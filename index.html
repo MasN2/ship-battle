@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Ship Battle: Tactical</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="top">
+            <h1>Ship Battle <span class="sep">::</span> Tactical</h1>
+            <div class="right">
+                <label class="handicap" for="handicap-select" data-tip="handicap">
+                    <span class="handicap-label">AI</span>
+                    <select id="handicap-select">
+                        <option value="daily">Daily Puzzle</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="hard">Hard</option>
+                        <option value="challenging">Challenging</option>
+                        <option value="tricky">Tricky</option>
+                        <option value="visionary">Visionary</option>
+                        <option value="pvp">PVP</option>
+                        <option value="custom">Custom</option>
+
+                    </select>
+                </label>
+                <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
+                <input type="checkbox" id="tag-toggle" />
+                <label class="sound-toggle" data-tip="sound" title="Toggle sound effects">
+                    <input type="checkbox" id="sound-toggle" />
+                    <span class="sfx-icon" aria-hidden="true">
+                        <svg width="14" height="12" viewBox="0 0 14 12"><path fill="currentColor" d="M0 4 L0 8 L3 8 L7 11 L7 1 L3 4 Z" /><path fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" d="M9 4 Q11 6 9 8 M11 2 Q14 6 11 10" /></svg>
+                    </span>
+                    <span>SFX</span>
+                </label>
+                <div class="speed-control" data-tip="speed">
+                    <span class="speed-label">Speed</span>
+                    <input type="range" id="speed-slider" min="1" max="30" step="1" value="1" />
+                    <span class="speed-val" id="speed-val">1×</span>
+                </div>
+                <button class="small-btn" onclick="newGame()">↻ New Battle</button>
+            </div>
+        </header>
+
+        <div class="battlefield" id="battlefield">
+            <div id="fx-layer"></div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card blue">
+                <div class="left">
+                    <div class="faction">◤ Blue Command</div>
+                    <input type="text" oninput="username = this.value" value="player">
+                </div>
+                <div class="stat-resources">
+                    <div data-tip="money"><span class="stat-label">Money</span><span class="stat-val" id="blue-money">0.00</span></div>
+                    <div data-tip="ore"><span class="stat-label">Ore</span><span class="stat-val" id="blue-ore">2.00</span></div>
+                </div>
+            </div>
+            <input type="text" id="command-line" value="">
+            <div class="stat-card red">
+                <div class="left">
+                    <div class="faction">Red Command ◥</div>
+                    <div class="commander" id="red-command">Opponent · CPU</div>
+                </div>
+                <div class="stat-resources">
+                    <div data-tip="money"><span class="stat-label">Money</span><span class="stat-val" id="red-money">0.00</span></div>
+                    <div data-tip="ore"><span class="stat-label">Ore</span><span class="stat-val" id="red-ore">2.00</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="deploy-bar" id="deploy-bar"></div>
+
+        <div class="log-wrap" style="display: none;">
+            <div class="log">
+                <h3>Battle Log</h3>
+                <div class="scroll" id="log"></div>
+            </div>
+        </div>
+    </div>
+    <div id="tooltip" role="tooltip"></div>
+
+    <!-- Modal Overlay & Form Container -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal-content">
+            <h2>Import Game</h2>
+            <div class="form-group">
+                <label for="userSelect">Select a Scenario:</label>
+                <select id="userSelect">
+                    <option value="">-- Clear --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="handicapSelect">Select a Handicap:</label>
+                <select id="handicapSelect">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <form id="popupForm">
+                <div class="form-group" style="display:flex">
+                    <label for="name">Blue Build Order:</label>
+                    <input type="text" id="blue-bo" name="name" style="flex-grow:1">
+                </div>
+                <div class="form-group" style="display:flex">
+                    <label for="email">Red Build Order:</label>
+                    <input type="email" id="red-bo" name="email" style="flex-grow:1">
+                </div>
+                <button type="submit" id="importBtn">Import</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script defer src="https://static.itch.io/htmlgame.js" type="text/javascript"></script>
+</body>
+</html>
