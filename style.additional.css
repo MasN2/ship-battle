@@ -29,7 +29,7 @@
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	background: #21262d;	
+	background: #21262d;
 	backdrop-filter: blur(0.5rem);
 	border: 1px solid #30363d;
 	color: #6b6;
@@ -221,4 +221,17 @@
 		padding: 8px 10px;
 		border-radius: 6px;
 		border: 1px solid #21262d;
+	}
+
+.ship-btn {
+	border-radius: 2px;
+	border: 0;
+}
+
+.ship-btn:not(.unaffordable) {
+	box-shadow: 0 0 2px 0 rgba(33, 222, 255, 0.8);
+}
+
+	.ship-btn.debt {
+		background-color: var(--red-soft);
 	}

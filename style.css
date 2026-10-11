@@ -1110,7 +1110,7 @@ header.top {
     font-family: 'JetBrains Mono', monospace;
     color: var(--fg);
     display: grid;
-    transition: transform calc(0.12s / var(--anim-speed)), border-color calc(0.12s / var(--anim-speed)), background calc(0.12s / var(--anim-speed));
+    transition: transform 0.05s, border-color 0.05s, background 0.05s;
     position: relative;
     min-height: 40px;
     overflow: hidden;
@@ -1496,7 +1496,7 @@ header.top {
         border: 1px solid var(--line);
         border-top-color: transparent;
         border-left-color: transparent;
-        left: 50%;
+        left: var(--arrow-left, 50%);
         bottom: -5px;
         transform: translateX(-50%) rotate(45deg);
     }

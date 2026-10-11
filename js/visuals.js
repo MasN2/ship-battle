@@ -1,7 +1,7 @@
 import { state, timeout } from './state.js';
 
 // --- DYNAMIC FX POOLS ---
-const INITIAL_POOL_SIZE = 15; // Start small to save initial DOM overhead
+const INITIAL_POOL_SIZE = 30; // Start small to save initial DOM overhead
 const laserPool = [];
 const impactPool = [];
 const damagePool = [];

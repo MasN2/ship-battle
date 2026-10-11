@@ -256,13 +256,14 @@ export async function runAttacks() {
     }
 
     async function processAttacks(attacks) {
+        if (attacks.length === 0) return;
+
         for (const atk of attacks) {
             const { ship, enemyOwner } = atk;
             const { target, baseTarget } = findTarget(ship, enemyOwner);
             if (!target && !baseTarget) continue;
 
             ship.attackedThisTurn = true;
-
             let tsec = target?.sector ?? (ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX);
             const result = await executeStrike(ship, enemyOwner, target, baseTarget, 0);
 
@@ -280,13 +281,10 @@ export async function runAttacks() {
                     trampleHits++;
                 }
             }
-            await sleep(70);
         }
-        // Wait once at the end so all active lasers and damage numbers can finish
-        if (attacks.length > 0) {
-            await sleep(350);
-        }
+        await sleep(120);
     }
+
     state.newlyKilled = [];
     // both sides attack simultaneously
     await Promise.all([
@@ -315,20 +313,17 @@ export async function finishCleanup() {
 export async function runTurn(playerPick = 0) {
     if (processing || gameOver) return;
     setProcessing(true);
-    render();
 
     let aiPick = state.red.opening[state.turn - 1];
-
     if (state.red.ai === "pvp") {
         socket.send(playerPick);
         aiPick = parseInt(await getNextMessage(), 10);
     } else if (state.red.ai === "daily") {
         aiPick = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37][state.turn - 1] ?? 0;
     }
-
     if (aiPick === undefined) aiPick = pickAIR();
 
-    // Step 2: Deploy
+    // Step 1: Deploy (Instant)
     if (playerPick) await buyShip('blue', playerPick);
     else { log('BLUE skips deploy.', 'blue'); sfx.skip(); state.blue.history.push(0); }
 
@@ -336,43 +331,21 @@ export async function runTurn(playerPick = 0) {
     else { log('RED skips deploy.', 'red'); state.red.history.push(0); }
 
     render();
-    renderDeployBar()
-    await sleep(200);
+    renderDeployBar();
 
-    if ((state.blue.hp <= 0 || state.red.hp <= 0) && state.red.hp !== state.blue.hp) {
-        return finishCleanup();
-    }
-
-    for (const o of ['blue', 'red']) for (const s of state[o].ships) s.justDeployed = false;
-
-    // Step 3: Attack
+    // Step 2: Attacks fire immediately
     log('Attack phase.');
     await runAttacks();
-    render();
-    await sleep(200);
 
     if ((state.blue.hp <= 0 || state.red.hp <= 0) && state.red.hp !== state.blue.hp) {
         return finishCleanup();
     }
 
-    // Step 4: Cleanup dead
-    let removed = false;
+    // Step 3: Cleanup dead & Advance in one smooth motion
     for (const owner of ['blue', 'red']) {
-        const count = state[owner].ships.length;
         state[owner].ships = state[owner].ships.filter(s => s.health > 0);
-        if (state[owner].ships.length !== count) removed = true;
-    }
-    if (removed) {
-        recomputeRows();
-        log('Wreckage cleared.');
-        render();
-        await sleep(280);
-    }
-
-    // Step 5: Advance
-    let advanced = false;
-    for (const owner of ['blue', 'red']) {
         state[owner].ships.sort((a, b) => a.row - b.row);
+
         for (const ship of state[owner].ships) {
             if (!ship.attackedThisTurn) {
                 const dir = owner === 'blue' ? +1 : -1;
@@ -380,20 +353,20 @@ export async function runTurn(playerPick = 0) {
                 if (next >= 1 && next <= 7) {
                     ship.sector = next;
                     ship.row = 999;
-                    advanced = true;
-                    recomputeRows();
                 }
             }
             delete ship.attackedThisTurn;
+            ship.justDeployed = false;
         }
     }
-    if (advanced) {
-        log('Surviving ships advance.');
-        render();
-        await sleep(350);
-    }
 
-    // Step 6: End of turn abilities & mining
+    recomputeRows();
+    render();
+
+    // Tight 180ms slide: let CSS transition surviving ships to their new sector
+    await sleep(180);
+
+    // Step 4: Mining & Abilities
     for (const owner of ['blue', 'red']) {
         if (state[owner].regen !== undefined && state[owner].hp >= 100) state[owner].hp += state[owner].regen;
         const enemy = owner === 'red' ? 'blue' : 'red';
@@ -417,7 +390,7 @@ export async function runTurn(playerPick = 0) {
         const oreGained = calcOreIncome(owner, state);
         if (oreGained > 0) {
             state[owner].ore += oreGained;
-            log(`${owner.toUpperCase()} mines +${oreGained.toFixed(2)} ore (now ${state[owner].ore.toFixed(2)}).`, owner);
+            log(`${owner.toUpperCase()} mines +${oreGained.toFixed(2)} ore.`, owner);
         }
         for (const args of deployments) await deployShip(...args);
     }
@@ -427,10 +400,11 @@ export async function runTurn(playerPick = 0) {
         return finishCleanup();
     }
 
+    // Step 5: Ready for next turn immediately
     startNewTurn();
     setProcessing(false);
     render();
-    renderDeployBar()
+    renderDeployBar();
 }
 
 export async function load(moves) {

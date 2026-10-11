@@ -81,23 +81,23 @@ export function listAbilities(n) {
     const lines = [`Prime factors: ${factors.join(' &times; ')}`];
     for (const factor of factors) {
         switch (factor) {
-            case 2: lines.push('2: I have 2x attack.'); break;
-            case 3: lines.push(`3: End of Turn: +${n / 3} ore if this ship is in the center 3 sectors.`); break;
-            case 5: lines.push(`5: After I attack: fire a ${n / 5} damage missile that hits every enemy in target sector. Fires at the sector with the most enemies.`); break;
+            case 2: lines.push('2: I have ×2 attack.'); break;
+            case 3: lines.push(`3: End of turn: +${n / 3} ore if this ship is in the center 3 sectors.`); break;
+            case 5: lines.push(`5: After I attack: fire a ${n / 5} damage missile that hits every enemy in the sector with the most enemies.`); break;
             case 7: lines.push(`7: Deploy: Trade 3 base hp for ${n / 7} income.`); break;
-            case 11: lines.push('11: I have +1 range and x5 attack.'); break;
+            case 11: lines.push('11: I have +1 range and ×5 attack.'); break;
             case 13: lines.push(`13: End of turn: Deploy ship #${2 * n / 13} in my sector.`); break;
             case 17: lines.push(`17: End of turn: Enemy base loses ${n / 17} hp.`); break;
             case 19: lines.push(`19: I take ${n / 19} less damage from all sources.`); break;
             case 23: lines.push(`23: End of turn: Gain ${n / 23} income.`); break;
-            case 29: lines.push(`29: Deploy: Deploy ships up to #10 in my sector.`); break;
-            case 31: lines.push(`31: End of turn: Modify me with x2 attack.`); break;
+            case 29: lines.push(`29: Deploy: Also deploy ships up to #10 in my sector.`); break;
+            case 31: lines.push(`31: End of turn: Modify me with ×2 attack.`); break;
             case 37: lines.push("37: End of turn: Modify me with +1 attack, then deploy ship #(my attack) in my sector."); break;
-            case 41: lines.push("41: Deploy: Deploy prime ships up to #23 in my sector."); break;
-            case 43: lines.push("43: End of turn: Modify me with +1 attack, then deploy that many corvettes into my sector."); break;
+            case 41: lines.push("41: Deploy: Also deploy prime ships up to #23 in my sector."); break;
+            case 43: lines.push("43: End of turn: Modify me with +1 attack, then deploy that many Corvettes into my sector."); break;
             case 47: lines.push("47: Deploy: Set my attack equal to your income."); break;
-            case 53: lines.push("53: Deploy: I join the furthest advanced ship. (I also have more attack.)"); break;
-            case 71: lines.push('71: Deploy: I attack the enemy base. (I have enough attack to one-shot it unless there is a handicap.)'); break;
+            case 53: lines.push("53: I have increased attack. Deploy: I join the furthest advanced ship."); break;
+            case 71: lines.push('71: I have enough attack to instantly destroy the enemy base. Deploy: I attack the enemy base.'); break;
         }
     }
     if (n % 33 === 0) lines.push('3 &times; 11: I mine anywhere.');

@@ -141,7 +141,7 @@ export function createShipElement(ship, compact) {
                   <div class="ship-stats">
                     <span class="atk"></span>
                     <span class="hp"></span>
-                    <span class="ship-name" data-tip="shipname">${ship.template.name}</span>
+                    <span class="ship-name">${ship.template.name}</span>
                   </div>
               </div>
           </div>
@@ -151,11 +151,18 @@ export function createShipElement(ship, compact) {
 
 export function updateShipElement(div, ship) {
     if (div.classList.contains('dying')) return;
-    div.className = `ship ${ship.owner}${ship._attackPulse ? ' attacking' : ''}${ship.flashDamage ? ' damaged' : ''}${ship.dying ? ' dying' : ''}${ship.exhausted ? ' exhausted' : ''}${ship.justDeployed ? ' appearing' : ''}${ship.health <= 0 ? ' dead' : ''}`;
+
+    // Preserve active animation classes so render() doesn't cancel them
+    const isAttacking = div.classList.contains('attacking');
+    const isDamaged = div.classList.contains('damaged');
+
+    div.className = `ship ${ship.owner}${isAttacking ? ' attacking' : ''}${isDamaged ? ' damaged' : ''}${ship.exhausted ? ' exhausted' : ''}${ship.justDeployed ? ' appearing' : ''}${ship.health <= 0 ? ' dead' : ''}`;
+
     const atkEl = div.querySelector('.atk');
     if (atkEl) atkEl.innerHTML = `${ship.number % 5 ? (ship.number % 11 ? SWORD_SVG : BOW_SVG) : ROCKET_SVG}${ship.attack}`;
+
     const hpEl = div.querySelector('.hp');
-    if (hpEl) hpEl.innerHTML = `${HEART_SVG}${ship.health}`;
+    if (hpEl) hpEl.innerHTML = `${HEART_SVG}${Math.max(0, ship.health)}`;
 }
 
 export function renderBase(owner) {
@@ -172,6 +179,25 @@ export function renderBase(owner) {
     return div;
 }
 let deployBarInitialized = false;
+
+function getBuyCardTooltip(n, t, c) {
+    const baseC = cost(n, 0);
+    const oppC = cost(n, state.red.ore);
+    const abilities = listAbilities(n);
+
+    return `
+      <div style="margin-bottom: 6px;">
+        <strong style="font-size: 1.05em; color: #f0f6fc;">#${n} ${t.name}</strong>
+      </div>
+      <div style="margin-bottom: 8px; line-height: 1.45; color: #c9d1d9;">
+        ${abilities}
+      </div>
+      <div style="border-top: 1px solid #30363d; padding-top: 6px; font-size: 0.85em; color: #8b949e; line-height: 1.4;">
+        <div>Cost: <strong style="color: #58a6ff;">$${c.toFixed(2)}</strong> <span style="opacity: 0.7;">(Base: $${baseC.toFixed(2)})</span></div>
+        <div>Opponent pays: <strong style="color: #f85149;">$${oppC.toFixed(2)}</strong></div>
+      </div>
+    `;
+}
 
 export function renderDeployBar() {
     const el = document.getElementById('deploy-bar');
@@ -201,9 +227,10 @@ export function renderDeployBar() {
             btn.type = 'button';
             btn.id = `btn-ship-${n}`;
             btn.dataset.shipNum = n;
+            // NOTE: data-tip-text removed from <span class="num"> so only the button has the tooltip
             btn.innerHTML = `
               <div class="stats">
-                <span class="num" style="background:${shipNumBg(n)};" data-tip-text="${listAbilities(n)}" data-html="true">${n}</span>
+                <span class="num" style="background:${shipNumBg(n)};">${n}</span>
                 <span class="atk">${n % 5 ? (n % 11 ? SWORD_SVG : BOW_SVG) : ROCKET_SVG}${t.attack}</span>
                 <span class="hp">${HEART_SVG}${t.health}</span>
               </div>
@@ -234,16 +261,22 @@ export function renderDeployBar() {
         btn.style.display = isHidden ? 'none' : '';
         if (isHidden) continue;
 
+        const t = TEMPLATES[n];
         const c = cost(n, state.blue.ore);
         const affordable = state.blue.money + maxLoanFor(state.blue.income) >= c;
+        const costExceedsMoney = c > state.blue.money;
         const btnDisabled = !affordable || processing || gameOver;
 
-        btn.className = `ship-btn${affordable ? '' : ' unaffordable'}${btnDisabled ? ' disabled' : ''}`;
+        btn.className = `ship-btn${affordable ? (costExceedsMoney ? ' debt' : '') : ' unaffordable'
+            }${btnDisabled ? ' disabled' : ''}`;
+
+        // Unified all-in-one tooltip on the card:
+        btn.dataset.tipText = getBuyCardTooltip(n, t, c);
 
         const priceTag = btn.querySelector('.price-tag');
         if (priceTag) {
             priceTag.textContent = c.toFixed(2);
-            priceTag.className = `overlay-text-right price-tag ${c > state.blue.money ? 'text-red' : ''}`;
+            priceTag.className = `overlay-text-right price-tag ${costExceedsMoney ? 'text-red' : ''}`;
         }
     }
 }
