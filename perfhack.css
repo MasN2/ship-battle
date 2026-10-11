@@ -1,0 +1,31 @@
+/* These may or may not actually work */
+
+/* Force GPU compositing layers */
+.battlefield, #fx-layer, .ship {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+}
+
+/* Kill any accidental transitions that fight with animations */
+.fx-laser, .fx-impact, .fx-damage {
+    transition: none !important;
+}
+
+#fx-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    /* Force separate compositor surface & stop parent invalidation */
+    contain: strict;
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
+}
+
+#ships-layer {
+    /* Keep ships on their own separate surface too */
+    contain: layout paint;
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
+}

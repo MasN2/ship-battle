@@ -1,6 +1,6 @@
 import { BASE_START_HP, START_INCOME, START_ORE, DIFFICULTIES } from './config.js';
 import { sfx } from './audio.js';
-import { render } from './render.js';
+import { render, renderDeployBar } from './render.js';
 
 export let state = null;
 export let nextShipId = 1;
@@ -36,15 +36,17 @@ export function log(text, cls = '') {
 
 function renderLog() {
     const el = document.getElementById('log');
-    if (!el) return;
-    el.innerHTML = '';
-    for (const entry of state.log) {
-        const div = document.createElement('div');
-        div.className = `log-entry ${entry.cls || ''}`;
-        div.textContent = entry.text;
-        el.appendChild(div);
+    if (!el || state.log.length === 0) return;
+
+    const latest = state.log[state.log.length - 1];
+    const div = document.createElement('div');
+    div.className = `log-entry ${latest.cls || ''}`;
+    div.textContent = latest.text;
+    el.appendChild(div);
+
+    if (el.children.length > 200) {
+        el.removeChild(el.firstElementChild);
     }
-    el.parentElement.scrollTop = el.parentElement.scrollHeight;
 }
 
 export function startNewTurn() {
@@ -114,6 +116,7 @@ export function newGame(handicap) {
     log(`Battle commenced. Handicap: ${D.label}.`, 'heading');
     startNewTurn();
     render();
+    renderDeployBar()
 }
 
 export function endGame() {

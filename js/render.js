@@ -17,7 +17,7 @@ export function render() {
     hideTip();
     renderStats();
     renderBattlefield();
-    renderDeployBar();
+    // renderDeployBar();
 
     const ti = document.getElementById('turn-info');
     if (ti) {
@@ -82,10 +82,18 @@ export function renderBattlefield() {
         el.appendChild(fxLayer);
     }
 
+    /*
     const blueBase = el.querySelector('.base.blue');
     const redBase = el.querySelector('.base.red');
     if (blueBase) blueBase.replaceWith(renderBase('blue'));
     if (redBase) redBase.replaceWith(renderBase('red'));
+    */
+
+    const blueHp = el.querySelector('.base.blue .base-hp');
+    if (blueHp) blueHp.textContent = parseFloat(state.blue.hp.toFixed(1));
+
+    const redHp = el.querySelector('.base.red .base-hp');
+    if (redHp) redHp.textContent = parseFloat(state.red.hp.toFixed(1));
 
     const shipsLayer = document.getElementById('ships-layer');
     const allShips = [...state.blue.ships, ...state.red.ships];
@@ -163,47 +171,79 @@ export function renderBase(owner) {
     }
     return div;
 }
+let deployBarInitialized = false;
 
 export function renderDeployBar() {
     const el = document.getElementById('deploy-bar');
     if (!el) return;
-    el.innerHTML = '';
-
-    const skipDisabled = processing || gameOver;
-    const skip = document.createElement('button');
-    skip.type = 'button';
-    skip.className = `ship-btn skip-btn${skipDisabled ? ' disabled' : ''}`;
-    skip.dataset.tip = 'free';
-    skip.innerHTML = `<div class="stats"><span class="num">0</span></div><div class="row1"><span class="name">Skip</span></div><span class="overlay-text-right">FREE</span>`;
-    skip.onclick = () => { if (!skipDisabled) runTurn(0); };
-    el.appendChild(skip);
 
     const cb = document.getElementById('tag-toggle');
     const scrubMode = cb ? !cb.checked : false;
 
+    // --- INITIAL BUILD (Run only once!) ---
+    if (!deployBarInitialized || el.children.length === 0) {
+        el.innerHTML = '';
+
+        // Skip Button
+        const skip = document.createElement('button');
+        skip.type = 'button';
+        skip.id = 'btn-ship-skip';
+        skip.className = 'ship-btn skip-btn';
+        skip.dataset.tip = 'free';
+        skip.innerHTML = `<div class="stats"><span class="num">0</span></div><div class="row1"><span class="name">Skip</span></div><span class="overlay-text-right">FREE</span>`;
+        skip.onclick = () => { if (!processing && !gameOver) runTurn(0); };
+        el.appendChild(skip);
+
+        // 54 Ship Buttons
+        for (const n of SHIP_NUMS) {
+            const t = TEMPLATES[n];
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.id = `btn-ship-${n}`;
+            btn.dataset.shipNum = n;
+            btn.innerHTML = `
+              <div class="stats">
+                <span class="num" style="background:${shipNumBg(n)};" data-tip-text="${listAbilities(n)}" data-html="true">${n}</span>
+                <span class="atk">${n % 5 ? (n % 11 ? SWORD_SVG : BOW_SVG) : ROCKET_SVG}${t.attack}</span>
+                <span class="hp">${HEART_SVG}${t.health}</span>
+              </div>
+              <div class="row1"><span class="name">${t.name}</span></div>
+              <span class="overlay-text-right price-tag"></span>
+            `;
+            btn.onclick = () => {
+                const c = cost(n, state.blue.ore);
+                const affordable = state.blue.money + maxLoanFor(state.blue.income) >= c;
+                if (affordable && !processing && !gameOver) runTurn(n);
+            };
+            el.appendChild(btn);
+        }
+        deployBarInitialized = true;
+    }
+
+    // --- IN-PLACE UPDATE (0 DOM nodes created or destroyed) ---
+    const skipBtn = document.getElementById('btn-ship-skip');
+    if (skipBtn) {
+        skipBtn.classList.toggle('disabled', processing || gameOver);
+    }
+
     for (const n of SHIP_NUMS) {
-        if (scrubMode && n > 4 + state.turn) continue;
-        const t = TEMPLATES[n];
+        const btn = document.getElementById(`btn-ship-${n}`);
+        if (!btn) continue;
+
+        const isHidden = scrubMode && n > 4 + state.turn;
+        btn.style.display = isHidden ? 'none' : '';
+        if (isHidden) continue;
+
         const c = cost(n, state.blue.ore);
         const affordable = state.blue.money + maxLoanFor(state.blue.income) >= c;
         const btnDisabled = !affordable || processing || gameOver;
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
         btn.className = `ship-btn${affordable ? '' : ' unaffordable'}${btnDisabled ? ' disabled' : ''}`;
-        btn.dataset.tipText = scrubMode
-            ? `Ship #${n} (${t.name})<br>Hover over number for abilities.<br>Buy for ${c.toFixed(2)}!`
-            : `Ship #${n} (${t.name}) - base cost ${cost(n, 0).toFixed(2)}<br>You pay ${c.toFixed(2)}`;
-        btn.innerHTML = `
-          <div class="stats">
-            <span class="num" style="background:${shipNumBg(n)};" data-tip-text="${listAbilities(n)}" data-html="true">${n}</span>
-            <span class="atk">${n % 5 ? (n % 11 ? SWORD_SVG : BOW_SVG) : ROCKET_SVG}${t.attack}</span>
-            <span class="hp">${HEART_SVG}${t.health}</span>
-          </div>
-          <div class="row1"><span class="name">${t.name}</span></div>
-          <span class="overlay-text-right ${c > state.blue.money ? 'text-red' : ''}">${c.toFixed(2)}</span>
-        `;
-        btn.onclick = () => { if (!btnDisabled) runTurn(n); };
-        el.appendChild(btn);
+
+        const priceTag = btn.querySelector('.price-tag');
+        if (priceTag) {
+            priceTag.textContent = c.toFixed(2);
+            priceTag.className = `overlay-text-right price-tag ${c > state.blue.money ? 'text-red' : ''}`;
+        }
     }
 }

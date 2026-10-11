@@ -3,9 +3,39 @@ import { SECTORS, RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, 
 import { TEMPLATES, calculatePrimeFactors } from './templates.js';
 import { cost, calcOreIncome, maxLoanFor } from './economy.js';
 import { sfx } from './audio.js';
-import { animateAttacker, shootLaser, showDamageNumber, flashBase } from './visuals.js';
-import { render } from './render.js';
+import { animateAttacker, shootLaser, showDamageNumber, flashBase, clearRectCache } from './visuals.js';
+import { render, renderDeployBar } from './render.js';
 import { pickAIR } from './ai.js';
+import { HEART_SVG } from './config.js'; 
+
+function updateHealthDisplay(target, isBase, enemyOwner) {
+    if (isBase) {
+        const baseHpEl = document.querySelector(`.base.${enemyOwner} .base-hp`);
+        if (baseHpEl) {
+            baseHpEl.textContent = parseFloat(Math.max(0, state[enemyOwner].hp).toFixed(1));
+        }
+    } else if (target) {
+        const el = document.querySelector(`[data-ship-id="${target.id}"]`);
+        if (el) {
+            // Flash the element directly in the DOM
+            el.classList.add('damaged');
+            timeout(() => el.classList.remove('damaged'), 220);
+
+            // Update HP with the proper SVG icon intact
+            const hpEl = el.querySelector('.hp');
+            if (hpEl) {
+                const curHp = Math.max(0, target.health);
+                hpEl.innerHTML = `${HEART_SVG}${curHp}`;
+                if (curHp <= 0) {
+                    hpEl.className = 'hp dead';
+                    el.classList.add('dying', 'dead');
+                } else if (curHp <= target.maxHealth * 0.35) {
+                    hpEl.className = 'hp low';
+                }
+            }
+        }
+    }
+}
 
 export function priorityOrder(owner) {
     return state[owner].ships.slice().filter(s => s.health > 0 || s.dying).sort((a, b) => {
@@ -87,71 +117,82 @@ export async function buyShip(owner, num) {
     sfx.deploy();
     return true;
 }
+export function fireMissile(ship, enemyOwner, sector) {
+    const attackerEl = document.querySelector(`[data-ship-id="${ship.id}"]`);
+    if (attackerEl) {
+        attackerEl.classList.add('attacking');
+        timeout(() => attackerEl.classList.remove('attacking'), 350);
+    }
 
-export async function fireMissile(ship, enemyOwner, sector) {
-    animateAttacker(ship);
     const dmg = ship.template.number / 5;
     const bSec = ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX;
     const baseEl = document.querySelector(`.base.${enemyOwner}`);
-    const attackerEl = document.querySelector(`[data-ship-id="${ship.id}"]`);
 
     const hits = state[enemyOwner].ships.filter(e => e.sector === sector && e.health > 0 && !e.dying);
+
     hits.forEach((h, idx) => {
         const hEl = document.querySelector(`[data-ship-id="${h.id}"]`);
-        const d = idx * 90;
-        shootLaser(attackerEl, hEl, ship.owner, { aoe: true, delay: d });
-        showDamageNumber(hEl, dmg, ship.owner, { aoe: true, delay: d + 220 });
+        const delay = idx * 60;
+
+        const coords = shootLaser(attackerEl, hEl, ship.owner, { aoe: true, delay });
+        if (coords) showDamageNumber(coords.targetX, coords.targetY, dmg, ship.owner, { aoe: true, delay: delay + 180 });
+
         h.health -= Math.max(dmg - (h.number % 19 === 0 ? h.number / 19 : 0), 0);
-        h.flashDamage = true;
+
         if (h.health <= 0 && !h.dying) {
             h.dying = true;
             state.newlyKilled.push(h);
         }
+
+        // Direct DOM update triggers individual damage flashes for every hit target
+        updateHealthDisplay(h, false, enemyOwner);
     });
+
     sfx.missile();
 
     if (sector === bSec) {
-        shootLaser(attackerEl, baseEl, ship.owner, { large: true });
+        const coords = shootLaser(attackerEl, baseEl, ship.owner, { large: true });
         flashBase(enemyOwner);
         sfx.baseHit();
         state[enemyOwner].hp -= dmg * state[enemyOwner].damage_mult;
-        showDamageNumber(baseEl, dmg, ship.owner, { large: true, delay: 220 });
+        if (coords) showDamageNumber(coords.targetX, coords.targetY, dmg, ship.owner, { large: true, delay: 180 });
+        updateHealthDisplay(null, true, enemyOwner);
     }
 
     log(`#${ship.number} [${ship.owner.toUpperCase()}] missile-strikes ${SECTORS[sector]} — ${hits.length} hit for ${dmg} each.`, ship.owner);
-    render();
-    hits.forEach(h => { h.flashDamage = false; });
-    await sleep(520);
 }
 
 export async function executeStrike(ship, enemyOwner, atkTarget, atkBaseTarget, remainingDmg) {
     const dmg = remainingDmg || ship.attack;
-    state.newlyKilled = [];
+
+    // Direct attacker pulse on the DOM
+    const attackerEl = document.querySelector(`[data-ship-id="${ship.id}"]`);
+    if (attackerEl) {
+        attackerEl.classList.add('attacking');
+        timeout(() => attackerEl.classList.remove('attacking'), 350);
+    }
 
     if (atkBaseTarget) {
-        animateAttacker(ship);
         const baseEl = document.querySelector(`.base.${enemyOwner}`);
-        const attackerEl = document.querySelector(`[data-ship-id="${ship.id}"]`);
-        shootLaser(attackerEl, baseEl, ship.owner, { large: true });
+        const coords = shootLaser(attackerEl, baseEl, ship.owner, { large: true });
         flashBase(enemyOwner);
         sfx.baseHit();
+
         state[enemyOwner].hp -= dmg * state[enemyOwner].damage_mult;
-        showDamageNumber(baseEl, dmg, ship.owner, { large: true, delay: 220 });
-        log(`#${ship.number} [${ship.owner.toUpperCase()}] strikes ${enemyOwner.toUpperCase()} base for ${dmg} (→ ${state[enemyOwner].hp} HP).`, ship.owner);
-        render();
-        await sleep(560);
+        if (coords) showDamageNumber(coords.targetX, coords.targetY, dmg, ship.owner, { large: true, delay: 180 });
+        updateHealthDisplay(null, true, enemyOwner);
+
+        log(`#${ship.number} [${ship.owner.toUpperCase()}] strikes ${enemyOwner.toUpperCase()} base for ${dmg}.`, ship.owner);
         return { leftover: 0 };
     }
 
     if (!atkTarget || atkTarget.health <= 0 || atkTarget.dying) return { leftover: dmg };
 
-    animateAttacker(ship);
-    const attackerEl = document.querySelector(`[data-ship-id="${ship.id}"]`);
     const targetEl = document.querySelector(`[data-ship-id="${atkTarget.id}"]`);
-    shootLaser(attackerEl, targetEl, ship.owner);
-    showDamageNumber(targetEl, dmg, ship.owner, { delay: 220 });
+    const coords = shootLaser(attackerEl, targetEl, ship.owner);
+    if (coords) showDamageNumber(coords.targetX, coords.targetY, dmg, ship.owner, { delay: 180 });
+
     atkTarget.health -= Math.max(dmg - (atkTarget.number % 19 === 0 ? atkTarget.number / 19 : 0), 0);
-    atkTarget.flashDamage = true;
     sfx.attack();
     timeout(() => sfx.hit(), 90);
 
@@ -161,16 +202,18 @@ export async function executeStrike(ship, enemyOwner, atkTarget, atkBaseTarget, 
         atkTarget.dying = true;
         state.newlyKilled.push(atkTarget);
     }
-    log(`#${ship.number} [${ship.owner.toUpperCase()}] hits #${atkTarget.number} for ${dmg} (→ ${Math.max(0, atkTarget.health)} HP).`, ship.owner);
-    render();
-    atkTarget.flashDamage = false;
-    await sleep(520);
+
+    // Direct DOM update handles the damage flash and HP update immediately!
+    updateHealthDisplay(atkTarget, false, enemyOwner);
+    log(`#${ship.number} [${ship.owner.toUpperCase()}] hits #${atkTarget.number} for ${dmg}.`, ship.owner);
+
     return { leftover };
 }
 
 export async function runAttacks() {
+    clearRectCache();
+    state.newlyKilled = [];
     const getRange = ship => (ship.template.number % 11 === 0 ? 3 : ATTACK_RANGE);
-
     function findTarget(ship, enemyOwner) {
         const range = getRange(ship);
         const enemyShips = state[enemyOwner].ships.filter(s => s.health > 0 && !s.dying);
@@ -219,7 +262,6 @@ export async function runAttacks() {
             if (!target && !baseTarget) continue;
 
             ship.attackedThisTurn = true;
-            await sleep(220);
 
             let tsec = target?.sector ?? (ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX);
             const result = await executeStrike(ship, enemyOwner, target, baseTarget, 0);
@@ -238,12 +280,20 @@ export async function runAttacks() {
                     trampleHits++;
                 }
             }
+            await sleep(70);
+        }
+        // Wait once at the end so all active lasers and damage numbers can finish
+        if (attacks.length > 0) {
+            await sleep(350);
         }
     }
-
     state.newlyKilled = [];
-    await processAttacks(buildAttacksForOwner('blue'));
-    await processAttacks(buildAttacksForOwner('red'));
+    // both sides attack simultaneously
+    await Promise.all([
+        processAttacks(buildAttacksForOwner('blue')),
+        processAttacks(buildAttacksForOwner('red'))
+    ]);
+    render();
 
     for (const s of state.newlyKilled) s.dying = false;
     for (const o of ['blue', 'red']) for (const s of state[o].ships) { s.exhausted = false; s.flashDamage = false; }
@@ -286,6 +336,7 @@ export async function runTurn(playerPick = 0) {
     else { log('RED skips deploy.', 'red'); state.red.history.push(0); }
 
     render();
+    renderDeployBar()
     await sleep(200);
 
     if ((state.blue.hp <= 0 || state.red.hp <= 0) && state.red.hp !== state.blue.hp) {
@@ -379,6 +430,7 @@ export async function runTurn(playerPick = 0) {
     startNewTurn();
     setProcessing(false);
     render();
+    renderDeployBar()
 }
 
 export async function load(moves) {

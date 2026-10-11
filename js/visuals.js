@@ -1,5 +1,80 @@
 import { state, timeout } from './state.js';
 
+// --- DYNAMIC FX POOLS ---
+const INITIAL_POOL_SIZE = 15; // Start small to save initial DOM overhead
+const laserPool = [];
+const impactPool = [];
+const damagePool = [];
+let poolsReady = false;
+
+// Generic helper: grabs an idle element, or dynamically expands the pool if full
+function acquireFromPool(pool, defaultClass) {
+    let item = pool.find(p => !p.inUse);
+
+    // If all pooled elements are busy, EXPAND the pool by 1!
+    if (!item) {
+        const layer = document.getElementById('fx-layer');
+        if (!layer) return null;
+
+        const el = document.createElement('div');
+        el.className = defaultClass;
+        el.style.display = 'none';
+        layer.appendChild(el);
+
+        item = { el, inUse: false };
+        pool.push(item);
+    }
+
+    item.inUse = true;
+    return item;
+}
+
+export function initFxPool() {
+    const layer = document.getElementById('fx-layer');
+    if (!layer || poolsReady) return;
+    layer.innerHTML = '';
+
+    // Seed the initial pool
+    for (let i = 0; i < INITIAL_POOL_SIZE; i++) {
+        // Laser
+        const l = document.createElement('div');
+        l.className = 'fx-laser';
+        l.style.display = 'none';
+        layer.appendChild(l);
+        laserPool.push({ el: l, inUse: false });
+
+        // Impact
+        const imp = document.createElement('div');
+        imp.className = 'fx-impact';
+        imp.style.display = 'none';
+        layer.appendChild(imp);
+        impactPool.push({ el: imp, inUse: false });
+
+        // Damage Number
+        const dmg = document.createElement('div');
+        dmg.className = 'fx-damage';
+        dmg.style.display = 'none';
+        layer.appendChild(dmg);
+        damagePool.push({ el: dmg, inUse: false });
+    }
+    poolsReady = true;
+}
+
+
+let rectCache = new Map();
+export function clearRectCache() {
+    rectCache.clear();
+}
+function getCachedRect(el) {
+    if (!el) return null;
+    let r = rectCache.get(el);
+    if (!r) {
+        r = el.getBoundingClientRect();
+        rectCache.set(el, r);
+    }
+    return r;
+}
+
 export function shipFactorStops(num) {
     const stops = [];
     if (num === 0) return [0];
@@ -79,76 +154,94 @@ export function tagFactorClass(t) {
     if (t === 'LONG RANGE') return 'tag-lr';
     return '';
 }
-
 export function shootLaser(fromEl, toEl, owner, opts = {}) {
-    if (!fromEl || !toEl) return;
-    const layer = document.getElementById('fx-layer');
-    if (!layer) return;
-    const oRect = layer.getBoundingClientRect();
-    const f = fromEl.getBoundingClientRect();
-    const t = toEl.getBoundingClientRect();
+    if (!fromEl || !toEl) return null;
+    initFxPool();
+
+    const oRect = getCachedRect(document.getElementById('fx-layer'));
+    const f = getCachedRect(fromEl);
+    const t = getCachedRect(toEl);
+
     const x1 = f.left + f.width / 2 - oRect.left;
     const y1 = f.top + f.height / 2 - oRect.top;
     const x2 = t.left + t.width / 2 - oRect.left;
     const y2 = t.top + t.height / 2 - oRect.top;
     const dx = x2 - x1, dy = y2 - y1;
     const len = Math.hypot(dx, dy);
-    if (len < 1) return;
+    if (len < 1) return null;
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
     const delay = opts.delay || 0;
 
     const fire = () => {
-        const laser = document.createElement('div');
+        // Automatically expands if all current lasers are in-flight!
+        const item = acquireFromPool(laserPool, 'fx-laser');
+        if (!item) return;
+
+        const laser = item.el;
         laser.className = `fx-laser ${owner}${opts.preview ? ' preview' : ''}${opts.aoe ? ' aoe' : ''}`;
         laser.style.left = `${x1}px`;
         laser.style.top = `${y1}px`;
         laser.style.width = `${len}px`;
         laser.style.transform = `rotate(${angle}deg)`;
-        layer.appendChild(laser);
-        timeout(() => laser.remove(), 600);
-        if (!opts.preview) timeout(() => impactFlash(x2, y2, owner, opts.large), 220);
+        laser.style.display = 'block';
+
+        timeout(() => {
+            laser.style.display = 'none';
+            item.inUse = false; // Returned to pool
+        }, 350);
+
+        if (!opts.preview) timeout(() => impactFlash(x2, y2, owner, opts.large), 180);
     };
-    if (delay > 0) setTimeout(fire, delay); else fire();
+
+    if (delay > 0) setTimeout(fire, delay);
+    else fire();
+
+    return { targetX: x2, targetY: y2 };
 }
 
 export function impactFlash(x, y, owner, large = false) {
-    const layer = document.getElementById('fx-layer');
-    if (!layer) return;
-    const d = document.createElement('div');
+    initFxPool();
+    const item = acquireFromPool(impactPool, 'fx-impact');
+    if (!item) return;
+
+    const d = item.el;
     d.className = `fx-impact ${owner}${large ? ' large' : ''}`;
     d.style.left = `${x}px`;
     d.style.top = `${y}px`;
-    layer.appendChild(d);
-    timeout(() => d.remove(), 480);
+    d.style.display = 'block';
+
+    timeout(() => {
+        d.style.display = 'none';
+        item.inUse = false; // Returned to pool
+    }, 280);
 }
 
-export function showDamageNumber(el, dmg, owner, opts = {}) {
-    if (!el) return;
-    const layer = document.getElementById('fx-layer');
-    if (!layer) return;
+export function showDamageNumber(x, y, dmg, owner, opts = {}) {
+    initFxPool();
     const delay = opts.delay || 0;
-    const shipId = el.dataset.shipId;
-    const isBase = el.classList.contains('base');
-    const baseOwner = isBase ? (el.classList.contains('blue') ? 'blue' : 'red') : null;
 
     const fire = () => {
-        let currentEl = isBase ? document.querySelector(`.base.${baseOwner}`) : (shipId ? document.querySelector(`[data-ship-id="${shipId}"]`) : null);
-        if (!currentEl || !document.body.contains(currentEl)) return;
-        const currentORect = layer.getBoundingClientRect();
-        const currentR = currentEl.getBoundingClientRect();
-        const div = document.createElement('div');
-        div.className = `fx-damage${opts.aoe ? ' aoe' : ''}`;
-        div.style.left = `${currentR.left + currentR.width / 2 - currentORect.left}px`;
-        div.style.top = `${currentR.top - currentORect.top + 4}px`;
-        div.style.color = owner === 'blue' ? 'var(--laser-blue)' : 'var(--laser-red)';
-        if (opts.large) div.style.fontSize = '22px';
-        div.textContent = `−${dmg}`;
-        layer.appendChild(div);
-        timeout(() => { if (div.parentNode) div.remove(); }, 1000);
-    };
-    if (delay > 0) setTimeout(fire, delay); else fire();
-}
+        const item = acquireFromPool(damagePool, 'fx-damage');
+        if (!item) return;
 
+        const div = item.el;
+        div.className = `fx-damage${opts.aoe ? ' aoe' : ''}`;
+        div.style.left = `${x}px`;
+        div.style.top = `${y - 10}px`;
+        div.style.color = owner === 'blue' ? 'var(--laser-blue)' : 'var(--laser-red)';
+        div.style.fontSize = opts.large ? '22px' : '';
+        div.textContent = `−${dmg}`;
+        div.style.display = 'block';
+
+        timeout(() => {
+            div.style.display = 'none';
+            item.inUse = false; // Returned to pool
+        }, 650);
+    };
+
+    if (delay > 0) setTimeout(fire, delay);
+    else fire();
+}
 export function animateAttacker(ship) {
     ship._attackPulse = true;
     ship.exhausted = true;
