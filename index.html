@@ -6,44 +6,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.additional.css" />
 </head>
 <body>
     <div id="app">
-        <header class="top">
-            <h1>Ship Battle <span class="sep">::</span> Tactical</h1>
-            <div class="right">
-                <label class="handicap" for="handicap-select" data-tip="handicap">
-                    <span class="handicap-label">AI</span>
-                    <select id="handicap-select">
-                        <option value="daily">Daily Puzzle</option>
-                        <option value="normal" selected>Normal</option>
-                        <option value="hard">Hard</option>
-                        <option value="challenging">Challenging</option>
-                        <option value="tricky">Tricky</option>
-                        <option value="visionary">Visionary</option>
-                        <option value="pvp">PVP</option>
-                        <option value="custom">Custom</option>
-
-                    </select>
-                </label>
-                <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
-                <input type="checkbox" id="tag-toggle" />
-                <label class="sound-toggle" data-tip="sound" title="Toggle sound effects">
-                    <input type="checkbox" id="sound-toggle" />
-                    <span class="sfx-icon" aria-hidden="true">
-                        <svg width="14" height="12" viewBox="0 0 14 12"><path fill="currentColor" d="M0 4 L0 8 L3 8 L7 11 L7 1 L3 4 Z" /><path fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" d="M9 4 Q11 6 9 8 M11 2 Q14 6 11 10" /></svg>
-                    </span>
-                    <span>SFX</span>
-                </label>
-                <div class="speed-control" data-tip="speed">
-                    <span class="speed-label">Speed</span>
-                    <input type="range" id="speed-slider" min="1" max="30" step="1" value="1" />
-                    <span class="speed-val" id="speed-val">1×</span>
-                </div>
-                <button class="small-btn" onclick="newGame()">↻ New Battle</button>
-            </div>
-        </header>
+        <div class="hud-top">
+            <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
+            <button class="hud-menu-btn" id="menu-btn" title="Open Menu (ESC)">
+                <span>⚙ MENU</span>
+                <kbd>ESC</kbd>
+            </button>
+        </div>
 
         <div class="battlefield" id="battlefield">
             <div id="fx-layer"></div>
@@ -117,7 +91,62 @@
             </form>
         </div>
     </div>
+    <div class="pause-overlay" id="pause-modal" aria-hidden="true">
+        <div class="pause-dialog">
+            <div class="pause-header">
+                <h2>Tactical Command</h2>
+                <span class="esc-hint">Press <kbd>ESC</kbd> to resume</span>
+            </div>
+
+            <div class="pause-actions">
+                <button class="btn-action primary" id="btn-resume">▶ Resume Battle</button>
+                <button class="btn-action danger" id="btn-restart">↻ Restart Battle</button>
+            </div>
+
+            <div class="pause-section-title">Operations & AI</div>
+            <div class="pause-grid">
+                <div class="pause-field">
+                    <label for="handicap-select">AI Protocol</label>
+                    <select id="handicap-select">
+                        <option value="daily">Daily Puzzle</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="hard">Hard</option>
+                        <option value="challenging">Challenging</option>
+                        <option value="tricky">Tricky</option>
+                        <option value="visionary">Visionary</option>
+                        <option value="pvp">PVP</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="pause-field">
+                    <label>Sim Speed (<span id="speed-val">1×</span>)</label>
+                    <input type="range" id="speed-slider" min="1" max="30" step="1" value="1" />
+                </div>
+
+                <label for="sound-toggle">
+                    <div class="pause-field toggle-row">
+                        <label for="sound-toggle">Audio SFX</label>
+                        <input type="checkbox" id="sound-toggle" />
+                    </div>
+                </label>
+
+                <label for="tag-toggle">
+                    <div class="pause-field toggle-row">
+                        <label for="tag-toggle">Show All Ship Tech</label>
+                        <input type="checkbox" id="tag-toggle" />
+                    </div>
+                </label>
+            </div>
+
+            <div class="pause-footer">
+                <button class="btn-action outline" id="btn-open-scenarios">📂 Load Scenarios / Import</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="script.js"></script>
+    <script type="module" src="script.pause.js"></script>
     <script defer src="https://static.itch.io/htmlgame.js" type="text/javascript"></script>
 </body>
 </html>

@@ -415,6 +415,7 @@ header.top {
     gap: 0;
     border: 1px solid var(--line);
     background-image: url(https://media.istockphoto.com/id/2165838619/vector/vector-colorful-abstract-universe-backgroud-with-galaxies-and-glowing-stars.jpg?s=612x612&w=0&k=20&c=oXF59JUdF4dQnOzds8whs7ZP2bhT4xihLaNKN1SEvyE=);
+    filter: saturate(0.8);
     padding: 6px;
     min-height: 300px;
     position: relative;
