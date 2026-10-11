@@ -1,6 +1,7 @@
 const pauseModal = document.getElementById('pause-modal');
 const btnResume = document.getElementById('btn-resume');
 const btnRestart = document.getElementById('btn-restart');
+const btnRestartTop = document.getElementById('btn-restart-top');
 const menuBtn = document.getElementById('menu-btn');
 const btnScenarios = document.getElementById('btn-open-scenarios');
 const scenarioModal = document.getElementById('formModal');
@@ -35,6 +36,11 @@ menuBtn?.addEventListener('click', () => togglePauseMenu(true));
 btnResume?.addEventListener('click', () => togglePauseMenu(false));
 
 btnRestart?.addEventListener('click', () => {
+    togglePauseMenu(false);
+    newGame();
+});
+
+btnRestartTop?.addEventListener('click', () => {
     togglePauseMenu(false);
     newGame();
 });

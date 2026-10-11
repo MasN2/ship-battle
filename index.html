@@ -14,11 +14,12 @@
     <div id="app">
         <div class="hud-top">
             <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
-            <button class="hud-menu-btn" id="menu-btn" title="Open Menu (ESC)">
-                <span>⚙ MENU</span>
-                <kbd>ESC</kbd>
-            </button>
         </div>
+        <button class="btn-action danger" id="btn-restart-top">↻ Restart Battle</button>
+        <button class="hud-menu-btn" id="menu-btn" title="Open Menu (ESC)">
+            <span>⚙ MENU</span>
+            <kbd>ESC</kbd>
+        </button>
 
         <div class="battlefield" id="battlefield">
             <div id="fx-layer"></div>
@@ -95,19 +96,14 @@
     <div class="pause-overlay" id="pause-modal" aria-hidden="true">
         <div class="pause-dialog">
             <div class="pause-header">
-                <h2>Tactical Command</h2>
+                <h2>Pause Menu</h2>
                 <span class="esc-hint">Press <kbd>ESC</kbd> to resume</span>
             </div>
 
-            <div class="pause-actions">
-                <button class="btn-action primary" id="btn-resume">▶ Resume Battle</button>
-                <button class="btn-action danger" id="btn-restart">↻ Restart Battle</button>
-            </div>
-
-            <div class="pause-section-title">Operations & AI</div>
+            <div class="pause-section-title">Settings</div>
             <div class="pause-grid">
                 <div class="pause-field">
-                    <label for="handicap-select">AI Protocol</label>
+                    <label for="handicap-select">AI Mode</label>
                     <select id="handicap-select">
                         <option value="daily">Daily Puzzle</option>
                         <option value="normal" selected>Normal</option>
@@ -121,27 +117,32 @@
                 </div>
 
                 <div class="pause-field">
-                    <label>Sim Speed (<span id="speed-val">1×</span>)</label>
+                    <label>Animation Speed (<span id="speed-val">1×</span>)</label>
                     <input type="range" id="speed-slider" min="1" max="30" step="1" value="1" />
                 </div>
 
                 <label for="sound-toggle">
                     <div class="pause-field toggle-row">
-                        <label for="sound-toggle">Audio SFX</label>
+                        <label for="sound-toggle">Enable SFX</label>
                         <input type="checkbox" id="sound-toggle" />
                     </div>
                 </label>
 
                 <label for="tag-toggle">
                     <div class="pause-field toggle-row">
-                        <label for="tag-toggle">Show All Ship Tech</label>
+                        <label for="tag-toggle">Advanced UI</label>
                         <input type="checkbox" id="tag-toggle" />
                     </div>
                 </label>
             </div>
-
+            <!--
             <div class="pause-footer">
                 <button class="btn-action outline" id="btn-open-scenarios">📂 Load Scenarios / Import</button>
+            </div>
+            -->
+            <div class="pause-actions">
+                <button class="btn-action primary" id="btn-resume">▶ Resume Battle</button>
+                <button class="btn-action danger" id="btn-restart">↻ Restart Battle</button>
             </div>
         </div>
     </div>

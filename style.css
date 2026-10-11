@@ -100,7 +100,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    background: var(--bg);
+    background-color: #222;
     color: var(--fg);
     font-family: 'Space Grotesk', system-ui, sans-serif;
     min-height: 100vh;
