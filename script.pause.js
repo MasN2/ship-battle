@@ -54,3 +54,25 @@ btnScenarios?.addEventListener('click', () => {
 pauseModal?.addEventListener('click', (e) => {
     if (e.target === pauseModal) togglePauseMenu(false);
 });
+
+
+import { renderShortcutBar } from './js/render.js';
+
+const SHORTCUT_KEY = 'shipbattle.showShortcut';
+const shortcutBar = document.getElementById('shortcut-bar');
+const shortcutToggle = document.getElementById('shortcut-toggle');
+
+// Load preference (defaults to true)
+let showShortcut = localStorage.getItem(SHORTCUT_KEY) !== '0';
+
+if (shortcutToggle && shortcutBar) {
+    shortcutToggle.checked = showShortcut;
+    shortcutBar.style.display = showShortcut ? 'grid' : 'none';
+
+    shortcutToggle.addEventListener('change', (e) => {
+        showShortcut = e.target.checked;
+        localStorage.setItem(SHORTCUT_KEY, showShortcut ? '1' : '0');
+        shortcutBar.style.display = showShortcut ? 'grid' : 'none';
+        if (showShortcut) renderShortcutBar();
+    });
+}

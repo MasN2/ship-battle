@@ -135,9 +135,9 @@ export function createShipElement(ship, compact) {
     div.className = `ship ${ship.owner}${compact ? ' compact' : ''}`;
     div.innerHTML = `
         <div class="ship-inner">
-          <div style="display: flex; gap:5px;">
-              <div><span class="ship-num" data-tip-text="${listAbilities(ship.number)}" style="background:${shipNumBg(ship.number)};">${ship.number}</span></div>
-              <div style="position:relative;flex:1">
+          <div style="display: flex; gap: 5px;">
+              <div><span class="ship-num"></span></div>
+              <div style="position: relative; flex: 1">
                   <div class="ship-stats">
                     <span class="atk"></span>
                     <span class="hp"></span>
@@ -146,6 +146,12 @@ export function createShipElement(ship, compact) {
               </div>
           </div>
         </div>`;
+
+    const numSpan = div.querySelector('.ship-num');
+    numSpan.textContent = ship.number;
+    numSpan.dataset.tipText = listAbilities(ship.number);
+    numSpan.style.background = shipNumBg(ship.number);
+
     return div;
 }
 
@@ -278,5 +284,87 @@ export function renderDeployBar() {
             priceTag.textContent = c.toFixed(2);
             priceTag.className = `overlay-text-right price-tag ${costExceedsMoney ? 'text-red' : ''}`;
         }
+    }
+}
+
+
+// --- CALCULATE THE 5 RING SHIPS ---
+function getShortcutRingNums() {
+    const ore = state.blue.ore;
+    const maxSpend = state.blue.money + maxLoanFor(state.blue.income);
+
+    // All ships currently affordable (including using debt)
+    const affordable = SHIP_NUMS.filter(n => cost(n, ore) <= maxSpend);
+
+    const ring = [];
+    // 5 columns: c = 0, 1, 2, 3, 4 where (n - 1) % 5 === c
+    for (let c = 0; c < 5; c++) {
+        const shipsInCol = affordable.filter(n => (n - 1) % 5 === c);
+        if (shipsInCol.length > 0) {
+            // Pick highest affordable ship in this modulo column
+            ring.push(Math.max(...shipsInCol));
+        } else {
+            // Default fallback if no money (1, 2, 3, 4, 5)
+            ring.push(c + 1);
+        }
+    }
+    return ring;
+}
+
+// --- RENDER THE 7-SHIP SHORTCUT BAR ---
+export function renderShortcutBar() {
+    const el = document.getElementById('shortcut-bar');
+    if (!el || el.style.display === 'none') return;
+
+    el.innerHTML = '';
+
+    // Defaults to 0 on game start
+    const lastBought = state.blue.lastBought ?? 0;
+    const ringShips = getShortcutRingNums();
+
+    // 7 Slots: [0 (Skip), ...5 Ring Ships, Last-Bought]
+    const shortcutSlots = [
+        { type: 'skip', num: 0 },
+        ...ringShips.map(num => ({ type: 'ring', num })),
+        { type: 'last', num: lastBought }
+    ];
+
+    for (const slot of shortcutSlots) {
+        const n = slot.num;
+
+        // --- IF SLOT IS 0 (Slot 1 or Slot 7 defaulting to 0) ---
+        if (n === 0) {
+            const skip = document.createElement('button');
+            skip.type = 'button';
+            skip.className = `ship-btn skip-btn${processing || gameOver ? ' disabled' : ''}${slot.type === 'last' ? ' slot-last' : ''}`;
+            skip.dataset.tip = 'free';
+            // Single-line string eliminates whitespace rendering glitches:
+            skip.innerHTML = `<div class="stats"><span class="num">0</span></div><div class="row1"><span class="name">Skip</span></div><span class="overlay-text-right">FREE</span>`;
+            skip.onclick = () => { if (!processing && !gameOver) runTurn(0); };
+            el.appendChild(skip);
+            continue;
+        }
+
+        // --- NORMAL SHIPS (1..54) ---
+        const t = TEMPLATES[n];
+        if (!t) continue;
+
+        const c = cost(n, state.blue.ore);
+        const affordable = state.blue.money + maxLoanFor(state.blue.income) >= c;
+        const costExceedsMoney = c > state.blue.money;
+        const btnDisabled = !affordable || processing || gameOver;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `ship-btn${affordable ? (costExceedsMoney ? ' debt' : '') : ' unaffordable'}${btnDisabled ? ' disabled' : ''}${slot.type === 'last' ? ' slot-last' : ''}`;
+        btn.dataset.tipText = getBuyCardTooltip(n, t, c);
+
+        btn.innerHTML = `<div class="stats"><span class="num" style="background:${shipNumBg(n)};">${n}</span><span class="atk">${n % 5 ? (n % 11 ? SWORD_SVG : BOW_SVG) : ROCKET_SVG}${t.attack}</span><span class="hp">${HEART_SVG}${t.health}</span></div><div class="row1"><span class="name">${t.name}</span></div><span class="overlay-text-right price-tag ${costExceedsMoney ? 'text-red' : ''}">${c.toFixed(2)}</span>`;
+
+        btn.onclick = () => {
+            if (affordable && !processing && !gameOver) runTurn(n);
+        };
+
+        el.appendChild(btn);
     }
 }

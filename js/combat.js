@@ -4,7 +4,7 @@ import { TEMPLATES, calculatePrimeFactors } from './templates.js';
 import { cost, calcOreIncome, maxLoanFor } from './economy.js';
 import { sfx } from './audio.js';
 import { animateAttacker, shootLaser, showDamageNumber, flashBase, clearRectCache } from './visuals.js';
-import { render, renderDeployBar } from './render.js';
+import { render, renderDeployBar, renderShortcutBar } from './render.js';
 import { pickAIR } from './ai.js';
 import { HEART_SVG } from './config.js'; 
 
@@ -109,6 +109,9 @@ export async function buyShip(owner, num) {
     if (state[owner].money + maxLoanFor(state[owner].income) < c) {
         state[owner].history.push(0);
         return false;
+    }
+    if (owner === 'blue' && num > 0) {
+        state.blue.lastBought = num;
     }
     state[owner].history.push(num);
     state[owner].money -= c;
@@ -405,6 +408,7 @@ export async function runTurn(playerPick = 0) {
     setProcessing(false);
     render();
     renderDeployBar();
+    renderShortcutBar();
 }
 
 export async function load(moves) {

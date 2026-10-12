@@ -235,3 +235,17 @@
 	.ship-btn.debt {
 		background-color: var(--red-soft);
 	}
+
+/* Shortcut Bar Layout */
+.shortcut-bar {
+	margin: auto;
+	grid-template-columns: repeat(7, 1fr);
+}
+
+#tooltip .tg {
+	color: var(--green);
+}
+
+#tooltip .tp {
+	color: var(--purple);
+}

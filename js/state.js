@@ -1,6 +1,6 @@
 import { BASE_START_HP, START_INCOME, START_ORE, DIFFICULTIES } from './config.js';
 import { sfx } from './audio.js';
-import { render, renderDeployBar } from './render.js';
+import { render, renderDeployBar, renderShortcutBar } from './render.js';
 
 export let state = null;
 export let nextShipId = 1;
@@ -83,7 +83,18 @@ export function newGame(handicap) {
 
     state = {
         turn: 0,
-        blue: { hp: BASE_START_HP, damage_mult: 1, regen: 0, income: START_INCOME, money: 0, ore: START_ORE, ore_boost: 1, ships: [], history: [] },
+        blue: {
+            hp: BASE_START_HP,
+            damage_mult: 1,
+            regen: 0,
+            income: START_INCOME,
+            money: 0,
+            ore: START_ORE,
+            ore_boost: 1,
+            ships: [],
+            history: [],
+            lastBought: 0
+        },
         red: {
             hp: BASE_START_HP,
             damage_mult: D.hpMult ?? 1,
@@ -116,7 +127,8 @@ export function newGame(handicap) {
     log(`Battle commenced. Handicap: ${D.label}.`, 'heading');
     startNewTurn();
     render();
-    renderDeployBar()
+    renderDeployBar();
+    renderShortcutBar();
 }
 
 export function endGame() {
