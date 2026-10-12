@@ -1,0 +1,251 @@
+.hud-top {
+	position: sticky;
+	z-index: 100;
+	display: flex;
+	top: 0.5rem;
+	justify-content: space-between;
+	margin: auto;
+	align-items: center;
+	max-width: 1200px;
+	column-gap: 4px;
+	pointer-events: none; /* Allows clicking behind it */
+}
+
+	.hud-top .turn-info {
+		pointer-events: auto;
+		background: rgba(22, 27, 34, 0.85);
+		backdrop-filter: blur(8px);
+		border: 1px solid #30363d;
+		padding: 6px 14px;
+		border-radius: 20px;
+		font-size: 0.82rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: #ddd;
+	}
+
+.hud-menu-btn {
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	background: #21262d;
+	backdrop-filter: blur(0.5rem);
+	border: 1px solid #30363d;
+	color: #6b6;
+	padding: 6px 12px;
+	border-radius: 8px;
+	font-size: 0.8rem;
+	cursor: pointer;
+	transition: all 0.05s ease;
+	position: absolute;
+	right: 1.25rem;
+	top: 0.5rem;
+	flex: 1;
+	padding: 10px 14px;
+	border-radius: 6px;
+	font-size: 0.88rem;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition: all 0.05s ease;
+}
+
+	.hud-menu-btn:hover {
+		background: #393;
+		color: #fff;
+	}
+
+	.hud-menu-btn kbd, .esc-hint kbd {
+		background: #161b22;
+		border: 1px solid #30363d;
+		border-radius: 4px;
+		padding: 2px 5px;
+		font-size: 0.7rem;
+		color: #ddd;
+	}
+
+#btn-restart-top {
+	position: absolute;
+	left: 1.25rem;
+	top: 0.5rem;
+}
+/* ============================================================
+   3. PAUSE MODAL OVERLAY
+   ============================================================ */
+.pause-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(1, 4, 9, 0.75);
+	backdrop-filter: blur(6px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.05s ease;
+}
+
+	.pause-overlay.active {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+.pause-dialog {
+	background: #161b22;
+	border: 1px solid #30363d;
+	border-radius: 12px;
+	width: 90%;
+	max-width: 440px;
+	padding: 24px;
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	transform: translateY(-8px);
+	transition: transform 0.05s ease;
+}
+
+.pause-overlay.active .pause-dialog {
+	transform: translateY(0);
+}
+
+.pause-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	border-bottom: 1px solid #21262d;
+	padding-bottom: 10px;
+}
+
+	.pause-header h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		color: #f0f6fc;
+	}
+
+.esc-hint {
+	font-size: 0.75rem;
+	color: #8b949e;
+}
+
+.pause-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.btn-action {
+	flex: 1;
+	padding: 10px 14px;
+	border-radius: 6px;
+	font-size: 0.88rem;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition: all 0.05s ease;
+}
+
+	.btn-action.primary {
+		background: #238636;
+		color: #fff;
+	}
+
+		.btn-action.primary:hover {
+			background: #2ea043;
+		}
+
+	.btn-action.danger {
+		background: #21262d;
+		border-color: #30363d;
+		color: #f85149;
+	}
+
+		.btn-action.danger:hover {
+			background: #da3633;
+			color: #fff;
+		}
+
+	.btn-action.outline {
+		background: transparent;
+		border-color: #30363d;
+		color: #c9d1d9;
+		width: 100%;
+	}
+
+		.btn-action.outline:hover {
+			background: #21262d;
+			border-color: #8b949e;
+		}
+
+.pause-section-title {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #8b949e;
+	margin-top: 4px;
+}
+
+.pause-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.pause-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+	.pause-field label {
+		font-size: 0.78rem;
+		color: #8b949e;
+	}
+
+	.pause-field select, .pause-field input[type="range"] {
+		background: #0d1117;
+		border: 1px solid #30363d;
+		color: #c9d1d9;
+		padding: 6px;
+		border-radius: 6px;
+	}
+
+	.pause-field.toggle-row {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		grid-column: span 2;
+		background: #0d1117;
+		padding: 8px 10px;
+		border-radius: 6px;
+		border: 1px solid #21262d;
+	}
+
+.ship-btn {
+	border-radius: 2px;
+	border: 0;
+}
+
+.ship-btn:not(.unaffordable) {
+	box-shadow: 0 0 2px 0 rgba(33, 222, 255, 0.8);
+}
+
+	.ship-btn.debt {
+		background-color: var(--red-soft);
+	}
+
+/* Shortcut Bar Layout */
+.shortcut-bar {
+	margin: auto;
+	grid-template-columns: repeat(7, 1fr);
+}
+
+#tooltip .tg {
+	color: var(--green);
+}
+
+#tooltip .tp {
+	color: var(--purple);
+}
