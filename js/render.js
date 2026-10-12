@@ -82,18 +82,8 @@ export function renderBattlefield() {
         el.appendChild(fxLayer);
     }
 
-    /*
-    const blueBase = el.querySelector('.base.blue');
-    const redBase = el.querySelector('.base.red');
-    if (blueBase) blueBase.replaceWith(renderBase('blue'));
-    if (redBase) redBase.replaceWith(renderBase('red'));
-    */
-
-    const blueHp = el.querySelector('.base.blue .base-hp');
-    if (blueHp) blueHp.textContent = parseFloat(state.blue.hp.toFixed(1));
-
-    const redHp = el.querySelector('.base.red .base-hp');
-    if (redHp) redHp.textContent = parseFloat(state.red.hp.toFixed(1));
+    updateBase('blue', el.querySelector('.base.blue'));
+    updateBase('red', el.querySelector('.base.red'));
 
     const shipsLayer = document.getElementById('ships-layer');
     const allShips = [...state.blue.ships, ...state.red.ships];
@@ -171,19 +161,64 @@ export function updateShipElement(div, ship) {
     if (hpEl) hpEl.innerHTML = `${HEART_SVG}${Math.max(0, ship.health)}`;
 }
 
+export function updateBase(owner, baseEl) {
+    if (!baseEl) return;
+
+    // 1. In-place HP update (only touches DOM if value actually changed)
+    const hpEl = baseEl.querySelector('.base-hp');
+    if (hpEl) {
+        const hpStr = String(parseFloat(state[owner].hp.toFixed(1)));
+        if (hpEl.textContent !== hpStr) {
+            hpEl.textContent = hpStr;
+        }
+    }
+
+    // 2. In-place Base History update
+    const row = baseEl.querySelector('.row1');
+    if (!row) return;
+
+    const history = state[owner].history;
+
+    // A. Handle battle restart / undo: prune excess nodes if history shrank
+    while (row.children.length > history.length) {
+        row.lastElementChild.remove();
+    }
+
+    // B. Re-sync existing nodes only if their value changed (e.g., loaded game / swapped state)
+    for (let i = 0; i < row.children.length; i++) {
+        const child = row.children[i];
+        const n = history[i];
+        if (child.dataset.shipNum !== String(n)) {
+            child.dataset.shipNum = n;
+            child.textContent = n;
+            child.style.background = shipNumBg(n);
+            child.dataset.tipText = listAbilities(n);
+        }
+    }
+
+    // C. Append ONLY new entries added since last render
+    for (let i = row.children.length; i < history.length; i++) {
+        const n = history[i];
+        const span = document.createElement('span');
+        span.className = 'num';
+        span.dataset.shipNum = n;
+        span.textContent = n;
+        span.style.background = shipNumBg(n);
+        span.dataset.tipText = listAbilities(n);
+        span.dataset.html = 'true';
+        row.appendChild(span);
+    }
+}
+
 export function renderBase(owner) {
     const div = document.createElement('div');
     div.className = `base ${owner}`;
     div.dataset.tip = 'base';
-    div.innerHTML = `<div class="base-hp">${parseFloat(state[owner].hp.toFixed(3))}</div>`;
-    const row = document.createElement('div');
-    row.className = "row1";
-    div.appendChild(row);
-    for (const n of state[owner].history) {
-        row.insertAdjacentHTML('beforeend', `<span class="num" style="background:${shipNumBg(n)};" data-tip-text="${listAbilities(n)}" data-html="true">${n}</span>`);
-    }
+    div.innerHTML = `<div class="base-hp"></div><div class="row1"></div>`;
+    updateBase(owner, div);
     return div;
 }
+
 let deployBarInitialized = false;
 
 function getBuyCardTooltip(n, t, c) {

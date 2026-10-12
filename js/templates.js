@@ -82,8 +82,8 @@ export function listAbilities(n) {
     for (const factor of factors) {
         switch (factor) {
             case 2: lines.push('<b class="tr">2 › </b> I have ×2 attack.'); break;
-            case 3: lines.push(`<b style="color: #00cab1;">3 › End of turn:</b> +${n / 3} ore if this ship is in the center 3 sectors.`); break;
-            case 5: lines.push(`<b class="tp">5 › After I attack:</b> fire a ${n / 5} damage missile that hits every enemy in the sector with the most enemies.`); break;
+            case 3: lines.push(`<b style="color: #00cab1;">3 › End of turn:</b> +${n / 3} ore if this ship is within the center 3 sectors.`); break;
+            case 5: lines.push(`<b class="tp">5 › After I attack:</b> Fire a ${n / 5}-damage missile that hits all enemies in the sector with the most enemies.`); break;
             case 7: lines.push(`<b class="tc">7 › Deploy:</b> Trade 3 base hp for ${n / 7} income.`); break;
             case 11: lines.push('<b style="color: #25d367;">11 ›</b> I have +1 range and ×5 attack.'); break;
             case 13: lines.push(`<b class="to">13 › End of turn:</b> Deploy ship #${2 * n / 13} in my sector.`); break;
@@ -96,10 +96,8 @@ export function listAbilities(n) {
             case 41: lines.push(`<b style="color: #5e7488;">41 › Deploy:</b> Also deploy prime ships up to #23 in my sector.`); break;
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › Deploy:</b> Set my attack equal to your income.`); break;
-            case 53: lines.push(`<b style="color: white;">53 ›</b> I have massively increased attack. 
-                <br><b style='color:white'>Deploy:</b> I join the furthest advanced ship.`); break;
-            case 71: lines.push(`<b style="color: white;">71 ›</b> I have enough attack to instantly destroy the enemy base. 
-                <br><b style="color: white;">Deploy:</b> I attack the enemy base.`); break;
+            case 53: lines.push(`<b style="color: white;">53 ›</b> I have massively increased attack and <b style='color:white'>Deploy:</b> I join the furthest advanced ship.`); break;
+            case 71: lines.push(`<b style="color: white;">71 ›</b> I have enough attack to instantly destroy the enemy base and <b style="color: white;">Deploy:</b> I attack the enemy base.`); break;
         }
     }
     if (n % 33 === 0) lines.push('<b style="color: #00cab1;">3</b> &times; <b style="color: #25d367;">11</b>: I mine anywhere.');

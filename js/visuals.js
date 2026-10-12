@@ -77,7 +77,7 @@ function getCachedRect(el) {
 
 export function shipFactorStops(num) {
     const stops = [];
-    if (num === 0) return [0];
+    if (num <= 0) return [{ c: 'rgba(0,0,0,0)', p: 1 }];
     let n = num;
     const primes = [
         { p: 2, c: 'var(--f-cmb)' }, { p: 3, c: 'var(--f-min)' },
@@ -96,7 +96,7 @@ export function shipFactorStops(num) {
 export function buildConicGradient(num) {
     const stops = shipFactorStops(num);
     const n = stops.length;
-    if (n === 1) return stops[0].c;
+    if (n === 1) return stops[0].c || stops[0];
     const SEP = 'oklch(0.97 0.005 245)';
     const SEPW = 1 / 30;
     const out = [`${SEP} 0turn`, `${SEP} ${SEPW / 2}turn`];
@@ -193,7 +193,7 @@ export function shootLaser(fromEl, toEl, owner, opts = {}) {
         if (!opts.preview) timeout(() => impactFlash(x2, y2, owner, opts.large), 180);
     };
 
-    if (delay > 0) setTimeout(fire, delay);
+    if (delay > 0) timeout(fire, delay);
     else fire();
 
     return { targetX: x2, targetY: y2 };
@@ -239,7 +239,7 @@ export function showDamageNumber(x, y, dmg, owner, opts = {}) {
         }, 650);
     };
 
-    if (delay > 0) setTimeout(fire, delay);
+    if (delay > 0) timeout(fire, delay);
     else fire();
 }
 export function animateAttacker(ship) {
