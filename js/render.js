@@ -235,7 +235,7 @@ function getBuyCardTooltip(n, t, c) {
         ${abilities}
       </div>
       <div style="border-top: 1px solid #30363d; padding-top: 6px; font-size: 0.85em; color: #8b949e; line-height: 1.4;">
-        <div>You pay <strong style="color: #58a6ff;">${c.toFixed(2)}</strong> — ${q} more ore would discount this by ${d > 1 ? d.toFixed(2) : d.toPrecision(2)}</div>
+        <div>You pay <strong style="color: #58a6ff;">${c.toFixed(2)}</strong> — ${margin} more ore would discount this by ${d > 1 ? d.toFixed(2) : d.toPrecision(2)}</div>
         <div>Opponent pays: <strong style="color: #f85149;">$${oppC.toFixed(2)}</strong></div>
       </div>
     `;
