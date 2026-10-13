@@ -21,20 +21,20 @@ export const TEMPLATES = {
     18: { number: 18, name: 'Behemoth', attack: 2, health: 25, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.36 },
     19: { number: 19, name: 'Bulwark', attack: 1, health: 84, tags: ['ARMOR'] },
     20: { number: 20, name: 'Leviathan', attack: 4, health: 45, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
-    21: { number: 21, name: 'Foundry', attack: 1, health: 2, tags: ['MIN', '×5 INC+3'], mining: 0.21, incomeBoost: 3 },
+    21: { number: 21, name: 'Foundry', attack: 1, health: 1, tags: ['MIN', '×5 INC+3'], mining: 0.21, incomeBoost: 3 },
     22: { number: 22, name: 'Glaive', attack: 10, health: 45, tags: ['CARRIER'], split: true },
-    23: { number: 23, name: 'Pathfinder', attack: 1, health: 12, tags: [] },
+    23: { number: 23, name: 'Pathfinder', attack: 1, health: 11, tags: [] },
     24: { number: 24, name: 'Freighter', attack: 8, health: 55, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
-    25: { number: 25, name: 'Nova', attack: 1, health: 25, tags: ['NOVA'], nova: true },
+    25: { number: 25, name: 'Nova', attack: 1, health: 24, tags: ['NOVA'], nova: true },
     26: { number: 26, name: 'Mothership', attack: 2, health: 36, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     27: { number: 27, name: 'Cornucopia', attack: 1, health: 6, tags: ['MIN', 'MIN', 'MIN'], mining: 0.81 },
     28: { number: 28, name: 'Convoy', attack: 4, health: 55, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
     29: { number: 29, name: 'Ruler', attack: 1, health: 40, tags: [] },
-    30: { number: 30, name: 'Dynamite', attack: 2, health: 45, tags: ['×2 CMB', 'MIN', '×7 AOE'], mining: 0.30, missile: true },
+    30: { number: 30, name: 'Dynamite', attack: 2, health: 40, tags: ['×2 CMB', 'MIN', '×7 AOE'], mining: 0.30, missile: true },
     31: { number: 31, name: 'Raybeam', attack: 1, health: 60, tags: [] },
     32: { number: 32, name: 'Battlecruiser', attack: 32, health: 70, tags: ['×2 CMB'] },
     33: { number: 33, name: 'Reaper', attack: 5, health: 100, tags: ['MIN', 'CARRIER'], split: true },
-    34: { number: 34, name: 'Eraser', attack: 2, health: 80, tags: ['×2 CMB', 'SIEGE'], siege: true },
+    34: { number: 34, name: 'Eraser', attack: 2, health: 70, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
     36: { number: 36, name: 'Titan', attack: 4, health: 70, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
     37: { number: 37, name: 'Rainbow', attack: 1, health: 90, tags: [] },
@@ -42,20 +42,20 @@ export const TEMPLATES = {
     39: { number: 39, name: 'Harvester', attack: 1, health: 50, tags: ['MIN', 'LONG RANGE'], longRange: true, mining: 0.33 },
     40: { number: 40, name: 'Obliterator', attack: 8, health: 90, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
     41: { number: 41, name: 'Abacus', attack: 1, health: 20 },
-    42: { number: 42, name: 'Refinery', attack: 2, health: 45, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
+    42: { number: 42, name: 'Refinery', attack: 2, health: 40, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
     43: { number: 43, name: 'Replicator', attack: 1, health: 50 },
     44: { number: 44, name: 'Sharpshooter', attack: 20, health: 150 },
     45: { number: 45, name: 'Reactor', attack: 1, health: 35 },
-    46: { number: 46, name: 'Starfinder', attack: 2, health: 70 },
+    46: { number: 46, name: 'Starfinder', attack: 2, health: 60 },
     47: { number: 47, name: 'Economist', attack: 1, health: 120, tags: [] },
     48: { number: 48, name: 'Megahauler', attack: 16, health: 200, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
     49: { number: 49, name: 'Exchange', attack: 1, health: 100, tags: ['×5 INC+1'], incomeBoost: 14 },
-    50: { number: 50, name: 'Doomsday', attack: 2, health: 80, tags: ['NOVA'], nova: true },
-    51: { number: 51, name: 'Engineer', attack: 1, health: 140, tags: ['×2 CMB', 'SIEGE'], siege: true },
+    50: { number: 50, name: 'Doomsday', attack: 2, health: 70, tags: ['NOVA'], nova: true },
+    51: { number: 51, name: 'Engineer', attack: 1, health: 120, tags: ['×2 CMB', 'SIEGE'], siege: true },
     52: { number: 52, name: 'Starbase', attack: 4, health: 120, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
-    53: { number: 53, name: 'Ninja', attack: 53, health: 90 },
+    53: { number: 53, name: 'Ninja', attack: 53, health: 80 },
     54: { number: 54, name: 'Valhalla', attack: 2, health: 50, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.36 },
-    71: { number: 71, name: 'Terminus', attack: BASE_START_HP, health: 1, tags: ['END'], win: true },
+    73: { number: 73, name: 'Terminus', attack: BASE_START_HP, health: 1, tags: ['END'], win: true },
 };
 
 export const SHIP_NUMS = Object.keys(TEMPLATES).map(Number).sort((a, b) => a - b);
@@ -97,7 +97,7 @@ export function listAbilities(n) {
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › Deploy:</b> Set my attack equal to your income.`); break;
             case 53: lines.push(`<b style="color: white;">53 ›</b> I have massively increased attack and <b style='color:white'>Deploy:</b> I join the furthest advanced ship.`); break;
-            case 71: lines.push(`<b style="color: white;">71 ›</b> I have enough attack to instantly destroy the enemy base and <b style="color: white;">Deploy:</b> I attack the enemy base.`); break;
+            case 73: lines.push(`<b style="color: white;">73 ›</b> I have enough attack to instantly destroy the enemy base and <b style="color: white;">Deploy:</b> I attack the enemy base.`); break;
         }
     }
     if (n % 33 === 0) lines.push('<b style="color: #00cab1;">3</b> &times; <b style="color: #25d367;">11</b>: I mine anywhere.');

@@ -9,7 +9,7 @@ export function oreDivisor(ore) {
 }
 
 export function excessExponent(shipNum) {
-    return 0.35 * (1.023 ** shipNum);
+    return 0.35 * (1.022 ** shipNum);
 }
 
 export function cost(shipNum, ore) {
