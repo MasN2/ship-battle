@@ -335,6 +335,7 @@ export async function runTurn(playerPick = 0) {
 
     render();
     renderDeployBar();
+    await sleep(0.01);
 
     // Step 2: Attacks fire immediately
     log('Attack phase.');
