@@ -284,8 +284,8 @@ export async function runAttacks() {
                     trampleHits++;
                 }
             }
+            await sleep(120);
         }
-        await sleep(120);
     }
 
     state.newlyKilled = [];
