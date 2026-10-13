@@ -27,6 +27,7 @@ export function render() {
                 ? `Turn ${state.turn} · ENDED`
                 : `Turn ${state.turn} · DEPLOY`;
     }
+    await sleep(0.01);
 }
 
 export function renderStats() {
