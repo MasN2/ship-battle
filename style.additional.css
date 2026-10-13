@@ -232,10 +232,6 @@
 	box-shadow: 0 0 2px 0 rgba(33, 222, 255, 0.8);
 }
 
-	.ship-btn.debt {
-		background-color: var(--red-soft);
-	}
-
 /* Shortcut Bar Layout */
 .shortcut-bar {
 	margin: auto;
