@@ -223,7 +223,7 @@ let deployBarInitialized = false;
 
 function getBuyCardTooltip(n, t, c) {
     const margin = Math.max(1, calcOreIncome('blue', state));
-    const baseC = cost(n, state.blue.ore+margin);
+    const d = c - cost(n, state.blue.ore+margin);
     const oppC = cost(n, state.red.ore);
     const abilities = listAbilities(n);
 
@@ -235,7 +235,7 @@ function getBuyCardTooltip(n, t, c) {
         ${abilities}
       </div>
       <div style="border-top: 1px solid #30363d; padding-top: 6px; font-size: 0.85em; color: #8b949e; line-height: 1.4;">
-        <div>Cost: <strong style="color: #58a6ff;">$${c.toFixed(2)}</strong> <span style="opacity: 0.7;">(With ${margin} more ore: $${baseC.toFixed(2)})</span></div>
+        <div>You pay <strong style="color: #58a6ff;">${c.toFixed(2)}</strong> — ${q} more ore would discount this by ${d > 1 ? d.toFixed(2) : d.toPrecision(2)}</div>
         <div>Opponent pays: <strong style="color: #f85149;">$${oppC.toFixed(2)}</strong></div>
       </div>
     `;
