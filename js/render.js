@@ -300,12 +300,12 @@ export function renderDeployBar() {
         if (!btn) continue;
 
         let isHidden = false;
-            if (state.blue.ore < 50 && n >= 20) isHidden = true;
-            if (state.blue.ore < 200 && n >= 30) isHidden = true;
-            if (state.blue.ore >= 200 && n <= 10) isHidden = true;
-            if (state.blue.ore < 500 && n >= 40) isHidden = true;
-            if (state.blue.ore >= 500 && n <= 20) isHidden = true;
-            if (state.blue.ore < 800 && n >= 50) isHidden = true;
+            if (cost(10, state.blue.ore) > 2*state.blue.income + 10 && n >= 10) isHidden = true;
+            if (cost(20, state.blue.ore) > 2*state.blue.income + 10 && n >= 20) isHidden = true;
+            if (cost(30, state.blue.ore) > 2*state.blue.income + 10 && n >= 30) isHidden = true;
+            if (cost(40, state.blue.ore) > 2*state.blue.income + 10 && n >= 40) isHidden = true;
+            if (cost(50, state.blue.ore) > 2*state.blue.income + 10 && n >= 50) isHidden = true;
+
         btn.style.display = isHidden ? 'none' : '';
         if (isHidden) continue;
 
