@@ -299,7 +299,7 @@ export function renderDeployBar() {
         const btn = document.getElementById(`btn-ship-${n}`);
         if (!btn) continue;
 
-        const isHidden = false;
+        let isHidden = false;
             if (state.blue.ore < 600 && n >= 30) isHidden = true;
             if (state.blue.ore >= 600 && n <= 10) isHidden = true;
             if (state.blue.ore < 900 && n >= 40) isHidden = true;
