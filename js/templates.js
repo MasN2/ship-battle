@@ -36,13 +36,13 @@ export const TEMPLATES = {
     33: { number: 33, name: 'Reaper', attack: 5, health: 90, tags: ['MIN', 'CARRIER'], split: true },
     34: { number: 34, name: 'Eraser', attack: 2, health: 70, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
-    36: { number: 36, name: 'Titan', attack: 4, health: 60, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
+    36: { number: 36, name: 'Titan', attack: 4, health: 55, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
     37: { number: 37, name: 'Rainbow', attack: 1, health: 90, tags: [] },
     38: { number: 38, name: 'Centurion', attack: 2, health: 200, tags: ['ARMOR'] },
     39: { number: 39, name: 'Harvester', attack: 1, health: 50, tags: ['MIN', 'LONG RANGE'], longRange: true, mining: 0.33 },
     40: { number: 40, name: 'Obliterator', attack: 8, health: 90, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
     41: { number: 41, name: 'Abacus', attack: 1, health: 20 },
-    42: { number: 42, name: 'Refinery', attack: 2, health: 35, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
+    42: { number: 42, name: 'Refinery', attack: 2, health: 33, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
     43: { number: 43, name: 'Replicator', attack: 1, health: 50 },
     44: { number: 44, name: 'Sharpshooter', attack: 20, health: 150 },
     45: { number: 45, name: 'Reactor', attack: 1, health: 35 },
@@ -51,11 +51,15 @@ export const TEMPLATES = {
     48: { number: 48, name: 'Megahauler', attack: 16, health: 200, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
     49: { number: 49, name: 'Exchange', attack: 1, health: 100, tags: ['×5 INC+1'], incomeBoost: 14 },
     50: { number: 50, name: 'Doomsday', attack: 2, health: 70, tags: ['NOVA'], nova: true },
-    51: { number: 51, name: 'Engineer', attack: 1, health: 100, tags: ['×2 CMB', 'SIEGE'], siege: true },
+    51: { number: 51, name: 'Engineer', attack: 1, health: 90, tags: ['×2 CMB', 'SIEGE'], siege: true },
     52: { number: 52, name: 'Starbase', attack: 4, health: 120, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     53: { number: 53, name: 'Ninja', attack: 53, health: 80 },
     54: { number: 54, name: 'Valhalla', attack: 2, health: 50, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.36 },
-    73: { number: 73, name: 'Terminus', attack: BASE_START_HP, health: 1, tags: ['END'], win: true },
+    55: { number: 55, name: 'ICBM', attack: 5, health: 70 },
+    56: { number: 56, name: 'Armade', attack: 8, health: 240 },
+    57: { number: 57, name: 'Source', attack: 1, health: 300 },
+    58: { number: 58, name: 'MeterStick', attack: 2, health: 80 },
+    79: { number: 79, name: 'Terminus', attack: BASE_START_HP, health: 1, tags: ['END'], win: true },
 };
 
 export const SHIP_NUMS = Object.keys(TEMPLATES).map(Number).sort((a, b) => a - b);
@@ -90,7 +94,7 @@ export function listAbilities(n) {
             case 17: lines.push(`<b style="color: #a28e00;">17 › End of turn:</b> Enemy base loses ${n / 17} hp.`); break;
             case 19: lines.push(`<b style="color: #8a63fe;">19 ›</b> I take ${n / 19} less damage from all sources.`); break;
             case 23: lines.push(`<b style="color: yellow;">23 › End of turn:</b> Gain ${n / 23} income.`); break;
-            case 29: lines.push(`<b style="color: #5e7488;">29 › Deploy:</b> Also deploy ships up to #10 in my sector.`); break;
+            case 29: lines.push(`<b style="color: #5e7488;">29 › Deploy:</b> Also deploy ships up to #${10 * n / 29} in my sector.`); break;
             case 31: lines.push(`<b style="color: white;">31 › End of turn:</b> Modify me with ×2 attack.`); break;
             case 37: lines.push(`<b style="color: white;">37 › End of turn:</b> Modify me with +1 attack, then deploy ship #(my attack) in my sector.`); break;
             case 41: lines.push(`<b style="color: #5e7488;">41 › Deploy:</b> Also deploy prime ships up to #23 in my sector.`); break;

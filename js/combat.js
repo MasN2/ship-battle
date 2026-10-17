@@ -97,8 +97,8 @@ export async function deployShip(owner, num, sector, hp, atk) {
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num === 29) {
-        for (let i = 1; i <= 10; i++) await deployShip(owner, i, sector);
+    if (num % 29 === 0) {
+        for (let i = 1; i <= 10 * num/29; i++) await deployShip(owner, i, sector);
     }
     return ship;
 }
