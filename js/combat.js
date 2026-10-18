@@ -59,7 +59,7 @@ export function recomputeRows() {
 
 export async function deployShip(owner, num, sector, hp, atk) {
     const tpl = TEMPLATES[num];
-    if (num === 53 && state[owner].ships.length) {
+    if (num === 59 && state[owner].ships.length) {
         sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
     }
     const ship = {
@@ -75,7 +75,7 @@ export async function deployShip(owner, num, sector, hp, atk) {
         justDeployed: true,
     };
     state[owner].ships.push(ship);
-    if (num === 47) ship.attack = state[owner].income;
+    if (num === 53) ship.attack = state[owner].income;
     if (num > 0 && (num % 7 === 0)) {
         state[owner].income += num / 7;
         state[owner].hp -= 3;
@@ -88,7 +88,7 @@ export async function deployShip(owner, num, sector, hp, atk) {
     }
     if (tpl.win) {
         const enemy = owner === 'red' ? 'blue' : 'red';
-        await executeStrike(ship, enemy, null, true, 0);
+        state[enemy].hp -= ship.attack;
     }
     recomputeRows();
     log(`${owner.toUpperCase()} deploys #${num} ${tpl.name} into ${SECTORS[sector]}.`, owner);
@@ -389,6 +389,7 @@ export async function runTurn(playerPick = 0) {
                 s.attack += 1;
                 for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
+            if (s.template.number % 47 === 0) state[owner].armor += s.template.number / 47;
         }
 
         const oreGained = calcOreIncome(owner, state);
