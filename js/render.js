@@ -32,10 +32,8 @@ export function render() {
 export function renderStats() {
     document.getElementById('blue-money').textContent = `${state.blue.money.toFixed(2)} (+${state.blue.income})`;
     document.getElementById('blue-ore').textContent = `${state.blue.ore} (+${calcOreIncome('blue', state)})`;
-    document.getElementById('blue-armor').textContent = `/${state.blue.armor.toFixed(2)}`;
     document.getElementById('red-money').textContent = `${state.red.money.toFixed(2)} (+${state.red.income})`;
     document.getElementById('red-ore').textContent = `${state.red.ore} (+${calcOreIncome('red', state)})`;
-    document.getElementById('red-armor').textContent = `/${state.red.armor.toFixed(2)}`;
     document.getElementById('red-command').textContent = opponent;
 }
 
