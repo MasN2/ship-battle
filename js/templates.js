@@ -34,7 +34,7 @@ export const TEMPLATES = {
     31: { number: 31, name: 'Raybeam', attack: 1, health: 60, tags: [] },
     32: { number: 32, name: 'Battlecruiser', attack: 32, health: 70, tags: ['×2 CMB'] },
     33: { number: 33, name: 'Reaper', attack: 5, health: 90, tags: ['MIN', 'CARRIER'], split: true },
-    34: { number: 34, name: 'Eraser', attack: 2, health: 70, tags: ['×2 CMB', 'SIEGE'], siege: true },
+    34: { number: 34, name: 'Eraser', attack: 2, health: 60, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
     36: { number: 36, name: 'Titan', attack: 4, health: 55, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
     37: { number: 37, name: 'Rainbow', attack: 1, health: 90, tags: [] },
