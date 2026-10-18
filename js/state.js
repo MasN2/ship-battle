@@ -91,13 +91,15 @@ export function newGame(handicap) {
             money: 0,
             ore: START_ORE,
             ore_boost: 1,
+            armor: 1,
             ships: [],
             history: [],
             lastBought: 0
         },
         red: {
             hp: BASE_START_HP,
-            damage_mult: D.hpMult ?? 1,
+            armor: 1,
+            armor_gain: D.armorGain ?? 0,
             regen: D.regen,
             income: D.incomeMult,
             money: 0,

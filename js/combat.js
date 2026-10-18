@@ -157,7 +157,7 @@ export function fireMissile(ship, enemyOwner, sector) {
         const coords = shootLaser(attackerEl, baseEl, ship.owner, { large: true });
         flashBase(enemyOwner);
         sfx.baseHit();
-        state[enemyOwner].hp -= dmg * state[enemyOwner].damage_mult;
+        state[enemyOwner].hp -= dmg / state[enemyOwner].armor;
         if (coords) showDamageNumber(coords.targetX, coords.targetY, dmg, ship.owner, { large: true, delay: 180 });
         updateHealthDisplay(null, true, enemyOwner);
     }
@@ -181,7 +181,7 @@ export async function executeStrike(ship, enemyOwner, atkTarget, atkBaseTarget, 
         flashBase(enemyOwner);
         sfx.baseHit();
 
-        state[enemyOwner].hp -= dmg * state[enemyOwner].damage_mult;
+        state[enemyOwner].hp -= dmg / state[enemyOwner].armor;
         if (coords) showDamageNumber(coords.targetX, coords.targetY, dmg, ship.owner, { large: true, delay: 180 });
         updateHealthDisplay(null, true, enemyOwner);
 
@@ -396,6 +396,7 @@ export async function runTurn(playerPick = 0) {
             state[owner].ore += oreGained;
             log(`${owner.toUpperCase()} mines +${oreGained.toFixed(2)} ore.`, owner);
         }
+        state[owner].armor += state[owner].armor_gain;
         for (const args of deployments) await deployShip(...args);
     }
     recomputeRows();
