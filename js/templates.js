@@ -15,7 +15,7 @@ export const TEMPLATES = {
     12: { number: 12, name: 'Excavator', attack: 4, health: 27, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.12 },
     13: { number: 13, name: 'Carrier', attack: 1, health: 22, tags: ['LONG RANGE'], longRange: true },
     14: { number: 14, name: 'Caravan', attack: 2, health: 20, tags: ['×2 CMB', '×5 INC+2'], combat: true, incomeBoost: 2 },
-    15: { number: 15, name: 'Blaster', attack: 1, health: 15, tags: ['MIN', '×7 AOE'], mining: 0.15, missile: true },
+    15: { number: 15, name: 'Blaster', attack: 1, health: 16, tags: ['MIN', '×7 AOE'], mining: 0.15, missile: true },
     16: { number: 16, name: 'Dreadnought', attack: 16, health: 32, tags: ['×2 CMB'], combat: true },
     17: { number: 17, name: 'Sapper', attack: 1, health: 80, tags: ['SIEGE'], siege: true },
     18: { number: 18, name: 'Behemoth', attack: 2, health: 25, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.36 },
