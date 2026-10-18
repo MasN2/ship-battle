@@ -381,7 +381,7 @@ export async function runTurn(playerPick = 0) {
         const deployments = [];
 
         for (const s of state[owner].ships) {
-            if (s.template.number % 31 === 0) s.attack *= 2;
+            if (s.template.number % 31 === 0) s.attack *= 1 + s.template.number / 31;
             if (s.template.number % 23 === 0) state[owner].income += s.template.number / 23;
             if (s.template.number % 17 === 0) state[enemy].hp -= s.template.number / 17;
             if (s.template.number % 13 === 0) deployments.push([owner, 2 * s.template.number / 13, s.sector]);
