@@ -389,7 +389,7 @@ export async function runTurn(playerPick = 0) {
                 s.attack += 1;
                 for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
-            if (s.template.number % 37 === 0) state[owner].armor += s.template.number / 47;
+            if (s.template.number % 37 === 0) state[owner].armor += s.template.number / 37;
         }
 
         const oreGained = calcOreIncome(owner, state);
