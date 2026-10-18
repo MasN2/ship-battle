@@ -92,6 +92,7 @@ export function newGame(handicap) {
             ore: START_ORE,
             ore_boost: 1,
             armor: 1,
+            armor_gain: 0,
             ships: [],
             history: [],
             lastBought: 0
