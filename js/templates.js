@@ -37,7 +37,7 @@ export const TEMPLATES = {
     34: { number: 34, name: 'Eraser', attack: 2, health: 60, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
     36: { number: 36, name: 'Titan', attack: 4, health: 55, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
-    37: { number: 37, name: 'Rainbow', attack: 1, health: 90, tags: [] },
+    37: { number: 37, name: 'Armory', attack: 1, health: 120, tags: [] },
     38: { number: 38, name: 'Centurion', attack: 2, health: 200, tags: ['ARMOR'] },
     39: { number: 39, name: 'Harvester', attack: 1, health: 50, tags: ['MIN', 'LONG RANGE'], longRange: true, mining: 0.33 },
     40: { number: 40, name: 'Obliterator', attack: 8, health: 90, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
@@ -47,7 +47,7 @@ export const TEMPLATES = {
     44: { number: 44, name: 'Sharpshooter', attack: 20, health: 150 },
     45: { number: 45, name: 'Reactor', attack: 1, health: 35 },
     46: { number: 46, name: 'Starfinder', attack: 2, health: 60 },
-    47: { number: 47, name: 'Armory', attack: 1, health: 120, tags: [] },
+    47: { number: 47, name: 'Rainbow', attack: 1, health: 90, tags: [] },
     48: { number: 48, name: 'Megahauler', attack: 16, health: 200, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
     49: { number: 49, name: 'Exchange', attack: 1, health: 100, tags: ['×5 INC+1'], incomeBoost: 14 },
     50: { number: 50, name: 'Doomsday', attack: 2, health: 70, tags: ['NOVA'], nova: true },
@@ -97,10 +97,10 @@ export function listAbilities(n) {
             case 23: lines.push(`<b style="color: yellow;">23 › End of turn:</b> Gain ${n / 23} income.`); break;
             case 29: lines.push(`<b style="color: #5e7488;">29 › Deploy:</b> Also deploy ships up to #${10 * n / 29} in my sector.`); break;
             case 31: lines.push(`<b style="color: white;">31 › End of turn:</b> Modify me with ×2 attack.`); break;
-            case 37: lines.push(`<b style="color: white;">37 › End of turn:</b> Modify me with +1 attack, then deploy ship #(my attack) in my sector.`); break;
+            case 37: lines.push(`<b style="color: white;">37 › End of turn:</b> Modify your base with +1 armor.`); break;
             case 41: lines.push(`<b style="color: #5e7488;">41 › Deploy:</b> Also deploy prime ships up to #23 in my sector.`); break;
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
-            case 47: lines.push(`<b style="color: white;">47 › End of turn:</b> Modify your base with +1 armor.`); break;
+            case 47: lines.push(`<b style="color: white;">47 › End of turn:</b> Deploy ship #(my attack) in my sector, then modify me with +2 attack.`); break;
             case 53: lines.push(`<b style="color: white;">53 › Deploy:</b> Set my attack equal to your income.`); break;
             case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 79: lines.push(`<b style="color: white;">79 › Deploy:</b> The enemy base loses hp equal to my power.`); break;

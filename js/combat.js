@@ -381,15 +381,15 @@ export async function runTurn(playerPick = 0) {
             if (s.template.number % 23 === 0) state[owner].income += s.template.number / 23;
             if (s.template.number % 17 === 0) state[enemy].hp -= s.template.number / 17;
             if (s.template.number % 13 === 0) deployments.push([owner, 2 * s.template.number / 13, s.sector]);
-            if (s.template.number % 37 === 0) {
-                s.attack += 1;
+            if (s.template.number % 47 === 0) {
                 deployments.push([owner, s.attack, s.sector]);
+                s.attack += 2;
             }
             if (s.template.number % 43 === 0) {
                 s.attack += 1;
                 for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
-            if (s.template.number % 47 === 0) state[owner].armor += s.template.number / 47;
+            if (s.template.number % 37 === 0) state[owner].armor += s.template.number / 47;
         }
 
         const oreGained = calcOreIncome(owner, state);
