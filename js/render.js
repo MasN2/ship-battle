@@ -309,6 +309,7 @@ export function renderDeployBar() {
             if (cost(50, state.blue.ore) > 2.8*state.blue.income && n >= 50) isHidden = true;
             if (cost(50, state.blue.ore) <= 2.8*state.blue.income && n <= 20) isHidden = true;
             if (cost(60, state.blue.ore) > 2.8*state.blue.income && n >= 60) isHidden = true;
+            if (cost(60, state.blue.ore) <= 2.8*state.blue.income && n <= 30) isHidden = true; // change to 2.7 when the jakri complains
 
         btn.style.display = isHidden ? 'none' : '';
         if (isHidden) continue;
