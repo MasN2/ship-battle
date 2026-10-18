@@ -4,16 +4,14 @@ import { TEMPLATES, calculatePrimeFactors } from './templates.js';
 import { cost, calcOreIncome, maxLoanFor } from './economy.js';
 import { sfx } from './audio.js';
 import { animateAttacker, shootLaser, showDamageNumber, flashBase, clearRectCache } from './visuals.js';
-import { render, renderDeployBar, renderShortcutBar } from './render.js';
+import { render, renderDeployBar, renderShortcutBar, updateBase } from './render.js';
 import { pickAIR } from './ai.js';
 import { HEART_SVG } from './config.js'; 
 
 function updateHealthDisplay(target, isBase, enemyOwner) {
     if (isBase) {
-        const baseHpEl = document.querySelector(`.base.${enemyOwner} .base-hp`);
-        if (baseHpEl) {
-            baseHpEl.textContent = parseFloat(Math.max(0, state[enemyOwner].hp).toFixed(1));
-        }
+        const baseEl = document.querySelector(`.base.${enemyOwner}`);
+        updateBase(enemyOwner, baseEl);
     } else if (target) {
         const el = document.querySelector(`[data-ship-id="${target.id}"]`);
         if (el) {
