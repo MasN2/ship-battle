@@ -1,7 +1,7 @@
 import { MAX_LOAN, ORE_BASE, ORE_POW, ORE_R } from './config.js';
 
 export function maxLoanFor(income) {
-    return MAX_LOAN + 0.1 * Math.max(0, income - 8);
+    return MAX_LOAN + 0.15 * Math.max(0, income - 8);
 }
 
 export function oreDivisor(ore) {
