@@ -21,6 +21,7 @@ export function calcOreIncome(owner, state) {
     let total = 0;
     for (const s of state[owner].ships) {
         let mult = (s.sector >= 3 && s.sector <= 5) ? 1 : 0;
+        if (s.template.number % 33 === 0) mult = 1;
         if (s.template.number % 3 === 0) total += (s.template.number / 3) * mult;
         if (s.template.number % 9 === 0) total += (s.template.number / 3) * mult;
         if (s.template.number % 27 === 0) total += (s.template.number / 3) * mult;
