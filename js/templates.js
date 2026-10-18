@@ -60,6 +60,7 @@ export const TEMPLATES = {
     57: { number: 57, name: 'Source', attack: 1, health: 300 },
     58: { number: 58, name: 'MeterStick', attack: 3, health: 80 },
     59: { number: 59, name: 'Ninja', attack: 59, health: 120 },
+    60: { number: 60, name: 'Nobel', attack: 9, health: 120 },
     79: { number: 79, name: 'Terminus', attack: 79, health: 1, tags: ['END'], win: true },
 };
 
