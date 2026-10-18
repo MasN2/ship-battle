@@ -169,7 +169,8 @@ export function updateBase(owner, baseEl) {
     // 1. In-place HP update (only touches DOM if value actually changed)
     const hpEl = baseEl.querySelector('.base-hp');
     if (hpEl) {
-        const hpStr = String(parseFloat(state[owner].hp.toFixed(1)));
+        let hpStr = String(parseFloat(state[owner].hp.toFixed(1)));
+        if (state[owner].armor > 1) hpStr += ` x${+state[owner].armor.toFixed(2)}`;
         if (hpEl.textContent !== hpStr) {
             hpEl.textContent = hpStr;
         }
