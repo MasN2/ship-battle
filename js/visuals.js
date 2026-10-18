@@ -84,7 +84,7 @@ export function shipFactorStops(num) {
         { p: 5, c: 'var(--f-aoe)' }, { p: 7, c: 'var(--f-inc)' },
         { p: 11, c: 'var(--f-11)' }, { p: 13, c: 'var(--f-13)' },
         { p: 17, c: 'var(--f-17)' }, { p: 19, c: 'var(--f-19)' },
-        { p: 23, c: 'var(--f-23)' }
+        { p: 23, c: 'var(--f-23)' }, { p: 29, c: 'var(--f-29)' },
     ];
     for (const { p, c } of primes) {
         while (n % p === 0) { stops.push({ c, p }); n /= p; }

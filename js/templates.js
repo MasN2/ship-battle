@@ -101,7 +101,7 @@ export function listAbilities(n) {
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › Deploy:</b> Set my attack equal to your income.`); break;
             case 53: lines.push(`<b style="color: white;">53 ›</b> I have massively increased attack and <b style='color:white'>Deploy:</b> I join the furthest advanced ship.`); break;
-            case 73: lines.push(`<b style="color: white;">73 ›</b> I have enough attack to instantly destroy the enemy base and <b style="color: white;">Deploy:</b> I attack the enemy base.`); break;
+            case 79: lines.push(`<b style="color: white;">79 ›</b> I have enough attack to instantly destroy the enemy base and <b style="color: white;">Deploy:</b> I attack the enemy base.`); break;
         }
     }
     if (n % 33 === 0) lines.push('<b style="color: #00cab1;">3</b> &times; <b style="color: #25d367;">11</b>: I mine anywhere.');
