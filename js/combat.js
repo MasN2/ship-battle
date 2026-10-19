@@ -100,7 +100,7 @@ export async function deployShip(owner, num, sector, hp, atk) {
         }
     }
     if (num % 31 === 0) {
-        for (let i = 1; i <= 11 * num/31; i++) await deployShip(owner, i, sector);
+        for (let i = 1; i <= 10 * num/31; i++) await deployShip(owner, i, sector);
     }
     if (num === 59) {
         for (const s of state[owner].ships){
