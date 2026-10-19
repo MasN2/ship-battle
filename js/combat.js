@@ -102,8 +102,8 @@ export async function deployShip(owner, num, sector, hp, atk) {
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num % 29 === 0) {
-        for (let i = 1; i <= 10 * num/29; i++) await deployShip(owner, i, sector);
+    if (num % 31 === 0) {
+        for (let i = 1; i <= 11 * num/31; i++) await deployShip(owner, i, sector);
     }
     return ship;
 }
@@ -395,8 +395,8 @@ export async function runTurn(playerPick = 0) {
                 s.attack += 1;
                 for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
-            if (s.template.number % 31 === 0) state[owner].armor += s.template.number / 31;
-            if (s.template.number % 62 === 0) state[owner].armor *= 2;
+            if (s.template.number % 29 === 0) state[owner].armor += s.template.number / 29;
+            if (s.template.number % 58 === 0) state[owner].armor *= 2;
         }
 
         const oreGained = calcOreIncome(owner, state);
