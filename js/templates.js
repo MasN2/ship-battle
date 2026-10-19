@@ -117,7 +117,7 @@ export function listAbilities(n) {
             case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 61: lines.push(`<b style="color: white;">61 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 67: lines.push(`<b style="color: white;">67 › Deploy:</b> I join the furthest advanced ship.`); break;
-            case 71: lines.push(`<b style="color: white;">67 › Deploy:</b> Your base gains hp equal to my attack.`); break;
+            case 71: lines.push(`<b style="color: white;">71 › Deploy:</b> Your base gains hp equal to my attack.`); break;
             case 83: lines.push(`<b style="color: white;">83 › Deploy:</b> The enemy base loses hp equal to my attack.`); break;
         }
     }
