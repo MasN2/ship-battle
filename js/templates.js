@@ -58,7 +58,7 @@ export const TEMPLATES = {
     55: { number: 55, name: 'ICBM', attack: 5, health: 70 },
     56: { number: 56, name: 'Armada', attack: 27, health: 200 },
     57: { number: 57, name: 'Source', attack: 1, health: 300 },
-    58: { number: 58, name: 'MeterStick', attack: 3, health: 70 },
+    58: { number: 58, name: 'MeterStick', attack: 3, health: 50 },
     59: { number: 59, name: 'Ninja', attack: 59, health: 120 },
     60: { number: 60, name: 'Nobel', attack: 9, health: 120 },
     61: { number: 61, name: 'Shinobi', attack: 61, health: 130 },
