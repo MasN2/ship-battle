@@ -59,7 +59,7 @@ export const TEMPLATES = {
     56: { number: 56, name: 'Armada', attack: 27, health: 200 },
     57: { number: 57, name: 'Source', attack: 1, health: 300 },
     58: { number: 58, name: 'BaseForge', attack: 3, health: 120 },
-    59: { number: 59, name: 'Ninja', attack: 59, health: 120 },
+    59: { number: 59, name: 'Command Ship', attack: 59, health: 120 },
     60: { number: 60, name: 'Nobel', attack: 9, health: 120 },
     61: { number: 61, name: 'Shinobi', attack: 61, health: 130 },
     62: { number: 62, name: 'MeterStick', attack: 3, health: 20 },
@@ -114,7 +114,7 @@ export function listAbilities(n) {
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › End of turn:</b> Deploy ship #(my attack) in my sector, then modify me with +2 attack.`); break;
             case 53: lines.push(`<b style="color: white;">53 › Deploy:</b> Set my attack equal to your income.`); break;
-            case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> I join the furthest advanced ship.`); break;
+            case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> Modify your ships with +1 attack.`); break;
             case 61: lines.push(`<b style="color: white;">61 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 67: lines.push(`<b style="color: white;">67 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 71: lines.push(`<b style="color: white;">71 › Deploy:</b> Your base gains hp equal to my attack.`); break;

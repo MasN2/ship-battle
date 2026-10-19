@@ -57,9 +57,6 @@ export function recomputeRows() {
 
 export async function deployShip(owner, num, sector, hp, atk) {
     const tpl = TEMPLATES[num];
-    if (num === 59 && state[owner].ships.length) {
-        sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
-    }
     if (num === 61 && state[owner].ships.length) {
         sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
     }
@@ -104,6 +101,11 @@ export async function deployShip(owner, num, sector, hp, atk) {
     }
     if (num % 31 === 0) {
         for (let i = 1; i <= 11 * num/31; i++) await deployShip(owner, i, sector);
+    }
+    if (num === 59) {
+        for (const s of state[owner].ships){
+            s.attack += 1;
+        }
     }
     return ship;
 }
