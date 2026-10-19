@@ -106,7 +106,7 @@ export function listAbilities(n) {
             case 23: lines.push(`<b style="color: yellow;">23 › End of turn:</b> Gain ${n / 23} income.`); break;
             case 29: lines.push(`<b style="color: #5e7488;">29 › Deploy:</b> Also deploy ships up to #${10 * n / 29} in my sector.`); break;
             case 31: lines.push(`<b style="color: white;">31 › End of turn:</b> Modify your base with +1 armor.`); break;
-            case 37: lines.push(`<b style="color: white;">37 › End of turn:</b> Modify me with ×${1+n/31} attack.`); break;
+            case 37: lines.push(`<b style="color: white;">37 › End of turn:</b> Modify me with ×${1+n/37} attack.`); break;
             case 41: lines.push(`<b style="color: #5e7488;">41 › Deploy:</b> Also deploy prime ships up to #23 in my sector.`); break;
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › End of turn:</b> Deploy ship #(my attack) in my sector, then modify me with +2 attack.`); break;
