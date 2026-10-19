@@ -381,7 +381,7 @@ export async function runTurn(playerPick = 0) {
         const deployments = [];
 
         for (const s of state[owner].ships) {
-            if (s.template.number % 31 === 0) s.attack *= 1 + s.template.number / 31;
+            if (s.template.number % 37 === 0) s.attack *= 1 + s.template.number / 37;
             if (s.template.number % 23 === 0) state[owner].income += s.template.number / 23;
             if (s.template.number % 17 === 0) state[enemy].hp -= s.template.number / 17;
             if (s.template.number % 13 === 0) deployments.push([owner, 2 * s.template.number / 13, s.sector]);
@@ -393,7 +393,8 @@ export async function runTurn(playerPick = 0) {
                 s.attack += 1;
                 for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
-            if (s.template.number % 37 === 0) state[owner].armor += s.template.number / 37;
+            if (s.template.number % 31 === 0) state[owner].armor += s.template.number / 31;
+            if (s.template.number % 62 === 0) state[owner].armor *= 2;
         }
 
         const oreGained = calcOreIncome(owner, state);
