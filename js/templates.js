@@ -6,7 +6,7 @@ export const TEMPLATES = {
     3: { number: 3, name: 'Driller', attack: 1, health: 4, tags: ['MIN'], mining: 0.03 },
     4: { number: 4, name: 'Frigate', attack: 4, health: 16, tags: ['×2 CMB'], combat: true },
     5: { number: 5, name: 'Missile', attack: 1, health: 19, tags: ['×7 AOE'], missile: true },
-    6: { number: 6, name: 'Reaver', attack: 2, health: 16, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.06 },
+    6: { number: 6, name: 'Reaver', attack: 2, health: 17, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.06 },
     7: { number: 7, name: 'Trader', attack: 1, health: 1, tags: ['×5 INC+1'], incomeBoost: 1 },
     8: { number: 8, name: 'Destroyer', attack: 8, health: 22, tags: ['×2 CMB'], combat: true },
     9: { number: 9, name: 'Quarry', attack: 1, health: 4, tags: ['MIN', 'MIN'], mining: 0.18 },

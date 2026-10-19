@@ -318,6 +318,7 @@ export async function finishCleanup() {
 export async function runTurn(playerPick = 0) {
     if (processing || gameOver) return;
     setProcessing(true);
+    render();
 
     let aiPick = state.red.opening[state.turn - 1];
     if (state.red.ai === "pvp") {
