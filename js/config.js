@@ -28,9 +28,9 @@ export const DIFFICULTIES = {
     daily: { label: 'Weekly Puzzle', incomeMult: 72, oreMult: 1, hpMult: 1, aiNoise: 0.1, aiSkipChance: 0.02, ai: 'daily' },
     normal: { label: 'Normal', incomeMult: 4, oreMult: 1, hpMult: 1, aiNoise: 0.4, aiSkipChance: 0.08, ai: false },
     hard: { label: 'Hard', incomeMult: 4, oreMult: 1, oreDelay: 1 / 16, armorGain: 0.02, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
-    challenging: { label: 'Hard', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
-    tricky: { label: 'Brutal', incomeMult: 4, oreMult: 1, oreDelay: 3 / 16, armorGain: 0.04, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
-    visionary: { label: 'Brutal', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
+    challenging: { label: 'Challenging', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
+    tricky: { label: 'Tricky', incomeMult: 4, oreMult: 1, oreDelay: 3 / 16, armorGain: 0.04, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
+    visionary: { label: 'Visionary', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };

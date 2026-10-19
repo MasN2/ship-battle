@@ -400,7 +400,7 @@ export async function runTurn(playerPick = 0) {
             state[owner].ore += oreGained;
             log(`${owner.toUpperCase()} mines +${oreGained.toFixed(2)} ore.`, owner);
         }
-        if (state.turn >= 12) state[owner].armor += state[owner].armor_gain;
+        if (state.turn >= 11) state[owner].armor += state[owner].armor_gain;
         for (const args of deployments) await deployShip(...args);
     }
     recomputeRows();

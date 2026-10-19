@@ -78,7 +78,7 @@ export function newGame(handicap) {
             render();
         }, { once: true });
     } else {
-        opponent = "ai";
+        opponent = `ai - ${D.label}`;
     }
 
     state = {
