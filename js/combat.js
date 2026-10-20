@@ -86,15 +86,16 @@ export async function deployShip(owner, num, sector, hp, atk) {
 
 async function triggerOnDeploy(owner, num, sector, ship){
 if (num === 53) ship.attack += state[owner].income;
+    const trade_hp = num >= 28 ? 3 : 4;
     if (num > 0 && (num % 7 === 0)) {
         state[owner].income += num / 7;
-        state[owner].hp -= 3;
-        log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
+        state[owner].hp -= trade_hp;
+        log(`${owner.toUpperCase()} trades ${trade_hp} base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num > 0 && (num % 49 === 0)) {
         state[owner].income += num / 7;
-        state[owner].hp -= 3;
-        log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
+        state[owner].hp -= trade_hp;
+        log(`${owner.toUpperCase()} trades ${trade_hp} base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num === 73) state[owner].hp += ship.attack;
     if (TEMPLATES[num].win) {
