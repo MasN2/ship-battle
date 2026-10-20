@@ -63,9 +63,6 @@ export async function deployShip(owner, num, sector, hp, atk) {
     if (num === 67 && state[owner].ships.length) {
         sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
     }
-    if (num === 71 && state[owner].ships.length) {
-        sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
-    }
     const ship = {
         id: incrementShipId(),
         owner,
@@ -79,7 +76,16 @@ export async function deployShip(owner, num, sector, hp, atk) {
         justDeployed: true,
     };
     state[owner].ships.push(ship);
-    if (num === 53) ship.attack = state[owner].income;
+    for (let i = 0; i < 2 ** state[owner].ships.filter(s => s.number == 71).length; i++) {
+        await triggerOnDeploy(owner, num, sector, ship);
+    }
+    recomputeRows();
+    log(`${owner.toUpperCase()} deploys #${num} ${tpl.name} into ${SECTORS[sector]}.`, owner);
+    return ship;
+}
+
+async function triggerOnDeploy(owner, num, sector, ship){
+if (num === 53) ship.attack += state[owner].income;
     if (num > 0 && (num % 7 === 0)) {
         state[owner].income += num / 7;
         state[owner].hp -= 3;
@@ -91,12 +97,10 @@ export async function deployShip(owner, num, sector, hp, atk) {
         log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num === 73) state[owner].hp += ship.attack;
-    if (tpl.win) {
+    if (TEMPLATES[num].win) {
         const enemy = owner === 'red' ? 'blue' : 'red';
         state[enemy].hp -= ship.attack;
     }
-    recomputeRows();
-    log(`${owner.toUpperCase()} deploys #${num} ${tpl.name} into ${SECTORS[sector]}.`, owner);
     if (num === 41) {
         for (let i = 1; i <= 23; i++) {
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
@@ -110,7 +114,6 @@ export async function deployShip(owner, num, sector, hp, atk) {
             s.attack += 1;
         }
     }
-    return ship;
 }
 
 export async function buyShip(owner, num) {
