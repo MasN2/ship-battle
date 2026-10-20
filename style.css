@@ -1093,6 +1093,24 @@ header.top {
         animation: shake calc(0.4s / var(--anim-speed));
     }
 
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden; /* Prevents the whole browser window from scrolling */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Use 100dvh for mobile safety */
+}
+
+.app {
+  flex: 1;
+  overflow-y: auto; /* Handles its own internal scrolling */
+  padding: 16px;
+}
+
 /* Deploy bar */
 .deploy-bar {
     border: 1px solid var(--line);
@@ -1102,10 +1120,7 @@ header.top {
     grid-template-columns: repeat(10, 1fr);
     gap: 5px;
     align-items: stretch;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    flex-shrink: 0; /* Prevents it from getting squished */
 }
 
 .ship-btn {

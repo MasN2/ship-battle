@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="summary-bar.css" />
 </head>
 <body>
-    <div id="app">
+    <div class="container">
+    <div class="app" id="app">
         <div class="hud-top">
             <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
         </div>
@@ -51,14 +52,8 @@
         </div>
 
         <div class="deploy-bar shortcut-bar" id="shortcut-bar"></div>
-        <div class="deploy-bar" id="deploy-bar"></div>
-
-        <div class="log-wrap" style="display: none;">
-            <div class="log">
-                <h3>Battle Log</h3>
-                <div class="scroll" id="log"></div>
-            </div>
-        </div>
+    </div>
+    <div class="deploy-bar" id="deploy-bar"></div>
     </div>
     <div id="tooltip" role="tooltip"></div>
 
