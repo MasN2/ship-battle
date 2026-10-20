@@ -63,6 +63,9 @@ export async function deployShip(owner, num, sector, hp, atk) {
     if (num === 67 && state[owner].ships.length) {
         sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
     }
+    if (num === 71 && state[owner].ships.length) {
+        sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
+    }
     const ship = {
         id: incrementShipId(),
         owner,
@@ -87,7 +90,7 @@ export async function deployShip(owner, num, sector, hp, atk) {
         state[owner].hp -= 3;
         log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
-    if (num === 71) state[owner].hp += ship.attack;
+    if (num === 73) state[owner].hp += ship.attack;
     if (tpl.win) {
         const enemy = owner === 'red' ? 'blue' : 'red';
         state[enemy].hp -= ship.attack;

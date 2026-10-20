@@ -310,6 +310,7 @@ export function renderDeployBar() {
             if (cost(50, state.blue.ore) <= 2.7*state.blue.income && n <= 20) isHidden = true;
             if (cost(60, state.blue.ore) > 2.7*state.blue.income && n >= 60) isHidden = true;
             if (cost(60, state.blue.ore) <= 2.7*state.blue.income && n <= 30) isHidden = true;
+            if (cost(70, state.blue.ore) > 4*state.blue.income && n >= 70) isHidden = true;
 
         btn.style.display = isHidden ? 'none' : '';
         if (isHidden) continue;

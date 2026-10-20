@@ -34,7 +34,7 @@ export const TEMPLATES = {
     31: { number: 31, name: 'Ruler', attack: 1, health: 60, tags: [] },
     32: { number: 32, name: 'Battlecruiser', attack: 32, health: 70, tags: ['×2 CMB'] },
     33: { number: 33, name: 'Reaper', attack: 5, health: 90, tags: ['MIN', 'CARRIER'], split: true },
-    34: { number: 34, name: 'Eraser', attack: 2, health: 70, tags: ['×2 CMB', 'SIEGE'], siege: true },
+    34: { number: 34, name: 'Eraser', attack: 2, health: 60, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
     36: { number: 36, name: 'Titan', attack: 4, health: 55, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
     37: { number: 37, name: 'Raybeam', attack: 1, health: 100, tags: [] },
@@ -51,7 +51,7 @@ export const TEMPLATES = {
     48: { number: 48, name: 'Megahauler', attack: 81, health: 100, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
     49: { number: 49, name: 'Exchange', attack: 1, health: 100, tags: ['×5 INC+1'], incomeBoost: 14 },
     50: { number: 50, name: 'Doomsday', attack: 3, health: 70, tags: ['NOVA'], nova: true },
-    51: { number: 51, name: 'Engineer', attack: 1, health: 110, tags: ['×2 CMB', 'SIEGE'], siege: true },
+    51: { number: 51, name: 'Engineer', attack: 1, health: 100, tags: ['×2 CMB', 'SIEGE'], siege: true },
     52: { number: 52, name: 'Starbase', attack: 9, health: 120, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     53: { number: 53, name: 'Economist', attack: 1, health: 180 },
     54: { number: 54, name: 'Valhalla', attack: 3, health: 50, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.36 },
@@ -71,7 +71,9 @@ export const TEMPLATES = {
     68: { number: 68, name: 'Clock', attack: 9, health: 900 },
     69: { number: 69, name: 'Orefinder', attack: 1, health: 100 },
     70: { number: 70, name: 'Fleet', attack: 3, health: 120 },
-    71: { number: 71, name: 'Rejuvenator', attack: 71, health: 300 },
+    71: { number: 71, name: 'Ninja', attack: 71, health: 200 },
+    72: { number: 72, name: 'Old God', attack: 27, health: 200 },
+    73: { number: 73, name: 'Rejuvenator', attack: 73, health: 300 },
     83: { number: 83, name: 'Terminus', attack: 1984, health: 1, tags: ['END'], win: true },
 };
 
@@ -117,7 +119,8 @@ export function listAbilities(n) {
             case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> Modify your ships with +1 attack.`); break;
             case 61: lines.push(`<b style="color: white;">61 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 67: lines.push(`<b style="color: white;">67 › Deploy:</b> I join the furthest advanced ship.`); break;
-            case 71: lines.push(`<b style="color: white;">71 › Deploy:</b> Your base gains hp equal to my attack.`); break;
+            case 71: lines.push(`<b style="color: white;">71 › Deploy:</b> I join the furthest advanced ship.`); break;
+            case 73: lines.push(`<b style="color: white;">73 › Deploy:</b> Your base gains hp equal to my attack.`); break;
             case 83: lines.push(`<b style="color: white;">83 › Deploy:</b> The enemy base loses hp equal to my attack.`); break;
         }
     }
