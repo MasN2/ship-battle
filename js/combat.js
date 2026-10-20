@@ -76,7 +76,7 @@ export async function deployShip(owner, num, sector, hp, atk) {
         justDeployed: true,
     };
     state[owner].ships.push(ship);
-    for (let i = 0, i < 2 ** state[owner].ships.filter(i => i.number == 71).length) {
+    for (let i = 0, i < 2 ** state[owner].ships.filter(s => s.number == 71).length) {
         await triggerOnDeploy(owner, num, sector, ship);
     }
     recomputeRows();
