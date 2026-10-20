@@ -57,10 +57,13 @@ export function recomputeRows() {
 
 export async function deployShip(owner, num, sector, hp, atk) {
     const tpl = TEMPLATES[num];
-    if (num === 59 && state[owner].ships.length) {
+    if (num === 61 && state[owner].ships.length) {
         sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
     }
-    if (num === 61 && state[owner].ships.length) {
+    if (num === 67 && state[owner].ships.length) {
+        sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
+    }
+    if (num === 71 && state[owner].ships.length) {
         sector = (owner === 'blue' ? Math.max : Math.min)(...state[owner].ships.map(s => s.sector));
     }
     const ship = {
@@ -87,7 +90,7 @@ export async function deployShip(owner, num, sector, hp, atk) {
         state[owner].hp -= 3;
         log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
-    if (num === 67) state[owner].hp += ship.attack;
+    if (num === 73) state[owner].hp += ship.attack;
     if (tpl.win) {
         const enemy = owner === 'red' ? 'blue' : 'red';
         state[enemy].hp -= ship.attack;
@@ -99,8 +102,13 @@ export async function deployShip(owner, num, sector, hp, atk) {
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num % 29 === 0) {
-        for (let i = 1; i <= 10 * num/29; i++) await deployShip(owner, i, sector);
+    if (num % 31 === 0) {
+        for (let i = 1; i <= 10 * num/31; i++) await deployShip(owner, i, sector);
+    }
+    if (num === 59) {
+        for (const s of state[owner].ships){
+            s.attack += 1;
+        }
     }
     return ship;
 }
@@ -318,6 +326,7 @@ export async function finishCleanup() {
 export async function runTurn(playerPick = 0) {
     if (processing || gameOver) return;
     setProcessing(true);
+    render();
 
     let aiPick = state.red.opening[state.turn - 1];
     if (state.red.ai === "pvp") {
@@ -391,8 +400,8 @@ export async function runTurn(playerPick = 0) {
                 s.attack += 1;
                 for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
-            if (s.template.number % 31 === 0) state[owner].armor += s.template.number / 31;
-            if (s.template.number % 62 === 0) state[owner].armor *= 2;
+            if (s.template.number % 29 === 0) state[owner].armor += s.template.number / 29;
+            if (s.template.number % 58 === 0) state[owner].armor *= 2;
         }
 
         const oreGained = calcOreIncome(owner, state);
