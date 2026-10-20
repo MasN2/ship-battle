@@ -68,11 +68,11 @@ export const TEMPLATES = {
     65: { number: 65, name: 'Firebase', attack: 1, health: 120 },
     66: { number: 66, name: 'Musketeer', attack: 15, health: 240 },
     67: { number: 67, name: 'Samurai', attack: 67, health: 160 },
-    68: { number: 68, name: 'Clock', attack: 9, health: 900 },
+    68: { number: 68, name: 'Clock', attack: 9, health: 300 },
     69: { number: 69, name: 'Orefinder', attack: 1, health: 100 },
     70: { number: 70, name: 'Fleet', attack: 3, health: 120 },
-    71: { number: 71, name: 'Ninja', attack: 71, health: 200 },
-    72: { number: 72, name: 'Old God', attack: 27, health: 200 },
+    71: { number: 71, name: 'Wong', attack: 1, health: 150 },
+    72: { number: 72, name: 'Old God', attack: 27, health: 800 },
     73: { number: 73, name: 'Rejuvenator', attack: 73, health: 300 },
     83: { number: 83, name: 'Terminus', attack: 1984, health: 1, tags: ['END'], win: true },
 };
@@ -115,11 +115,11 @@ export function listAbilities(n) {
             case 41: lines.push(`<b style="color: #5e7488;">41 › Deploy:</b> Also deploy prime ships up to #23 in my sector.`); break;
             case 43: lines.push(`<b style="color: #5e7488;">43 › End of turn:</b> Modify me with +1 attack, then deploy that many Corvettes into my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › End of turn:</b> Deploy ship #(my attack) in my sector, then modify me with +2 attack.`); break;
-            case 53: lines.push(`<b style="color: white;">53 › Deploy:</b> Set my attack equal to your income.`); break;
+            case 53: lines.push(`<b style="color: white;">53 › Deploy:</b> Modify me with +attack equal to your income.`); break;
             case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> Modify your ships with +1 attack.`); break;
             case 61: lines.push(`<b style="color: white;">61 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 67: lines.push(`<b style="color: white;">67 › Deploy:</b> I join the furthest advanced ship.`); break;
-            case 71: lines.push(`<b style="color: white;">71 › Deploy:</b> I join the furthest advanced ship.`); break;
+            case 71: lines.push(`<b style="color: white;">71</b> Your Deploy abilities trigger twice as many times.`); break;
             case 73: lines.push(`<b style="color: white;">73 › Deploy:</b> Your base gains hp equal to my attack.`); break;
             case 83: lines.push(`<b style="color: white;">83 › Deploy:</b> The enemy base loses hp equal to my attack.`); break;
         }
