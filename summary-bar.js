@@ -236,8 +236,8 @@ export function updateSummaryBar() {
             html += `
                 <div class="lane-card${classAttr}">
                     <div class="lane-row empty-row">
-                        <span class="lane-stat hp empty-val" data-tip-text="Total Health: 0 HP">${HEART_SVG} 0</span>
-                        <span class="lane-stat count empty-val" data-tip-text="Ship Count: 0"><span class="caret${caretColorClass}">▲</span> 0</span>
+                        <span class="lane-stat hp empty-val" data-tip-text="Total HP: 0">${HEART_SVG} 0</span>
+                        <span class="lane-stat count empty-val" data-tip-text="Ship count: 0"><span class="caret${caretColorClass}">➤</span> 0</span>
                     </div>
                 </div>
             `;
@@ -257,8 +257,8 @@ export function updateSummaryBar() {
                     ${active.baseArmor > 0 ? `<span class="lane-stat base-armor" data-tip-text="Base armor per turn: +${active.baseArmor}">${BASE_ARMOR_SVG} +${active.baseArmor}</span>` : ''}
                 </div>
                 <div class="lane-row bottom-row">
-                    <span class="lane-stat hp" data-tip-text="Ship HP: ${active.hp} HP">${HEART_SVG} ${active.hp}</span>
-                    <span class="lane-stat count" data-tip-text="Ship count: ${active.count}"><span class="caret${caretColorClass}">▲</span> ${active.count}</span>
+                    <span class="lane-stat hp" data-tip-text="Total HP: ${active.hp}">${HEART_SVG} ${active.hp}</span>
+                    <span class="lane-stat count" data-tip-text="Ship count: ${active.count}"><span class="caret${caretColorClass}">➤</span> ${active.count}</span>
                 </div>
             </div>
         `;

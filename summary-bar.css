@@ -1,5 +1,5 @@
 /* ============================================================
-   LANE SUMMARY BAR & BATTLEFIELD CAPPED HEIGHT
+   LANE SUMMARY BAR & BATTLEFIELD HUD
    ============================================================ */
 
 /* Clean fixed-height cap */
@@ -14,69 +14,107 @@
 #lane-summary-bar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0;
-    background: #0d1117;
-    border: 1px solid var(--line);
+    background: #090c10;
+    border: 1px solid var(--line, #30363d);
     border-top: none;
     margin-top: -1rem;
+    margin-bottom: 6px;
     z-index: 123;
-    margin-bottom: 4px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
     user-select: none;
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
 }
 
 /* Individual Lane Card */
 .lane-card {
-    background: rgba(19, 19, 33, 0.88);
-    border-right: 1px dashed var(--line-soft);
-    padding: 6px 7px;
+    position: relative;
+    background: #0d1117;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 7px 8px 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 48px;
+    min-height: 54px;
     box-sizing: border-box;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
     .lane-card:last-child {
         border-right: none;
     }
 
-    /* Faction Glows & Tint */
-    .lane-card.blue-controlled {
-        background: linear-gradient(180deg, oklch(0.24 0.05 230 / 0.45), #131321);
-        box-shadow: inset 0 0 12px oklch(0.78 0.13 230 / 0.2);
-        border-top: 1px solid var(--blue-dim);
+    .lane-card:hover {
+        background-color: #121720;
     }
 
-    .lane-card.red-controlled {
-        background: linear-gradient(180deg, oklch(0.24 0.06 25 / 0.4), #131321);
-        box-shadow: inset 0 0 12px oklch(0.72 0.18 25 / 0.2);
-        border-top: 1px solid var(--red-dim);
+    /* Top Accent Line for Territory Ownership */
+    .lane-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.08);
+        transition: background 0.2s ease, box-shadow 0.2s ease;
     }
+
+    /* Blue Controlled Territory */
+    .lane-card.blue-controlled {
+        background: linear-gradient(180deg, rgba(31, 111, 235, 0.14) 0%, rgba(13, 17, 23, 0.95) 75%);
+    }
+
+        .lane-card.blue-controlled::before {
+            background: var(--blue, #388bfd);
+            box-shadow: 0 0 8px rgba(56, 139, 253, 0.7);
+        }
+
+    /* Red Controlled Territory */
+    .lane-card.red-controlled {
+        background: linear-gradient(180deg, rgba(248, 81, 73, 0.13) 0%, rgba(13, 17, 23, 0.95) 75%);
+    }
+
+        .lane-card.red-controlled::before {
+            background: var(--red, #f85149);
+            box-shadow: 0 0 8px rgba(248, 81, 73, 0.7);
+        }
 
     /* Card Content Rows */
     .lane-card .lane-row {
         display: flex;
         align-items: center;
-        gap: 6px;
         line-height: 1;
     }
 
+        /* Top Row: Ability & Income Tokens */
         .lane-card .lane-row.top-row {
-            min-height: 14px;
+            min-height: 16px;
             flex-wrap: wrap;
-            row-gap: 3px;
+            gap: 3px 5px;
+            align-content: flex-start;
         }
 
+        /* Bottom Row: Core Vital Stats (Health & Units) */
         .lane-card .lane-row.bottom-row {
-            margin-top: 4px;
-            gap: 12px;
+            margin-top: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 4px;
         }
 
+        /* Empty Lane Alignment: Anchors to bottom to match populated lane baselines */
         .lane-card .lane-row.empty-row {
-            justify-content: space-around;
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            height: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 4px;
         }
 
 /* Stat Tokens */
@@ -84,72 +122,96 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--fg, #f0f6fc);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--fg, #e6edf3);
     cursor: help;
 }
 
-    .lane-stat svg,
-    .lane-icon {
-        width: 11px;
-        height: 11px;
-        display: inline-block;
-        flex-shrink: 0;
-    }
+/* Micro-pills for top-row ability buffs */
+.lane-row.top-row .lane-stat {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px;
+    border-radius: 2px;
+}
 
-    /* Semantic Icon Colors */
-    .lane-stat.melee svg {
-        color: var(--f-cmb, #e65552);
-    }
+.lane-stat svg,
+.lane-icon {
+    width: 11px;
+    height: 11px;
+    display: inline-block;
+    flex-shrink: 0;
+}
 
-    .lane-stat.range svg {
-        color: var(--green, #25d367);
-    }
+/* Semantic Icon Accents */
+.lane-stat.melee svg {
+    color: var(--f-cmb, #ff7b72);
+}
 
-    .lane-stat.missile svg {
-        color: var(--purple, #b356d6);
-    }
+.lane-stat.range svg {
+    color: var(--green, #3fb950);
+}
 
-    .lane-stat.siege svg {
-        color: var(--f-17, #a28e00);
-    }
+.lane-stat.missile svg {
+    color: var(--purple, #d2a8ff);
+}
 
-    .lane-stat.drill svg {
-        color: var(--ore, #00cab1);
-    }
+.lane-stat.siege svg {
+    color: var(--f-17, #e3b341);
+}
 
-    .lane-stat.income svg {
-        color: var(--gold, #e5c07b);
-    }
+.lane-stat.drill svg {
+    color: var(--ore, #2ee6ca);
+}
 
-    .lane-stat.deploy svg {
-        color: #79c0ff;
-    }
+.lane-stat.income svg {
+    color: var(--gold, #f1e05a);
+}
 
-    .lane-stat.base-armor svg {
-        color: #f0f6fc;
-    }
+.lane-stat.deploy svg {
+    color: #79c0ff;
+}
 
-    .lane-stat.hp svg {
-        color: var(--fg, #f0f6fc);
-    }
+.lane-stat.base-armor svg {
+    color: #a5d6ff;
+}
+
+/* Bottom Row Vital Stats */
+.lane-stat.hp svg {
+    color: #ff6b81;
+}
+/*
+.lane-stat.count {
+    color: #8b949e;
+}
+*/
+
+.lane-stat .caret {
+    display: inline-block;
+    font-size: 8px;
+    transform: translateY(-0.5px);
+    color: #6e7681;
+}
 
     .lane-stat .caret.blue {
         color: var(--blue, #58a6ff);
+        filter: drop-shadow(0 0 3px rgba(88, 166, 255, 0.6));
     }
 
     .lane-stat .caret.red {
         color: var(--red, #f85149);
+        filter: drop-shadow(0 0 3px rgba(248, 81, 73, 0.6));
     }
 
-    /* Neutral / Empty lane styling */
-    .lane-stat.empty-val {
-        color: var(--muted, #6e7681);
-        opacity: 0.5;
-    }
+/* Neutral / Empty lane styling */
+.lane-stat.empty-val {
+    color: #484f58;
+    opacity: 0.6;
+}
 
-        .lane-stat.empty-val svg,
-        .lane-stat.empty-val .caret {
-            color: currentColor;
-        }
+    .lane-stat.empty-val svg,
+    .lane-stat.empty-val .caret {
+        color: currentColor;
+        filter: none;
+    }
