@@ -25,7 +25,7 @@ export const TEMPLATES = {
     22: { number: 22, name: 'Glaive', attack: 10, health: 50, tags: ['CARRIER'], split: true },
     23: { number: 23, name: 'Pathfinder', attack: 1, health: 11, tags: [] },
     24: { number: 24, name: 'Freighter', attack: 8, health: 50, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
-    25: { number: 25, name: 'Nova', attack: 1, health: 22, tags: ['NOVA'], nova: true },
+    25: { number: 25, name: 'Nova', attack: 1, health: 20, tags: ['NOVA'], nova: true },
     26: { number: 26, name: 'Mothership', attack: 2, health: 40, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     27: { number: 27, name: 'Cornucopia', attack: 1, health: 6, tags: ['MIN', 'MIN', 'MIN'], mining: 0.81 },
     28: { number: 28, name: 'Convoy', attack: 4, health: 55, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
