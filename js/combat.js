@@ -97,7 +97,7 @@ if (num === 53) ship.attack += state[owner].income;
         log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num === 73) state[owner].hp += ship.attack;
-    if (tpl.win) {
+    if (TEMPLATES[num].win) {
         const enemy = owner === 'red' ? 'blue' : 'red';
         state[enemy].hp -= ship.attack;
     }
