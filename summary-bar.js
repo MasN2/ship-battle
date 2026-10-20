@@ -189,14 +189,13 @@ export function updateSummaryBar() {
         }
 
         // Direct vs Long-Range attack (strictly factor 11 for Bow)
-        const hasMissile = factors.includes(5);
-        if (!hasMissile) {
+
             if (factors.includes(11)) {
                 data.range += atk;
             } else {
                 data.melee += atk;
             }
-        }
+        
     }
 
     let html = '';
