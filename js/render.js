@@ -227,7 +227,8 @@ function getBuyCardTooltip(n, t, c) {
     const d = c - cost(n, state.blue.ore+margin);
     const oppC = cost(n, state.red.ore);
     const abilities = listAbilities(n);
-
+    const shortfall = c - state.blue.money;
+    const interest_block = `<div>You are must take a loan to buy this ship - interest would be ${(shortfall/4).toFixed(2)}</div>`
     return `
       <div style="margin-bottom: 6px;">
         <strong style="font-size: 1.05em; color: #f0f6fc;">#${n} ${t.name}</strong>
@@ -236,8 +237,9 @@ function getBuyCardTooltip(n, t, c) {
         ${abilities}
       </div>
       <div style="border-top: 1px solid #30363d; padding-top: 6px; font-size: 0.85em; color: #8b949e; line-height: 1.4;">
-        <div>You pay <strong style="color: #58a6ff;">${c.toFixed(2)}</strong> — ${margin} more ore would discount this by ${d > 1 ? d.toFixed(2) : d.toPrecision(2)}</div>
-        <div>Opponent pays: <strong style="color: #f85149;">$${oppC.toFixed(2)}</strong></div>
+        <div>Construction cost: <strong style="color: #58a6ff;">${c.toFixed(2)}</strong> — ${margin} more ore would discount this by ${d > 1 ? d.toFixed(2) : d.toPrecision(2)}</div>
+        ${shortfall > 0 ? interest_block : ""}
+        <div>Opponent's cost: <strong style="color: #f85149;">$${oppC.toFixed(2)}</strong></div>
       </div>
     `;
 }
