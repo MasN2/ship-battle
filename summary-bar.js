@@ -121,7 +121,7 @@ function applyState(enabled) {
 export function updateSummaryBar() {
     if (!summaryBarEl || !state) return;
 
-    // 7 sectors: columns B through H
+    // 7 sectors: columns B (index 1) through H (index 7)
     const sectors = Array.from({ length: 8 }, () => ({
         melee: 0,
         range: 0,
@@ -134,17 +134,32 @@ export function updateSummaryBar() {
         hp: 0,
         count: 0
     }));
+
     const sectorOwnership = Array.from({ length: 8 }, () => ({ blue: 0, red: 0 }));
+
+    // Each player always owns their starting column (Col B / 1 for Blue, Col H / 7 for Red)
+    sectorOwnership[1].blue += 69420;
+    sectorOwnership[7].red += 69420;
 
     const allShips = [...(state.blue?.ships || []), ...(state.red?.ships || [])];
 
     for (const ship of allShips) {
-        if (ship.health <= 0 || !ship.sector) continue;
+        if (ship.health <= 0 || !ship.sector || ship.sector < 1 || ship.sector > 7) continue;
 
         const data = sectors[ship.sector];
-        sectorOwnership[ship.sector][ship.owner] += 1;
         data.count += 1;
         data.hp += Math.max(0, ship.health);
+
+        // Ships project ownership to their own column and all columns behind them
+        if (ship.owner === 'blue') {
+            for (let c = 1; c <= ship.sector; c++) {
+                sectorOwnership[c].blue += 1;
+            }
+        } else if (ship.owner === 'red') {
+            for (let c = ship.sector; c <= 7; c++) {
+                sectorOwnership[c].red += 1;
+            }
+        }
 
         const n = ship.number;
         const atk = ship.attack || 0;
@@ -203,23 +218,34 @@ export function updateSummaryBar() {
         const active = sectors[i];
         const ownership = sectorOwnership[i];
 
+        // Determine ownership (lanes can be unowned if ownership is tied or both 0)
+        let factionClass = '';
+        let countColor = '';
+        if (ownership.blue > ownership.red) {
+            factionClass = 'blue-controlled';
+            countColor = 'blue';
+        } else if (ownership.red > ownership.blue) {
+            factionClass = 'red-controlled';
+            countColor = 'red';
+        }
+
+        const classAttr = factionClass ? ` ${factionClass}` : '';
+        const caretColorClass = countColor ? ` ${countColor}` : '';
+
         if (active.count === 0) {
             html += `
-                <div class="lane-card">
+                <div class="lane-card${classAttr}">
                     <div class="lane-row empty-row">
-                        <span class="lane-stat hp empty-val" data-tip-text="Total Health: 0 HP">${HEART_SVG} 0</span>
-                        <span class="lane-stat count empty-val" data-tip-text="Ship Count: 0"><span class="caret">▲</span> 0</span>
+                        <span class="lane-stat hp empty-val" data-tip-text="Total HP: 0">${HEART_SVG} 0</span>
+                        <span class="lane-stat count empty-val" data-tip-text="Ship count: 0"><span class="caret${caretColorClass}">➤</span> 0</span>
                     </div>
                 </div>
             `;
             continue;
         }
 
-        const factionClass = (ownership.blue >= ownership.red) ? 'blue-controlled' : 'red-controlled';
-        const countColor = (ownership.blue >= ownership.red) ? 'blue' : 'red';
-
         html += `
-            <div class="lane-card ${factionClass}">
+            <div class="lane-card${classAttr}">
                 <div class="lane-row top-row">
                     ${active.melee > 0 ? `<span class="lane-stat melee" data-tip-text="Attack: ${active.melee}">${SWORD_SVG} ${active.melee}</span>` : ''}
                     ${active.range > 0 ? `<span class="lane-stat range" data-tip-text="Long-range attack: ${active.range}">${BOW_SVG} ${active.range}</span>` : ''}
@@ -231,8 +257,8 @@ export function updateSummaryBar() {
                     ${active.baseArmor > 0 ? `<span class="lane-stat base-armor" data-tip-text="Base armor per turn: +${active.baseArmor}">${BASE_ARMOR_SVG} +${active.baseArmor}</span>` : ''}
                 </div>
                 <div class="lane-row bottom-row">
-                    <span class="lane-stat hp" data-tip-text="Total Sector Health: ${active.hp} HP">${HEART_SVG} ${active.hp}</span>
-                    <span class="lane-stat count" data-tip-text="Active Ships: ${active.count}"><span class="caret ${countColor}">▲</span> ${active.count}</span>
+                    <span class="lane-stat hp" data-tip-text="Total HP: ${active.hp}">${HEART_SVG} ${active.hp}</span>
+                    <span class="lane-stat count" data-tip-text="Ship count: ${active.count}"><span class="caret${caretColorClass}">➤</span> ${active.count}</span>
                 </div>
             </div>
         `;
