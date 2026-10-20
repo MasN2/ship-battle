@@ -1102,6 +1102,10 @@ header.top {
     grid-template-columns: repeat(10, 1fr);
     gap: 5px;
     align-items: stretch;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
 }
 
 .ship-btn {
