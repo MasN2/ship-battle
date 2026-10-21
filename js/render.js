@@ -306,6 +306,7 @@ export function renderDeployBar() {
             if (cost(60, state.blue.ore) > 2.6*state.blue.income && n >= 60) isHidden = true;
             if (cost(60, state.blue.ore) <= 2.6*state.blue.income && n <= 30) isHidden = true;
             if (cost(70, state.blue.ore) > 4*state.blue.income && n >= 70) isHidden = true;
+            if (n > state.blue.max_ship) isHidden = true;
 
         btn.style.display = isHidden ? 'none' : '';
         if (isHidden) continue;

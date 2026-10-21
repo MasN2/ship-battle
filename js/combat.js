@@ -116,10 +116,15 @@ if (num === 53) ship.attack += state[owner].income;
     }
 }
 
+export function canAfford(owner, num) {
+    const c = cost(num, state[owner].ore);
+    return state[owner].money + maxLoanFor(state[owner].income) < c;
+}
+
 export async function buyShip(owner, num) {
     const sec = owner === 'blue' ? BLUE_DEPLOY_IDX : RED_DEPLOY_IDX;
     const c = cost(num, state[owner].ore);
-    if (state[owner].money + maxLoanFor(state[owner].income) < c) {
+    if (canAfford(owner, num)) {
         state[owner].history.push(0);
         return false;
     }
@@ -337,6 +342,9 @@ export async function runTurn(playerPick = 0) {
         aiPick = parseInt(await getNextMessage(), 10);
     } else if (state.red.ai === "daily") {
         aiPick = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37][state.turn - 1] ?? 0;
+    }
+    for (const num of state.red.priority){
+        if (aiPick === undefined && canAfford('red', num)) {aiPick = num;}
     }
     if (aiPick === undefined) aiPick = pickAIR();
 
