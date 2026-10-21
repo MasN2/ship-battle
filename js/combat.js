@@ -257,7 +257,7 @@ export async function runAttacks() {
                 return { target: e.sector === baseSec ? null : e, baseTarget: e.sector === baseSec };
             }
         }
-        if (Math.abs(baseSec - ship.sector) <= range && state[enemyOwner].hp > 0) {
+        if (Math.abs(baseSec - ship.sector) <= range) {
             return { target: null, baseTarget: true };
         }
         return { target: null, baseTarget: false };
