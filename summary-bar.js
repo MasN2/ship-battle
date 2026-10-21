@@ -107,9 +107,6 @@ function injectPauseMenuToggle() {
 }
 
 function applyState(enabled) {
-    if (battlefieldEl) {
-        battlefieldEl.classList.toggle('capped-height', enabled);
-    }
     if (summaryBarEl) {
         summaryBarEl.style.display = enabled ? 'grid' : 'none';
     }
