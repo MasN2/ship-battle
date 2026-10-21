@@ -110,7 +110,7 @@ export function newGame(handicap) {
             ore_delay: D.oreDelay ?? 0,
             ships: [],
             ai: D.ai ?? false,
-            opening: [],
+            opening: D.opening ?? [],
             history: [],
             priority: D.priority ?? [],
         },
