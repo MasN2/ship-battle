@@ -161,8 +161,13 @@
     <script type="module" src="script.pause.js"></script>
     <script type="module" src="summary-bar.js"></script>
     <script>
-        import('./js/state.js').then(m => window.state = m.state);
-        import('./js/economy.js').then(m => window.shipCost = m.shipCost);
+        import('./js/state.js').then(m => {
+            Object.defineProperty(window, 'state', {
+                get() { return m.state; },
+                configurable: true
+            });
+        });
+        import('./js/economy.js').then(m => window.cost = m.cost);
     </script>
     <!--<script defer src="https://static.itch.io/htmlgame.js" type="text/javascript"></script>-->
 </body>
