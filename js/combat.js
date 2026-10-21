@@ -118,13 +118,13 @@ if (num === 53) ship.attack += state[owner].income;
 
 export function canAfford(owner, num) {
     const c = cost(num, state[owner].ore);
-    return state[owner].money + maxLoanFor(state[owner].income) < c;
+    return state[owner].money + maxLoanFor(state[owner].income) >= c;
 }
 
 export async function buyShip(owner, num) {
     const sec = owner === 'blue' ? BLUE_DEPLOY_IDX : RED_DEPLOY_IDX;
     const c = cost(num, state[owner].ore);
-    if (canAfford(owner, num)) {
+    if (!canAfford(owner, num)) {
         state[owner].history.push(0);
         return false;
     }
