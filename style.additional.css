@@ -283,3 +283,8 @@
 .tutorial-box button:hover {
   color: #fff;
 }
+
+#tutorial-text {
+    white-space: pre-line;
+    margin: 0;
+}

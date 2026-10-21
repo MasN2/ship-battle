@@ -25,7 +25,7 @@ export const HEART_SVG = `<svg class="stat-icon" viewBox="0 0 12 12" aria-hidden
 export const TARGET_MARK_SVG = `<svg class="target-mark" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="7" y1="0" x2="7" y2="2.8" stroke="currentColor" stroke-width="1.2"/><line x1="7" y1="11.2" x2="7" y2="14" stroke="currentColor" stroke-width="1.2"/><line x1="0" y1="7" x2="2.8" y2="7" stroke="currentColor" stroke-width="1.2"/><line x1="11.2" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.2"/></svg>`;
 
 const c1tutorial = {
-    1: "Welcome to ship battle! This is a game about buying ships and sending them to destroy the enemy base! Buy a skiff to get started!",
+    1: "Welcome to ship battle!\nYou can 'buy' a 'Skiff' (click the button)\nAlternatively, you can skip your turn and save your money for bigger ships. But saving money isn't useful in this mission because bigger ships haven't been unlocked yet.",
     2: "Ships advance one space every turn.",
     3: "Ships can fire at enemies within range 2.",
     4: "Ships that fire do not advance.",
