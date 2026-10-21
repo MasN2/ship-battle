@@ -13,7 +13,7 @@ export const ORE_BASE = 70;
 export const ATTACK_RANGE = 2;
 export const MAX_LOAN = 4;
 
-export const SECTOR_LABEL_H = 26;
+export const SECTOR_LABEL_H = 8;
 export const BASE_H = 78;
 export const SHIP_CARD_H = 30;
 export const SHIP_CARD_H_COMPACT = 26;
