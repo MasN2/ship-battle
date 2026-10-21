@@ -1,6 +1,7 @@
 import { BASE_START_HP, START_INCOME, START_ORE, DIFFICULTIES } from './config.js';
 import { sfx } from './audio.js';
 import { render, renderDeployBar, renderShortcutBar } from './render.js';
+import {showTutorial} from '../script.js';
 
 export let state = null;
 export let nextShipId = 1;
@@ -54,6 +55,10 @@ export function startNewTurn() {
     state.blue.money += state.blue.income;
     state.red.money += state.red.income;
     log(`── Turn ${state.turn} ── Income: BLUE +${state.blue.income} · RED +${state.red.income}`, 'heading');
+    const message = state.red.tutorial[state.turn];
+    if (message !== undefined) {
+        showTutorial(message);
+    }
 }
 
 export function newGame(handicap) {
@@ -116,6 +121,7 @@ export function newGame(handicap) {
             opening: D.opening ?? [],
             history: [],
             priority: D.priority ?? [],
+            tutorial: D.tutorial ?? [],
         },
         log: []
     };
