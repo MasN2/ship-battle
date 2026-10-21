@@ -84,7 +84,7 @@ export function newGame(handicap) {
     state = {
         turn: 0,
         blue: {
-            hp: BASE_START_HP,
+            hp: D.playerHp ?? BASE_START_HP,
             damage_mult: 1,
             regen: 0,
             income: D.playerIncome ?? START_INCOME,
