@@ -1111,6 +1111,10 @@ html, body {
   padding: 16px;
 }
 
+.bottom-bar {
+    flex-shrink: 0; /* Prevents it from getting squished */
+}
+
 /* Deploy bar */
 .deploy-bar {
     border: 1px solid var(--line);
@@ -1120,7 +1124,6 @@ html, body {
     grid-template-columns: repeat(10, 1fr);
     gap: 5px;
     align-items: stretch;
-    flex-shrink: 0; /* Prevents it from getting squished */
 }
 
 .ship-btn {
