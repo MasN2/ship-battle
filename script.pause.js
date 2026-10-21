@@ -1,3 +1,5 @@
+import { DIFFICULTIES } from './js/config.js';
+
 const pauseModal = document.getElementById('pause-modal');
 const btnResume = document.getElementById('btn-resume');
 const btnRestart = document.getElementById('btn-restart');
@@ -76,3 +78,29 @@ if (shortcutToggle && shortcutBar) {
         if (showShortcut) renderShortcutBar();
     });
 }
+
+
+// Select the dropdown element
+const selectElement = document.getElementById('handicap-select');
+
+// Define which option should be selected by default
+const defaultSelection = 'normal';
+
+// Loop through the DIFFICULTIES dictionary
+for (const [key, config] of Object.entries(DIFFICULTIES)) {
+    const option = document.createElement('option');
+    
+    // Set the option value to the key (e.g., 'normal', 'hard')
+    option.value = key;
+    
+    // Use the 'label' property from your object for the display text
+    option.textContent = config.label;
+    
+    // Check if this option should be selected by default
+    if (key === defaultSelection) {
+        option.selected = true;
+    }
+    
+    selectElement.appendChild(option);
+}
+
