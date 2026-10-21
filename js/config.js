@@ -30,7 +30,7 @@ export const DIFFICULTIES = {
     campaign4: { label: 'Campaign 4', maxShip: 4, botHp: 160, botIncome: 50, botOre: 1000, priority: [83, 0]},
     campaign6: { label: 'Campaign 6', maxShip: 6, playerHp: 70, botHp: 160, botIncome: 7, priority: [4]},
     campaign10: { label: 'Campaign 10', maxShip: 10, botHp: 160, botIncome: 11, priority: [8, 4], opening: [0, 0, 0, 0, 0]},
-    campaign11: { label: 'Campaign 11', lockedFactor: 11, botHp: 160, botIncome: 8, priority: [11, 7, 0], botOre: 30},
+    campaign11: { label: 'Campaign 11', lockedFactor: 11, botHp: 160, botIncome: 7, priority: [11, 7, 0], botOre: 30},
     normal: { label: 'Normal', incomeMult: 4, oreMult: 1, hpMult: 1, aiNoise: 0.4, aiSkipChance: 0.08, ai: false },
     hard: { label: 'Hard', incomeMult: 4, oreMult: 1, oreDelay: 1 / 16, armorGain: 0.02, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
     challenging: { label: 'Challenging', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
