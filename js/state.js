@@ -97,6 +97,7 @@ export function newGame(handicap) {
             history: [],
             lastBought: 0,
             max_ship: D.maxShip ?? 999,
+            locked_factor: D.lockedFactor ?? 999,
         },
         red: {
             hp: D.botHp ?? BASE_START_HP,

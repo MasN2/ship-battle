@@ -237,6 +237,33 @@ function getBuyCardTooltip(n, t, c) {
     `;
 }
 
+function largestPrimeFactor(n) {
+    if (n <= 1) return 1; // 1 has no prime factors
+    
+    let largest = 1;
+    
+    // 1. Strip out all factors of 2
+    while (n % 2 === 0) {
+        largest = 2;
+        n /= 2;
+    }
+    
+    // 2. Strip out odd factors up to sqrt(n)
+    for (let d = 3; d * d <= n; d += 2) {
+        while (n % d === 0) {
+            largest = d;
+            n /= d;
+        }
+    }
+    
+    // 3. If n is still greater than 1, the remaining value itself is prime
+    if (n > 1) {
+        largest = n;
+    }
+    
+    return largest;
+}
+
 export function renderDeployBar() {
     const el = document.getElementById('deploy-bar');
     if (!el) return;
@@ -307,6 +334,7 @@ export function renderDeployBar() {
             if (cost(60, state.blue.ore) <= 2.6*state.blue.income && n <= 30) isHidden = true;
             if (cost(70, state.blue.ore) > 4*state.blue.income && n >= 70) isHidden = true;
             if (n > state.blue.max_ship) isHidden = true;
+            if (largestPrimeFactor(n) >= state.blue.locked_factor) isHidden = true;
 
         btn.style.display = isHidden ? 'none' : '';
         if (isHidden) continue;
