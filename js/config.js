@@ -26,7 +26,8 @@ export const TARGET_MARK_SVG = `<svg class="target-mark" viewBox="0 0 14 14" ari
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 10, botIncome: 100, botOre: 1000, priority: [83, 0]},
-    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 40, botIncome: 50, botOre: 1000, priority: [83, 0]},
+    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 50, botIncome: 70, botOre: 1000, priority: [83, 0]},
+    campaign4: { label: 'Campaign 4', maxShip: 4, botHp: 160, botIncome: 40, botOre: 1000, priority: [83, 0]},
     normal: { label: 'Normal', incomeMult: 4, oreMult: 1, hpMult: 1, aiNoise: 0.4, aiSkipChance: 0.08, ai: false },
     hard: { label: 'Hard', incomeMult: 4, oreMult: 1, oreDelay: 1 / 16, armorGain: 0.02, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
     challenging: { label: 'Challenging', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
