@@ -63,13 +63,6 @@ export function renderBattlefield() {
             sec.className = `sector${i < 4 ? ' blue-side' : (i > 4 ? ' red-side' : '')}${i === BLUE_DEPLOY_IDX ? ' deploy-blue' : ''}${i === RED_DEPLOY_IDX ? ' deploy-red' : ''}`;
             sec.dataset.sectorIdx = i;
 
-            const label = document.createElement('div');
-            label.className = 'sector-label';
-            const tag = i === BLUE_DEPLOY_IDX ? '⌃ BLUE DEPLOY' : (i === RED_DEPLOY_IDX ? 'RED DEPLOY ⌃' : '');
-            label.innerHTML = `<span>${SECTORS[i]}</span><span class="deploy-tag">${tag}</span>`;
-            label.dataset.tip = (i === BLUE_DEPLOY_IDX || i === RED_DEPLOY_IDX) ? 'deploy' : 'sector';
-            sec.appendChild(label);
-
             if (i === BLUE_BASE_IDX) sec.appendChild(renderBase('blue'));
             if (i === RED_BASE_IDX) sec.appendChild(renderBase('red'));
             el.appendChild(sec);
