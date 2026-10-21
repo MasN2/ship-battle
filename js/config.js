@@ -26,9 +26,9 @@ export const TARGET_MARK_SVG = `<svg class="target-mark" viewBox="0 0 14 14" ari
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 10, botIncome: 100, botOre: 1000, priority: [83, 0]},
-    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 50, botIncome: 70, botOre: 1000, priority: [83, 0]},
-    campaign4: { label: 'Campaign 4', maxShip: 4, botHp: 160, botIncome: 50, botOre: 1000, priority: [83, 0]},
-    campaign6: { label: 'Campaign 6', maxShip: 6, playerHp: 70, botHp: 160, botIncome: 7, priority: [4]},
+    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [83, 0]},
+    campaign4: { label: 'Campaign 4', maxShip: 4, playerIncome: 3, playerHp: 160, botHp: 160, botIncome: 7, priority: [4]},
+    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [83, 0]},
     campaign10: { label: 'Campaign 10', maxShip: 10, botHp: 160, botIncome: 11, priority: [8, 4], opening: [0, 0, 0, 0, 0]},
     campaign11: { label: 'Campaign 11', lockedFactor: 11, botHp: 340, botIncome: 5, priority: [11, 7, 0], oreIncome: 2},
     campaign13: { label: 'Campaign 13', lockedFactor: 13, botHp: 160, priority: [13, 0], botMoney: 96},
