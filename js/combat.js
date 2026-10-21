@@ -359,6 +359,10 @@ export async function runTurn(playerPick = 0) {
     renderDeployBar();
     await sleep(0.01);
 
+    if ((state.blue.hp <= 0 || state.red.hp <= 0) && state.red.hp !== state.blue.hp) {
+        return finishCleanup();
+    }
+
     // Step 2: Attacks fire immediately
     log('Attack phase.');
     await runAttacks();
