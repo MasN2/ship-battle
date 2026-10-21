@@ -32,5 +32,5 @@ export function calcOreIncome(owner, state) {
     if (delay !== undefined && state.turn > 16) {
         total += (state.turn - 14) * delay;
     }
-    return total;
+    return total + state[owner].ore_income;
 }
