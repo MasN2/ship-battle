@@ -330,8 +330,8 @@ export function renderDeployBar() {
             if (cost(40, state.blue.ore) <= 2.7*state.blue.income && n <= 10) isHidden = true;
             if (cost(50, state.blue.ore) > 2.6*state.blue.income && n >= 50) isHidden = true;
             if (cost(50, state.blue.ore) <= 2.6*state.blue.income && n <= 20) isHidden = true;
-            if (cost(60, state.blue.ore) > 2.6*state.blue.income && n >= 60) isHidden = true;
-            if (cost(60, state.blue.ore) <= 2.6*state.blue.income && n <= 30) isHidden = true;
+            if (cost(60, state.blue.ore) > 2.5*state.blue.income && n >= 60) isHidden = true;
+            if (cost(60, state.blue.ore) <= 2.5*state.blue.income && n <= 30) isHidden = true;
             if (cost(70, state.blue.ore) > 4*state.blue.income && n >= 70) isHidden = true;
             if (n > state.blue.max_ship) isHidden = true;
             if (largestPrimeFactor(n) >= state.blue.locked_factor) isHidden = true;
