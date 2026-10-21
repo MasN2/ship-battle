@@ -161,8 +161,8 @@
     <script type="module" src="script.pause.js"></script>
     <script type="module" src="summary-bar.js"></script>
     <script>
-        const {state} = await import('./js/state.js');
-        const {shipCost} = await import('./js/economy.js');
+        import('./js/state.js').then(m => window.state = m.state);
+        import('./js/economy.js').then(m => window.shipCost = m.shipCost);
     </script>
     <!--<script defer src="https://static.itch.io/htmlgame.js" type="text/javascript"></script>-->
 </body>
