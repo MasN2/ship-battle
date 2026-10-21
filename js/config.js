@@ -32,19 +32,50 @@ const c1tutorial = {
     5: "Ships fire at the top ship in the enemy column.",
     6: "Reduce a ship to 0 hp to destroy it.",
     7: "After destroying an enemy ship, ships fire at the next enemy in line.",
-    8: "This battle won't continue forever - this enemy can only produce 10 skiffs.",
+    8: "For this mission, your objective is to destroy 10 enemy ships, then destroy the enemy base.",
     19: "Great job destroying the enemy fleet - time to move on their base.",
     20: "I heard the academy sends terminators to eliminate slow students, I wouldn't worry about that.",
     21: "Reduce the enemy base to 0hp to win!",
     26: "If you get terminated, you can press the button in the top left to try again.",
 }
 
+const c2tutorial = {
+    1: "Good job cadet! I've unlocked the corvette for you. The corvette hits harder and is tougher than an ordinary skiff.",
+    2: "Budget Master Ryan: On behalf of the federation, I've increased your budget to $2.",
+    3: "You can take loans to buy a ship you cannot afford. Loans have a 25% interest, so don't rely on them too much.",
+    4: "You might notice that ship 2 costs more than $2. Mysterious!",
+    5: "Ship Masters is a deep turn based strategy game set in a sci-fi universe. Construct over 60 hand-balanced ships, discover the unique powers of the prime numbers, and master the mechanics that allow you to combine them.",
+    6: "The power of the prime 2 is to hit harder. Hover over the 2 to find out more.",
+    7: "I wonder what will happen if you combine 2 with itself.",
+}
+
+const c4tutorial = {
+    1: "Each ship number is its ship's minimum cost. The power of the prime 3 is to mine ore, which brings the ship cost closer to the minimum.",
+    2: "Budget Master Ryan: On behalf of the federation, I've increased your budget to $3.",
+    3: "That said, we're under a frigate attack right now. Maybe now is not the best time to mine.",
+}
+
+const c6tutorial = {
+    1: "Budget Master Ryan: On behalf of the federation, I've increased your budget to $4.",
+    2: "The power of the prime 5 is to fire a missile that hits all enemies in the sector.",
+    3: "Wow, that would have been useful when the enemy was actually deploying ships.",
+}
+
+const c10tutorial = {
+    1: "Budget Master Ryan: I'm not increasing your budget anymore. It's perfect as is.",
+    2: "Looks like we'll have to increase it ourselves.",
+    3: "The power of the prime 7 is to increase your income.",
+    4: "My sensors are picking up on a destroyer attack in the future. It will be hard to defeat it with only 4 income.",
+    5: "Budget Master Ryan: What do you mean? 4 is a great number!",
+    6: "Once we fend off these destroyers, we'll challenge the prime masters and steal their technology!",
+}
+
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
-    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [83, 0]},
-    campaign4: { label: 'Campaign 4', maxShip: 4, playerIncome: 3, playerHp: 100, botHp: 160, botIncome: 7, priority: [4]},
-    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [83, 0]},
-    campaign10: { label: 'Campaign 10', maxShip: 10, botHp: 160, botIncome: 11, priority: [8, 4], opening: [0, 0, 0, 0, 0]},
+    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [83, 0], tutorial: c2tutorial},
+    campaign4: { label: 'Campaign 4', maxShip: 4, playerIncome: 3, playerHp: 100, botHp: 160, botIncome: 7, priority: [4], tutorial: c4tutorial},
+    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [83, 0], tutorial: c6tutorial},
+    campaign10: { label: 'Campaign 10', maxShip: 10, botHp: 160, botIncome: 11, priority: [8, 4], opening: [0, 0, 0, 0, 0], tutorial: c10tutorial},
     campaign11: { label: 'Campaign 11', lockedFactor: 11, botHp: 640, botIncome: 5, priority: [11, 7, 0], oreIncome: 2},
     campaign13: { label: 'Campaign 13', lockedFactor: 13, botHp: 160, priority: [13, 0], botMoney: 96},
     campaign17: { label: 'Campaign 17', lockedFactor: 17, botHp: 1160, priority: [17, 7, 0], botIncome: 10, oreIncome: 2},
