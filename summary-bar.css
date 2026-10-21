@@ -25,7 +25,6 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
     user-select: none;
     border-radius: 0 0 6px 6px;
-    overflow: hidden;
 }
 
 /* Individual Lane Card */
