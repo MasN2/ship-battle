@@ -4,6 +4,33 @@ import { initTooltips } from './js/tooltips.js';
 import { initScenarios } from './js/scenarios.js';
 import { renderDeployBar } from './js/render.js';
 
+const tutorialBox = document.getElementById('tutorial-box');
+const tutorialText = document.getElementById('tutorial-text');
+const tutorialCloseBtn = document.getElementById('tutorial-close-btn');
+
+// Close when the user clicks the close button
+tutorialCloseBtn.addEventListener('click', closeTutorial);
+
+/**
+ * Displays a tutorial box with the given text.
+ * Overwrites any current tutorial box if one is already open.
+ * @param {string} text - The message to display.
+ */
+export function showTutorial(text) {
+  // Overwrite text (works whether hidden or already showing)
+  tutorialText.textContent = text;
+  
+  // Ensure it is visible
+  tutorialBox.classList.remove('hidden');
+}
+
+/**
+ * Closes/hides the tutorial box.
+ */
+export function closeTutorial() {
+  tutorialBox.classList.add('hidden');
+}
+
 // Expose handlers expected by index.html inline attributes
 window.newGame = newGame;
 window.setUsername = setUsername;

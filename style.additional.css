@@ -245,3 +245,41 @@
 #tooltip .tp {
 	color: var(--purple);
 }
+
+.tutorial-box {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  max-width: 320px;
+  padding: 16px 40px 16px 16px;
+  background-color: #1e1e24;
+  color: #f0f0f0;
+  border: 2px solid #4a4e69;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  font-family: sans-serif;
+  z-index: 1000;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tutorial-box.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+.tutorial-box button {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.tutorial-box button:hover {
+  color: #fff;
+}
