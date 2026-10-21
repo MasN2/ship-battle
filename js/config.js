@@ -26,7 +26,17 @@ export const TARGET_MARK_SVG = `<svg class="target-mark" viewBox="0 0 14 14" ari
 
 const c1tutorial = {
     1: "Welcome to ship battle! This is a game about buying ships and sending them to destroy the enemy base! Buy a skiff to get started!",
-    2: "world",
+    2: "Ships advance one space every turn.",
+    3: "Ships can fire at enemies within range 2.",
+    4: "Ships that fire do not advance.",
+    5: "Ships fire at the top ship in the enemy column.",
+    6: "Reduce a ship to 0 hp to destroy it.",
+    7: "After destroying an enemy ship, ships fire at the next enemy in line.",
+    8: "This battle won't continue forever - this enemy can only produce 10 skiffs.",
+    19: "Great job destroying the enemy fleet - time to move on their base.",
+    20: "I heard the academy sends terminators to eliminate slow students, I wouldn't worry about that.",
+    21: "Reduce the enemy base to 0hp to win!",
+    26: "If you get terminated, you can press the button in the top left to try again.",
 }
 
 export const DIFFICULTIES = {
