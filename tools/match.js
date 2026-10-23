@@ -29,6 +29,7 @@ export function makeBot(name, cfg, eps) {
         case 'alice-red': return noisy(scriptBot(HUMAN_ORDERS.alice_red), eps);
         // the user's winning playtest order, then the turtle style it was playing
         case 'user1': return noisy(scriptBot(HUMAN_ORDERS.user1_blue, (S, side, rng) => POLICIES.turtle(S, side, GM_DEFAULTS, rng)), eps);
+        case 'user2': return noisy(scriptBot(HUMAN_ORDERS.user2_blue, (S, side, rng) => POLICIES.value(S, side, GM_DEFAULTS, rng)), eps);
         default:
             // pol:<name> plays one of grandmaster's rollout styles on its own (spend, smart, econ, mine, big)
             if (name.startsWith('pol:') && POLICIES[name.slice(4)]) {

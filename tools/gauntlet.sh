@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 CFG="${1:-{\}}"
 N="${2:-100}"
 total=0; won=0
-for opp in normal alice alice-red user1 econ pol:spend pol:smart pol:econ pol:mine pol:big pol:value pol:turtle; do
+for opp in normal alice alice-red user1 econ pol:spend pol:smart pol:econ pol:mine pol:big pol:value pol:turtle pol:snowball; do
   out=$(node tools/tourney.js gm "$opp" "$N" --a "$CFG" 2>/dev/null)
   w=$(echo "$out" | sed -n 's/^A wins \([0-9]*\).*/\1/p')
   med=$(echo "$out" | sed -n 's/^turns: A wins median \([0-9-]*\).*/\1/p')

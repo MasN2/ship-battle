@@ -190,6 +190,42 @@ function wild(S, side, cfg, rand) {
     return 0;
 }
 
+/** Damage per turn the enemy fleet could put on this side's base soon: ships already in
+    range at full weight, ships one or two sectors further out at half. */
+function baseThreat(S, side) {
+    const base = side === 'blue' ? 1 : 7;
+    let t = 0;
+    for (const s of S[enemyOf(side)].ships) {
+        if (s.health <= 0) continue;
+        const reach = s.number % 11 === 0 ? 3 : 2;
+        const d = Math.abs(s.sector - base);
+        if (d <= reach) t += s.attack;
+        else if (d <= reach + 2) t += 0.5 * s.attack;
+    }
+    return t;
+}
+
+/** Rollout policy: the human snowball. Base hp is a resource: keep buying income while the
+    base can soak the incoming damage for `buffer` turns, else the sturdiest fighter. As
+    income grows those fighters become the big ships that end the game. */
+function snowballer(buffer) {
+    return (S, side, cfg) => {
+        const me = S[side];
+        if (me.hp > 40 && me.hp > buffer * baseThreat(S, side)) {
+            let best = 0;
+            let bestRate = 0;
+            for (const n of shipMenu(S, side, cfg)) {
+                const g = INCOME_GAIN(n);
+                if (!g) continue;
+                const rate = g / cost(n, me.ore);
+                if (rate > bestRate) { bestRate = rate; best = n; }
+            }
+            if (best) return cost(best, me.ore) <= me.money ? best : 0;
+        }
+        return value(S, side, cfg);
+    };
+}
+
 export const POLICIES = {
     wild,
     spend: greedy,
@@ -199,6 +235,7 @@ export const POLICIES = {
     // Traders while nothing is near, then the sturdiest fighter every turn: the human
     // turtle-and-counterwave line that beat it in playtesting.
     turtle: investor(INCOME_GAIN, 40, value),
+    snowball: snowballer(8),
     mine: investor(ORE_GAIN, 40),
     big,
     skip: () => 0,
@@ -228,7 +265,8 @@ export function evaluate(S, side, cfg) {
     const v = sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
     // Win sooner, lose later; the position still breaks ties, so a lost line keeps fighting.
     const W = cfg.winScore;
-    if (S.over) return (S.over === side ? W - W / 1000 * S.turn : -W + W / 1000 * S.turn) + v;
+    const hurry = cfg.hurry ?? W / 1000;
+    if (S.over) return (S.over === side ? W - hurry * S.turn : -W + hurry * S.turn) + v;
     return v;
 }
 
