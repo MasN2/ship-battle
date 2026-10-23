@@ -25,6 +25,7 @@ export const GM_DEFAULTS = {
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
     winScore: 3e4,
+    trust: 1,           // per-turn discount on imagined wins/losses (see evaluate)
     incomeW: 1,         // weight on income's share of that...
     oreW: 1,            // ...and on the ore stock's share
     hpW: 1,             // value of a point of base hp...
@@ -261,12 +262,17 @@ function sideValue(S, side, cfg) {
     return v + cfg.shipW * ships;
 }
 
-export function evaluate(S, side, cfg) {
+export function evaluate(S, side, cfg, ahead = 0) {
     const v = sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
     // Win sooner, lose later; the position still breaks ties, so a lost line keeps fighting.
+    // A win `ahead` turns into an imagined future counts trust^ahead as much: the scripted
+    // opponents in rollouts defend worse than people, so far-off wins are mostly rumour, and
+    // against a rumour the economy (momentum, insurance) should win the argument. Losses keep
+    // full weight: a counterwave seen far off is still a real threat.
     const W = cfg.winScore;
     const hurry = cfg.hurry ?? W / 1000;
-    if (S.over) return (S.over === side ? W - hurry * S.turn : -W + hurry * S.turn) + v;
+    if (S.over === side) return (W - hurry * S.turn) * cfg.trust ** ahead + v;
+    if (S.over) return -W + hurry * S.turn + v;
     return v;
 }
 
@@ -317,7 +323,7 @@ function rollout(S, side, plan, mine, theirs, cfg, stream = 0) {
         if (!(e instanceof SimError)) throw e;
         return -5e5; // a line that freezes the live game: avoid it
     }
-    return evaluate(sim, side, cfg);
+    return evaluate(sim, side, cfg, sim.turn - S.turn);
 }
 
 /** Combines a move's scores across opponent styles. 'cautious' averages the worse half, so a

@@ -87,6 +87,9 @@ export const DIFFICULTIES = {
     visionary: { label: 'Visionary', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
     // No handicaps: same base, income and ore as Normal. The edge is all in js/grandmaster.js.
     grandmaster: { label: 'Grandmaster', ai: 'grandmaster' },
+    // Playtest variant: distrusts imagined wins that are far off, so it invests more when a
+    // win isn't close (gmCfg overrides GM_DEFAULTS in js/grandmaster.js).
+    grandmasterBeta: { label: 'Grandmaster β (testing)', ai: 'grandmaster', gmCfg: { trust: 0.9 } },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };

@@ -1,5 +1,5 @@
-import { state, processing, gameOver, setProcessing, sleep, timeout, log, startNewTurn, endGame, incrementShipId, socket, getNextMessage } from './state.js';
-import { SECTORS, RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE } from './config.js';
+import { state, processing, gameOver, setProcessing, sleep, timeout, log, startNewTurn, endGame, incrementShipId, socket, getNextMessage, difficulty } from './state.js';
+import { SECTORS, RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE, DIFFICULTIES } from './config.js';
 import { TEMPLATES, calculatePrimeFactors } from './templates.js';
 import { cost, calcOreIncome, maxLoanFor } from './economy.js';
 import { sfx } from './audio.js';
@@ -345,7 +345,7 @@ export async function runTurn(playerPick = 0) {
         aiPick = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37][state.turn - 1] ?? 0;
     } else if (state.red.ai === "grandmaster") {
         // Decided before blue's purchase below, so it never sees this turn's pick.
-        aiPick = chooseGrandmaster(state, 'red');
+        aiPick = chooseGrandmaster(state, 'red', { cfg: DIFFICULTIES[difficulty]?.gmCfg });
     }
     for (const num of state.red.priority){
         if (aiPick === undefined && canAfford('red', num)) {aiPick = num;}
