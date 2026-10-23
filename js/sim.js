@@ -12,7 +12,28 @@
 
 import { RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE, BASE_START_HP, START_INCOME, START_ORE } from './config.js';
 import { TEMPLATES, calculatePrimeFactors } from './templates.js';
-import { cost, calcOreIncome, maxLoanFor } from './economy.js';
+import { calcOreIncome, maxLoanFor, oreDivisor, excessExponent } from './economy.js';
+import { SHIP_NUMS } from './templates.js';
+
+// Ship prices for one ore level, all ships at once: the same expression as cost() in
+// economy.js (so the same numbers to the last bit), computed once per ore value instead of
+// on every call. Ore changes slowly, so a small cache covers nearly every lookup.
+const priceCache = new Map();
+function priceTable(ore) {
+    let t = priceCache.get(ore);
+    if (t) return t;
+    if (priceCache.size > 4096) priceCache.clear();
+    t = new Float64Array(84);
+    const d = oreDivisor(ore);
+    for (const n of SHIP_NUMS) {
+        const excess = excessExponent(n);
+        t[n] = Math.pow(n, 1 + (excess ** 2 / (excess + d)));
+    }
+    priceCache.set(ore, t);
+    return t;
+}
+/** cost(num, ore) from economy.js, cached. */
+export const costOf = (num, ore) => priceTable(ore)[num];
 
 export const SIDES = ['blue', 'red'];
 export const enemyOf = side => (side === 'blue' ? 'red' : 'blue');
@@ -50,16 +71,19 @@ export function cloneState(src) {
 }
 
 export function canAfford(S, side, num) {
-    return S[side].money + maxLoanFor(S[side].income) >= cost(num, S[side].ore);
+    return S[side].money + maxLoanFor(S[side].income) >= costOf(num, S[side].ore);
 }
 
+// Same result as recomputeRows in combat.js: within each sector, ships keep their row order
+// (ties in array order) and are renumbered 0, 1, 2, ...
+const rowBuckets = Array.from({ length: 9 }, () => []);
 function recomputeRows(S) {
     for (const owner of SIDES) {
-        const bySector = {};
-        for (const s of S[owner].ships) (bySector[s.sector] ??= []).push(s);
-        for (const sec in bySector) {
-            bySector[sec].sort((a, b) => a.row - b.row);
-            bySector[sec].forEach((s, i) => { s.row = i; });
+        for (const b of rowBuckets) b.length = 0;
+        for (const s of S[owner].ships) rowBuckets[s.sector].push(s);
+        for (const b of rowBuckets) {
+            if (b.length > 1) b.sort((a, c) => a.row - c.row);
+            for (let i = 0; i < b.length; i++) b[i].row = i;
         }
     }
 }
@@ -74,12 +98,15 @@ function deployShip(S, owner, num, sector) {
     if ((num === 61 || num === 67) && own.length) {
         sector = owner === 'blue' ? Math.max(...own.map(s => s.sector)) : Math.min(...own.map(s => s.sector));
     }
-    const ship = { number: num, attack: tpl.attack, health: tpl.health, sector, row: 999, template: tpl, dying: false };
+    // A new ship always ends up last in its sector: recomputeRows would give it the next row,
+    // so it gets that row directly (rows are normalised whenever ships are deployed).
+    let row = 0;
+    for (const s of own) if (s.sector === sector) row++;
+    const ship = { number: num, attack: tpl.attack, health: tpl.health, sector, row, template: tpl, dying: false };
     own.push(ship);
     for (let i = 0; i < 2 ** own.filter(s => s.number == 71).length; i++) {
         triggerOnDeploy(S, owner, num, sector, ship);
     }
-    recomputeRows(S);
     return ship;
 }
 
@@ -103,7 +130,7 @@ function buyShip(S, owner, num) {
     const me = S[owner];
     if (!canAfford(S, owner, num)) { me.history.push(0); return false; }
     me.history.push(num);
-    me.money -= cost(num, me.ore);
+    me.money -= costOf(num, me.ore);
     if (me.money < 0) me.money *= 1.25;
     deployShip(S, owner, num, owner === 'blue' ? BLUE_DEPLOY_IDX : RED_DEPLOY_IDX);
     return true;
@@ -308,7 +335,7 @@ export function stepTurn(S, bluePick, redPick) {
         if (S.turn >= 11) me.armor += me.armor_gain;
         for (const [num, sec] of deployments) deployShip(S, owner, num, sec);
     }
-    recomputeRows(S);
+    // (rows are already in order here: movement renumbered them and deployShip keeps them so)
     if (checkOver(S)) return S;
 
     startNewTurn(S);

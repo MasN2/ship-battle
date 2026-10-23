@@ -6,8 +6,8 @@
 // show (see visibleShips).
 
 import { SHIP_NUMS, TEMPLATES } from './templates.js';
-import { cost, economy, maxLoanFor } from './economy.js';
-import { cloneState, stepTurn, canAfford, enemyOf, SimError } from './sim.js';
+import { economy, maxLoanFor } from './economy.js';
+import { cloneState, stepTurn, canAfford, enemyOf, SimError, costOf } from './sim.js';
 import { evolvedEval, evolvedPolicy, seedWeights } from './evolved.js';
 import { EVOLVED_WEIGHTS } from './evolved-weights.js';
 import { intuitionBias, situation } from './intuition.js';
@@ -57,7 +57,7 @@ export const GM_DEFAULTS = {
 export function visibleShips(S, side) {
     const inc = S[side].income;
     const ore = S[side].ore;
-    const c = n => cost(n, ore);
+    const c = n => costOf(n, ore);
     const lim = {
         hideAbove10: c(10) > 3.2 * inc, hideAbove20: c(20) > 3 * inc, hideAbove30: c(30) > 2.8 * inc,
         hideAbove40: c(40) > 2.6 * inc, hideBelow10: c(40) <= 2.6 * inc, hideAbove50: c(50) > 2.5 * inc,
@@ -80,7 +80,7 @@ function shipMenu(S, side, cfg) {
 function greedy(S, side, cfg) {
     const menu = shipMenu(S, side, cfg);
     const me = S[side];
-    for (let i = menu.length - 1; i >= 0; i--) if (cost(menu[i], me.ore) <= me.money) return menu[i];
+    for (let i = menu.length - 1; i >= 0; i--) if (costOf(menu[i], me.ore) <= me.money) return menu[i];
     return 0;
 }
 
@@ -103,11 +103,11 @@ function investor(gain, minHp, fallback = greedy) {
         for (const n of shipMenu(S, side, cfg)) {
             const g = gain(n);
             if (!g) continue;
-            const rate = g / cost(n, me.ore);
+            const rate = g / costOf(n, me.ore);
             if (rate > bestRate) { bestRate = rate; best = n; }
         }
         if (!best) return fallback(S, side, cfg);
-        return cost(best, me.ore) <= me.money ? best : 0;
+        return costOf(best, me.ore) <= me.money ? best : 0;
     };
 }
 
@@ -119,7 +119,7 @@ function value(S, side, cfg) {
     let best = 0;
     let bestV = 0;
     for (const n of shipMenu(S, side, cfg)) {
-        if (cost(n, me.ore) > me.money) break;
+        if (costOf(n, me.ore) > me.money) break;
         if (INCOME_GAIN(n)) continue;
         const t = TEMPLATES[n];
         const v = t.attack * t.health;
@@ -159,7 +159,7 @@ function smart(S, side, cfg) {
     let best = 0;
     let bestV = 0;
     for (const n of shipMenu(S, side, cfg)) {
-        if (cost(n, me.ore) > me.money) break; // menu is ascending in number, and so in cost
+        if (costOf(n, me.ore) > me.money) break; // menu is ascending in number, and so in cost
         const v = matchupPower(n, f);
         if (v > bestV) { bestV = v; best = n; }
     }
@@ -185,16 +185,16 @@ function wild(S, side, cfg, rand) {
     const weights = [];
     let total = 0;
     for (const num of [...SHIP_NUMS, 0]) {
-        if (num && cost(num, me.ore) > me.money + 4) continue;
-        let w = num > 3 ? cost(num, 0) : 5;
+        if (num && costOf(num, me.ore) > me.money + 4) continue;
+        let w = num > 3 ? costOf(num, 0) : 5;
         if (num % 3 === 0) { w *= 2; if (foeNear) w = 0; }
         if (num % 7 === 0 && num !== 0) { w *= (me.hp - 20) / Math.min(me.income, 10); if (foeNear) w = 0; }
-        if (num === 0 && cost(7, me.ore) <= me.money + 4) w = 0;
+        if (num === 0 && costOf(7, me.ore) <= me.money + 4) w = 0;
         if (num % 17 === 0 && num !== 0) { w *= (40 * (num / 17) / foe.hp) ** 4; if (foeNear) w = 0; }
         if (num % 5 === 0 && num > 0) w *= (foe.ships.length ** 3) / 300;
         if (num % 3 !== 0 && num % 7 !== 0 && ownCenter) w = 0;
         if (num >= 67) w *= 1000000;
-        w = Math.max(0, w - 2 * Math.max(0, cost(num, me.ore) - me.money));
+        w = Math.max(0, w - 2 * Math.max(0, costOf(num, me.ore) - me.money));
         items.push(num);
         weights.push(w);
         total += w;
@@ -234,10 +234,10 @@ function snowballer(buffer) {
             for (const n of shipMenu(S, side, cfg)) {
                 const g = INCOME_GAIN(n);
                 if (!g) continue;
-                const rate = g / cost(n, me.ore);
+                const rate = g / costOf(n, me.ore);
                 if (rate > bestRate) { bestRate = rate; best = n; }
             }
-            if (best) return cost(best, me.ore) <= me.money ? best : 0;
+            if (best) return costOf(best, me.ore) <= me.money ? best : 0;
         }
         return value(S, side, cfg);
     };
@@ -305,7 +305,7 @@ function plans(S, side, cfg) {
         if (canAfford(S, side, n)) { out.push({ first: n }); continue; }
         if (cfg.saveTurns > 0 && me.income > 0) {
             // turns of saving until it's affordable (loan included, as canAfford counts it)
-            const short = cost(n, me.ore) - me.money - maxLoanFor(me.income);
+            const short = costOf(n, me.ore) - me.money - maxLoanFor(me.income);
             const wait = Math.ceil(short / me.income);
             if (wait <= cfg.saveTurns) out.push({ first: 0, saveFor: n, wait });
         }
