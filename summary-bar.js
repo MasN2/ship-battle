@@ -251,9 +251,7 @@ export function updateSummaryBar() {
                     </div>
                 </div>
             `;
-            continue;
-        }
-
+        } else {
         html += `
             <div class="lane-card${classAttr}">
                 <div class="lane-row top-row">
@@ -271,7 +269,7 @@ export function updateSummaryBar() {
                     <span class="lane-stat count" data-tip-text="Ship count: ${active.count}"><span class="caret${caretColorClass}">➤</span> ${active.count}</span>
                 </div>
             </div>
-        `;
+        `;}
     }
 
     summaryBarEl.innerHTML = html;
