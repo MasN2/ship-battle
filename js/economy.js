@@ -9,13 +9,45 @@ export function oreDivisor(ore) {
 }
 
 export function excessExponent(shipNum) {
-    if (shipNum < 21) return 0.34 + 0.01*shipNum;
+    if (shipNum < 20.5) return 0.34 + 0.01*shipNum;
     return 0.56 * (1.021 ** (shipNum - 21));
 }
 
 export function cost(shipNum, ore) {
     const excess = excessExponent(shipNum);
     return Math.pow(shipNum, 1 + (excess ** 2 / (excess + oreDivisor(ore))));
+}
+
+export function economy(income, ore) {
+    if (income <= 0) return 0;
+
+    let low = 0;
+    let high = Math.max(1, income);
+
+    // Dynamically expand the upper bound until cost(high, ore) >= income
+    while (cost(high, ore) < income) {
+        low = high;
+        high *= 2;
+    }
+
+    // Binary search (bisection) for high precision
+    for (let i = 0; i < 30; i++) {
+        const mid = (low + high) / 2;
+        const currentCost = cost(mid, ore);
+
+        if (currentCost < income) {
+            low = mid;
+        } else {
+            high = mid;
+        }
+    }
+
+    return (low + high) / 2;
+}
+
+export function balance(income, ore){
+    const target = economy(income, ore+1);
+    return cost(target, ore+1) - cost(target, ore);
 }
 
 export function calcOreIncome(owner, state) {

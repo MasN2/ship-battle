@@ -1,7 +1,7 @@
 import { state, processing, gameOver, opponent } from './state.js';
 import { SECTORS, BLUE_BASE_IDX, RED_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE, SWORD_SVG, BOW_SVG, ROCKET_SVG, HEART_SVG, TARGET_MARK_SVG, SECTOR_LABEL_H, BASE_H, SHIP_CARD_H, SHIP_CARD_H_COMPACT, START_ORE } from './config.js';
 import { TEMPLATES, SHIP_NUMS, listAbilities } from './templates.js';
-import { cost, calcOreIncome, excessExponent, oreDivisor, maxLoanFor } from './economy.js';
+import { cost, calcOreIncome, excessExponent, oreDivisor, maxLoanFor, balance } from './economy.js';
 import { shipNumBg, shipStripGradient } from './visuals.js';
 import { hideTip } from './tooltips.js';
 import { runTurn } from './combat.js';
@@ -32,6 +32,7 @@ export function render() {
 export function renderStats() {
     document.getElementById('blue-money').textContent = `${state.blue.money.toFixed(2)} (+${state.blue.income})`;
     document.getElementById('blue-ore').textContent = `${state.blue.ore} (+${calcOreIncome('blue', state)})`;
+    document.getElementById('blue-balance').textContent = `${balance(state.blue.income, state.blue.ore).toFixed(2)})`;
     document.getElementById('red-money').textContent = `${state.red.money.toFixed(2)} (+${state.red.income})`;
     document.getElementById('red-ore').textContent = `${state.red.ore} (+${calcOreIncome('red', state)})`;
     document.getElementById('red-command').textContent = opponent;
