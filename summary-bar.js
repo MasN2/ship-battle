@@ -1,5 +1,6 @@
 import { state } from './js/state.js';
 import { SWORD_SVG, BOW_SVG, ROCKET_SVG, HEART_SVG } from './js/config.js';
+import { economy, balance } from './js/economy.js';
 
 const STORAGE_KEY = 'shipbattle.laneSummary';
 
@@ -229,7 +230,19 @@ export function updateSummaryBar() {
         const classAttr = factionClass ? ` ${factionClass}` : '';
         const caretColorClass = countColor ? ` ${countColor}` : '';
 
-        if (active.count === 0) {
+        if (active.count === 0 && i === 1){
+            html += `<div class="lane-card${classAttr}">
+            <span>Economy: ${economy(state.blue.income, state.blue.ore).toFixed(2)}</span>
+            <span>Balance: ${balance(state.blue.income, state.blue.ore).toFixed(2)}</span>
+            </div>`
+        }
+        else if (active.count === 0 && i === 7){
+            html += `<div class="lane-card${classAttr}">
+            <span>Economy: ${economy(state.red.income, state.red.ore).toFixed(2)}</span>
+            <span>Balance: ${balance(state.red.income, state.red.ore).toFixed(2)}</span>
+            </div>`
+        }
+        else if (active.count === 0) {
             html += `
                 <div class="lane-card${classAttr}">
                     <div class="lane-row empty-row">
