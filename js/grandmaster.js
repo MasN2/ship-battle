@@ -19,7 +19,7 @@ export const GM_DEFAULTS = {
     // came from a playtest loss; adding them took it from 68 to 96 wins vs that build order.
     mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value'],
     theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value'],
-    agg: 'mean',        // how scores across their styles combine: 'mean' | 'min'
+    agg: 'mean',        // how scores across their styles combine: 'mean' | 'cautious' | 'min'
     horizon: 40,        // turns of future spending that income and ore are worth
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
@@ -282,6 +282,20 @@ function rollout(S, side, plan, mine, theirs, cfg, stream = 0) {
     return evaluate(sim, side, cfg);
 }
 
+/** Combines a move's scores across opponent styles. 'cautious' averages the worse half, so a
+    gamble that crushes most styles but dies to one doesn't look good on average. */
+function aggregate(scores, how) {
+    if (how === 'min') return Math.min(...scores);
+    if (how === 'cautious') {
+        const s = scores.slice().sort((a, b) => a - b);
+        const k = Math.ceil(s.length / 2);
+        let t = 0;
+        for (let i = 0; i < k; i++) t += s[i];
+        return t / k;
+    }
+    return scores.reduce((a, b) => a + b, 0) / scores.length;
+}
+
 /**
  * The grandmaster's pick for `side` this turn (0 = skip).
  * opts.cfg overrides GM_DEFAULTS; opts.out, if an array, receives every plan's score.
@@ -296,7 +310,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
         let score = -Infinity;
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
-            const s = cfg.agg === 'min' ? Math.min(...scores) : scores.reduce((a, b) => a + b, 0) / scores.length;
+            const s = aggregate(scores, cfg.agg);
             if (s > score) score = s;
         }
         if (opts.out) opts.out.push({ plan, score });
