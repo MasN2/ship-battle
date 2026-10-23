@@ -32,6 +32,7 @@ export const GM_DEFAULTS = {
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
     winScore: 3e4,
     trust: 1,           // per-turn discount on imagined wins/losses (see evaluate)
+    opening: null,      // e.g. { style: 'turtle', turns: 8 }: play that style first (see chooseGrandmaster)
     intuition: false,   // learned move bias (js/intuition.js): true = trained weights, or an object
     intuitionScale: 1,  // multiplier on that bias
     leaf: 'hand',       // how a rollout's end is scored: 'hand' (sideValue) or 'evolved' (js/evolved.js)
@@ -405,6 +406,11 @@ function aggregate(scores, how, weights) {
  */
 export function chooseGrandmaster(state, side, opts = {}) {
     const cfg = { ...GM_DEFAULTS, ...(opts.cfg || {}) };
+    // Opening book: play a fixed style for the first turns, then think. The concept crawl
+    // (tools/crawl.js) found openings that beat grandmaster's own opening.
+    if (cfg.opening && state.turn <= cfg.opening.turns) {
+        return POLICIES[cfg.opening.style](cloneState(state), side, cfg, opts.rng || Math.random) || 0;
+    }
     const S = cloneState(state);
     const rng = opts.rng || Math.random;
     const weights = styleWeights(state, side, cfg, opts.memo);
