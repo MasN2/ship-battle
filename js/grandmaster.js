@@ -26,6 +26,12 @@ export const GM_DEFAULTS = {
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
     winScore: 3e4,
     trust: 1,           // per-turn discount on imagined wins/losses (see evaluate)
+    commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
+    observe: false,     // weight opponent styles by how well they predicted real moves (styleWeights)
+    observeWindow: 10,  // turns of the opponent's history considered
+    observeDecay: 0.85, // a match k turns ago counts observeDecay^k
+    observePrior: 0.3,  // weight every style starts with...
+    priors: null,       // ...or per style, e.g. { spend: 0.05, wild: 0.05 } to expect a strong player
     incomeW: 1,         // weight on income's share of that...
     oreW: 1,            // ...and on the ore stock's share
     hpW: 1,             // value of a point of base hp...
@@ -326,9 +332,41 @@ function rollout(S, side, plan, mine, theirs, cfg, stream = 0) {
     return evaluate(sim, side, cfg, sim.turn - S.turn);
 }
 
+/**
+ * How much each opponent style counts, from how well it predicted their real purchases.
+ * Every turn the position is kept in memo; on later turns each style is asked what it would
+ * have bought there and gets credit (recent turns count most) when that matches what the
+ * opponent actually bought. 'wild' is random, so it keeps only the prior.
+ * Returns one weight per entry of cfg.theirs, or null when observing is off.
+ */
+function styleWeights(S, side, cfg, memo) {
+    const prior = name => cfg.priors?.[name] ?? cfg.observePrior;
+    if (!cfg.observe || !memo) return cfg.priors ? cfg.theirs.map(prior) : null;
+    const opp = enemyOf(side);
+    const hist = S[opp].history || [];
+    memo.snaps ??= {};
+    memo.preds ??= {};
+    memo.snaps[S.turn] = cloneState(S);
+    for (const t in memo.snaps) if (t < S.turn - cfg.observeWindow) { delete memo.snaps[t]; delete memo.preds[t]; }
+    const w = cfg.theirs.map(prior);
+    for (let t = S.turn - 1; t >= S.turn - cfg.observeWindow && t >= 1; t--) {
+        const snap = memo.snaps[t];
+        const actual = hist[t - 1];
+        if (!snap || actual === undefined) continue;
+        const preds = memo.preds[t] ??= {};
+        const r = cfg.observeDecay ** (S.turn - 1 - t);
+        cfg.theirs.forEach((name, j) => {
+            if (name === 'wild') return;
+            if (!(name in preds)) preds[name] = POLICIES[name](snap, opp, cfg, Math.random);
+            if (preds[name] === actual) w[j] += r;
+        });
+    }
+    return w;
+}
+
 /** Combines a move's scores across opponent styles. 'cautious' averages the worse half, so a
     gamble that crushes most styles but dies to one doesn't look good on average. */
-function aggregate(scores, how) {
+function aggregate(scores, how, weights) {
     if (how === 'min') return Math.min(...scores);
     if (how === 'cautious') {
         const s = scores.slice().sort((a, b) => a - b);
@@ -336,6 +374,11 @@ function aggregate(scores, how) {
         let t = 0;
         for (let i = 0; i < k; i++) t += s[i];
         return t / k;
+    }
+    if (weights) {
+        let t = 0, n = 0;
+        scores.forEach((x, j) => { t += x * weights[j]; n += weights[j]; });
+        return t / n;
     }
     return scores.reduce((a, b) => a + b, 0) / scores.length;
 }
@@ -348,17 +391,25 @@ export function chooseGrandmaster(state, side, opts = {}) {
     const cfg = { ...GM_DEFAULTS, ...(opts.cfg || {}) };
     const S = cloneState(state);
     const rng = opts.rng || Math.random;
+    const weights = styleWeights(state, side, cfg, opts.memo);
+    if (opts.weightsOut && weights) opts.weightsOut.push(...weights);
     const scored = [];
+    // What each of my styles would play right now, if I just followed it.
+    const styleMove = {};
+    for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
     for (const plan of plans(S, side, cfg)) {
-        // Best follow-up style of mine, judged across their styles.
+        // Every follow-up style of mine after this move, judged across their styles.
         let score = -Infinity;
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
-            const s = aggregate(scores, cfg.agg);
+            const s = aggregate(scores, cfg.agg, weights);
+            // "pure": this move is simply the style's own move, so the line is a plan it will
+            // keep following. Anything else is a one-off deviation before the style.
+            const pure = !plan.saveFor && plan.first === styleMove[mine];
+            scored.push({ plan, mine, score: s, pure });
             if (s > score) score = s;
         }
         if (opts.out) opts.out.push({ plan, score });
-        scored.push({ plan, score });
     }
     // Opening chaos: early on, every move gets a random nudge sized to the gap between the
     // best and the 4th-best move, so close alternatives trade places and no single memorised
@@ -368,11 +419,18 @@ export function chooseGrandmaster(state, side, opts = {}) {
         const sorted = scored.map(e => e.score).sort((a, b) => b - a);
         jitter = cfg.chaos * Math.min(sorted[0] - sorted[Math.min(3, sorted.length - 1)], 2000);
     }
-    let best = 0;
-    let bestScore = -Infinity;
-    for (const { plan, score } of scored) {
-        const s = score + (jitter ? rng() * jitter : 0);
-        if (s > bestScore) { bestScore = s; best = plan.first; }
+    // Commitment: every line assumes it plays its style properly from next turn, so a one-off
+    // (a trader now, defend later) always looks about as good as defending now, and re-planning
+    // each turn would put defence off forever. So it follows the best whole style unless a
+    // one-off beats that by commitMargin (missile tricks, saving up, speed bumps can).
+    let bestPure = null, bestDev = null;
+    for (const e of scored) {
+        const v = e.score + (jitter ? rng() * jitter : 0);
+        if (e.pure) { if (!bestPure || v > bestPure.v) bestPure = { ...e, v }; }
+        else if (!bestDev || v > bestDev.v) bestDev = { ...e, v };
     }
+    let pick = bestPure ?? bestDev;
+    if (bestDev && bestPure && bestDev.v > bestPure.v + cfg.commitMargin) pick = bestDev;
+    const best = pick ? pick.plan.first : 0;
     return best;
 }

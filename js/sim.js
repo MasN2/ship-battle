@@ -21,7 +21,7 @@ export const enemyOf = side => (side === 'blue' ? 'red' : 'blue');
 export function newSimState() {
     const side = () => ({
         hp: BASE_START_HP, armor: 1, armor_gain: 0, income: START_INCOME, money: 0, ore: START_ORE,
-        ore_boost: 1, ore_income: 0, ships: [],
+        ore_boost: 1, ore_income: 0, ships: [], history: [],
     });
     const S = { turn: 0, blue: side(), red: side(), over: null };
     S.blue.regen = 0;      // newGame gives blue regen 0 and red regen undefined;
@@ -43,6 +43,7 @@ export function cloneState(src) {
         const o = {};
         for (const k of SIDE_KEYS) if (src[side][k] !== undefined) o[k] = src[side][k];
         o.ships = src[side].ships.filter(s => s.health > 0).map(copyShip);
+        o.history = []; // purchases made from here on (read the source's own history for the past)
         S[side] = o;
     }
     return S;
@@ -100,7 +101,8 @@ function triggerOnDeploy(S, owner, num, sector, ship) {
 
 function buyShip(S, owner, num) {
     const me = S[owner];
-    if (!canAfford(S, owner, num)) return false;
+    if (!canAfford(S, owner, num)) { me.history.push(0); return false; }
+    me.history.push(num);
     me.money -= cost(num, me.ore);
     if (me.money < 0) me.money *= 1.25;
     deployShip(S, owner, num, owner === 'blue' ? BLUE_DEPLOY_IDX : RED_DEPLOY_IDX);
@@ -260,8 +262,9 @@ function startNewTurn(S) {
 /** One full turn, as runTurn() plays it. picks are ship numbers, 0 = skip. */
 export function stepTurn(S, bluePick, redPick) {
     if (S.over) return S;
-    if (bluePick) buyShip(S, 'blue', bluePick);
-    if (redPick) buyShip(S, 'red', redPick);
+    // history mirrors state[side].history in the live game: the ship bought, or 0
+    if (bluePick) buyShip(S, 'blue', bluePick); else S.blue.history.push(0);
+    if (redPick) buyShip(S, 'red', redPick); else S.red.history.push(0);
     if (checkOver(S)) return S;
 
     runAttacks(S);

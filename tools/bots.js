@@ -78,3 +78,8 @@ HUMAN_ORDERS.user1_red_gm = [0, 0, 0, 0, 8, 3, 2, 2, 4, 4, 0, 3, 3, 0, 0, 7, 0, 
 // then won with big ships around turn 56.
 HUMAN_ORDERS.user2_blue = [1, 3, 0, 0, 7, 0, 0, 7, 0, 7, 2, 4, 4, 4, 3, 3, 3, 7, 3, 3, 7, 7, 7, 3, 7, 7, 7, 7, 7, 7, 14, 5, 10, 10, 12, 10, 10, 10, 6, 12, 12, 6, 10, 13, 5, 8, 14, 8, 14, 8, 14, 8, 14, 8, 8, 8];
 HUMAN_ORDERS.user2_red_gm = [0, 0, 0, 0, 8, 3, 2, 0, 1, 3, 7, 3, 0, 0, 7, 0, 2, 3, 5, 0, 3, 0, 8, 8, 0, 8, 0, 0, 2, 4, 2, 8, 5, 4, 7, 4, 4, 4, 0, 4, 0, 0, 10, 5, 0, 7, 7, 5, 1, 4, 4, 0, 10, 5, 5, 5];
+
+// Playtest 4: user beat Grandmaster β with early traders then nonstop Frigates (a counterwave
+// built from home). Only an economy opening beats this order in replays.
+HUMAN_ORDERS.user4_blue = [1, 3, 0, 0, 7, 0, 0, 7, 4, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2];
+HUMAN_ORDERS.user4_red_gmb = [0, 0, 2, 4, 2, 4, 0, 1, 3, 5, 0, 0, 7, 0, 0, 7, 1, 7, 0, 5, 5, 5, 5, 4, 4, 4, 4];

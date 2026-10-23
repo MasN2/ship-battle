@@ -345,7 +345,7 @@ export async function runTurn(playerPick = 0) {
         aiPick = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37][state.turn - 1] ?? 0;
     } else if (state.red.ai === "grandmaster") {
         // Decided before blue's purchase below, so it never sees this turn's pick.
-        aiPick = chooseGrandmaster(state, 'red', { cfg: DIFFICULTIES[difficulty]?.gmCfg });
+        aiPick = chooseGrandmaster(state, 'red', { cfg: DIFFICULTIES[difficulty]?.gmCfg, memo: (state.red.gmMemo ??= {}) });
     }
     for (const num of state.red.priority){
         if (aiPick === undefined && canAfford('red', num)) {aiPick = num;}
