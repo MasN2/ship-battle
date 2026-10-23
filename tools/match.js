@@ -2,6 +2,7 @@
 // and roundrobin.js.
 
 import os from 'os';
+import { economy } from '../js/economy.js';
 import { newSimState, stepTurn, SimError, canAfford } from '../js/sim.js';
 import { mulberry32 } from './rng.js';
 import { normalBot, scriptBot, greedEconBot, grandmasterBot, HUMAN_ORDERS } from './bots.js';
@@ -88,10 +89,53 @@ export function playGame(seed, aName, bName, aCfg, bCfg, aSide, maxTurns, eps, o
     const terminus = S.over ? picks[S.over][picks[S.over].length - 1] === 83 : false;
     return {
         seed, aSide, winner, aWon: winner === aSide, bWon: winner !== aSide && (winner === 'red' || winner === 'blue'),
-        turns: S.turn, terminus, picks, econ,
+        turns: S.turn, terminus, picks, econ, margin: marginScore(S, aSide), parts: marginParts(S, aSide),
         msPerTurn: { a: ms[aSide] / S.turn, b: ms[aSide === 'red' ? 'blue' : 'red'] / S.turn },
         maxMs: { a: maxMs[aSide], b: maxMs[aSide === 'red' ? 'blue' : 'red'] },
         end: { blue: { hp: S.blue.hp, income: S.blue.income, ore: S.blue.ore }, red: { hp: S.red.hp, income: S.red.income, ore: S.red.ore } },
+    };
+}
+
+/**
+ * How well `side` did, 0..1, from the final position. Any win scores more than any loss:
+ * a win is 0.6-1.0, a loss 0-0.4, the two sides' scores add to 1. Inside the band, the
+ * quality of the win: base hp left, economy lead, share of the army still on the board,
+ * how small the loser's surviving force (the would-be counterwave) is next to the winner's
+ * hp and army, and money banked rather than spent into debt. Undecided games sit at 0.4-0.6.
+ */
+export function marginScore(S, side) {
+    const opp = side === 'red' ? 'blue' : 'red';
+    const worth = o => S[o].ships.reduce((a, s) => a + (s.health > 0 ? Math.sqrt(Math.max(0.5, s.attack) * s.health) : 0), 0);
+    const pt = o => (S[o].income > 0 ? economy(S[o].income, S[o].ore) : 0);
+    const clip = x => Math.max(0, Math.min(1, x));
+    const quality = (w, l) => {
+        const hp = clip(S[w].hp / 160);
+        const econ = clip((1 + (pt(w) - pt(l)) / (pt(w) + pt(l) + 1e-9)) / 2);
+        const board = clip(worth(w) / (worth(w) + worth(l) + 1e-9));
+        const safe = 1 - clip(worth(l) / (Math.max(0, S[w].hp) + worth(w) + 1));
+        const bank = clip(S[w].money / (3 * Math.max(1, S[w].income)));
+        return (hp + econ + board + safe + bank) / 5;
+    };
+    if (S.over === side) return 0.6 + 0.4 * quality(side, opp);
+    if (S.over === opp) return 0.4 - 0.4 * quality(opp, side);
+    return 0.5 + 0.1 * (quality(side, opp) - quality(opp, side));
+}
+
+/** End-of-game differences, `side` minus its opponent, for each margin component (any outcome). */
+export function marginParts(S, side) {
+    const opp = side === 'red' ? 'blue' : 'red';
+    const worth = o => S[o].ships.reduce((a, s) => a + (s.health > 0 ? Math.sqrt(Math.max(0.5, s.attack) * s.health) : 0), 0);
+    const pt = o => (S[o].income > 0 ? economy(S[o].income, S[o].ore) : 0);
+    const homeAtk = o => S[o].ships.reduce((a, s) => a + (s.health > 0 && s.sector === (o === 'blue' ? 1 : 7) ? s.attack : 0), 0);
+    return {
+        hp: (Math.max(0, S[side].hp) - Math.max(0, S[opp].hp)) / 160,
+        econ: (pt(side) - pt(opp)) / (pt(side) + pt(opp) + 1e-9),
+        income: S[side].income - S[opp].income,
+        ore: (S[side].ore - S[opp].ore) / 100,
+        board: (worth(side) - worth(opp)) / (worth(side) + worth(opp) + 1e-9),
+        home: (homeAtk(side) - homeAtk(opp)) / 10,
+        bank: (S[side].money - S[opp].money) / 10,
+        turns: S.turn,
     };
 }
 

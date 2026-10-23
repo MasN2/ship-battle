@@ -64,6 +64,18 @@ if (!isMainThread) {
     const distinct = new Set(results.map(r => JSON.stringify(r.picks))).size;
     console.log(`${n} games (${distinct} distinct), ${aLabel} vs ${bLabel}, ${((Date.now() - t0) / 1000).toFixed(1)}s`);
     console.log(`A wins ${count(r => r.aWon)}  B wins ${count(r => r.bWon)}  timeouts ${count(r => r.winner === 'timeout')}  crashes ${count(r => r.winner === 'crash')}`);
+    {
+        // margin score (tools/match.js marginScore): wins 0.6-1, losses 0-0.4, quality inside
+        const m = results.map(r => r.margin);
+        const mean = m.reduce((a, b) => a + b, 0) / n;
+        const se = Math.sqrt(m.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, n - 1) / n);
+        const w = results.map(r => (r.aWon ? 1 : r.bWon ? 0 : 0.5));
+        const wm = w.reduce((a, b) => a + b, 0) / n;
+        const wse = Math.sqrt(w.reduce((a, b) => a + (b - wm) ** 2, 0) / Math.max(1, n - 1) / n);
+        const snr = xs => { const mu = xs.reduce((a, b) => a + b, 0) / xs.length; const sd = Math.sqrt(xs.reduce((a, b) => a + (b - mu) ** 2, 0) / Math.max(1, xs.length - 1)); return `${mu.toFixed(2)} (${(mu / (sd / Math.sqrt(xs.length) || 1)).toFixed(1)}σ)`; };
+        console.log(`A minus B at game end: ${Object.keys(results[0].parts).filter(k => k !== 'turns').map(k => `${k} ${snr(results.map(r => r.parts[k]))}`).join('  ')}`);
+        console.log(`A score: wins ${(100 * wm).toFixed(1)}% ±${(100 * wse).toFixed(1)}   margin ${(100 * mean).toFixed(1)} ±${(100 * se).toFixed(1)}  (50 = even; ± is one standard error)`);
+    }
     console.log(`A as red: ${count(r => r.aSide === 'red' && r.aWon)}/${count(r => r.aSide === 'red')}   A as blue: ${count(r => r.aSide === 'blue' && r.aWon)}/${count(r => r.aSide === 'blue')}`);
     const aWins = results.filter(r => r.aWon);
     const bWins = results.filter(r => r.bWon);
