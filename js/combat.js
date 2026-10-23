@@ -6,6 +6,7 @@ import { sfx } from './audio.js';
 import { animateAttacker, shootLaser, showDamageNumber, flashBase, clearRectCache } from './visuals.js';
 import { render, renderDeployBar, renderShortcutBar, updateBase } from './render.js';
 import { pickAIR } from './ai.js';
+import { chooseGrandmaster } from './grandmaster.js';
 import { HEART_SVG } from './config.js'; 
 
 function updateHealthDisplay(target, isBase, enemyOwner) {
@@ -342,6 +343,9 @@ export async function runTurn(playerPick = 0) {
         aiPick = parseInt(await getNextMessage(), 10);
     } else if (state.red.ai === "daily") {
         aiPick = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37][state.turn - 1] ?? 0;
+    } else if (state.red.ai === "grandmaster") {
+        // Decided before blue's purchase below, so it never sees this turn's pick.
+        aiPick = chooseGrandmaster(state, 'red');
     }
     for (const num of state.red.priority){
         if (aiPick === undefined && canAfford('red', num)) {aiPick = num;}

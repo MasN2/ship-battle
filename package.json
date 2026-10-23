@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "Lets Node load the game's ES modules for the tools in tools/. The game itself needs no build step."
+}
