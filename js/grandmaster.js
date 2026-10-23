@@ -19,6 +19,12 @@ export const GM_DEFAULTS = {
     theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild'],
     agg: 'mean',        // how scores across their styles combine: 'mean' | 'min'
     horizon: 40,        // turns of future spending that income and ore are worth
+    // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
+    // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
+    // Lower values (3e3, 1e3) build more economy but lost in round robins.
+    winScore: 3e4,
+    incomeW: 1,         // weight on income's share of that...
+    oreW: 1,            // ...and on the ore stock's share
     hpW: 1,             // value of a point of base hp...
     fear: 40,           // ...plus fear·ln(1+hp): the last points matter most
     shipW: 1,           // value of ships on the board (√(attack·health) each)
@@ -179,10 +185,12 @@ function sideValue(S, side, cfg) {
     const me = S[side];
     const hp = Math.max(0, me.hp);
     let v = cfg.hpW * hp + cfg.fear * Math.log1p(hp);
-    // Income and ore, valued as the ship size they buy each turn over the horizon.
+    // Income and ore, valued as the ship size they buy each turn over the horizon:
+    // what the income buys at no ore, plus what the ore stock adds on top.
     const perTurn = me.income > 0 ? economy(me.income, me.ore) : 0;
+    const bare = me.income > 0 ? economy(me.income, 0) : 0;
     const horizon = Math.max(8, cfg.horizon - 0.1 * S.turn);
-    v += perTurn * horizon;
+    v += horizon * (cfg.incomeW * bare + cfg.oreW * (perTurn - bare));
     if (me.income > 0) v += me.money * (perTurn / me.income);
     let ships = 0;
     for (const s of me.ships) {
@@ -196,7 +204,8 @@ function sideValue(S, side, cfg) {
 export function evaluate(S, side, cfg) {
     const v = sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
     // Win sooner, lose later; the position still breaks ties, so a lost line keeps fighting.
-    if (S.over) return (S.over === side ? 1e6 - 1000 * S.turn : -1e6 + 1000 * S.turn) + v;
+    const W = cfg.winScore;
+    if (S.over) return (S.over === side ? W - W / 1000 * S.turn : -W + W / 1000 * S.turn) + v;
     return v;
 }
 
