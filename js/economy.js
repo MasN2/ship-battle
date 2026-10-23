@@ -47,7 +47,7 @@ export function economy(income, ore) {
 
 export function balance(income, ore){
     const target = economy(income, ore+1);
-    return cost(target, ore+1) - cost(target, ore);
+    return 1/(cost(target, ore) - cost(target, ore+1));
 }
 
 export function calcOreIncome(owner, state) {
