@@ -10,6 +10,8 @@ import { cost, economy, maxLoanFor } from './economy.js';
 import { cloneState, stepTurn, canAfford, enemyOf, SimError } from './sim.js';
 import { evolvedEval, evolvedPolicy, seedWeights } from './evolved.js';
 import { EVOLVED_WEIGHTS } from './evolved-weights.js';
+import { intuitionBias, situation } from './intuition.js';
+import { INTUITION_WEIGHTS } from './intuition-weights.js';
 
 const EVO = EVOLVED_WEIGHTS ?? seedWeights();
 
@@ -30,6 +32,8 @@ export const GM_DEFAULTS = {
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
     winScore: 3e4,
     trust: 1,           // per-turn discount on imagined wins/losses (see evaluate)
+    intuition: false,   // learned move bias (js/intuition.js): true = trained weights, or an object
+    intuitionScale: 1,  // multiplier on that bias
     leaf: 'hand',       // how a rollout's end is scored: 'hand' (sideValue) or 'evolved' (js/evolved.js)
     leafScale: 1,       // multiplier on the evolved score
     commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
@@ -406,6 +410,16 @@ export function chooseGrandmaster(state, side, opts = {}) {
     const weights = styleWeights(state, side, cfg, opts.memo);
     if (opts.weightsOut && weights) opts.weightsOut.push(...weights);
     const scored = [];
+    // Intuition: a learned glance-at-the-board bias per move (js/intuition.js), added to
+    // every line that starts with that move. cfg.intuition: true = trained weights, or a weights object.
+    const IW = cfg.intuition === true ? INTUITION_WEIGHTS : cfg.intuition || null;
+    const sit = IW ? situation(S, side) : null;
+    const biasOf = {};
+    const bias = plan => {
+        if (!IW) return 0;
+        const n = plan.saveFor ? 0 : plan.first;
+        return biasOf[n] ??= cfg.intuitionScale * intuitionBias(IW, n, S, side, sit);
+    };
     // What each of my styles would play right now, if I just followed it.
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
@@ -414,7 +428,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
         let score = -Infinity;
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
-            const s = aggregate(scores, cfg.agg, weights);
+            const s = aggregate(scores, cfg.agg, weights) + bias(plan);
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
             const pure = !plan.saveFor && plan.first === styleMove[mine];
