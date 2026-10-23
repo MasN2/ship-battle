@@ -1,77 +1,32 @@
 
-=== 2026-10-23T14:40:11.908Z 1200 duels, batch 16, lr 0.05, sigma 0.08, spike 0.5, 8 threads
-16 duels (16 decided), 0.5 min. strongest: pricey:banked 0.06, miner:breakout -0.04, econ:always -0.02, missile:always 0.02, size:incoming -0.02, skip:incoming -0.02
-32 duels (32 decided), 0.7 min. strongest: econ:failing 0.06, pricey:banked 0.06, miner:breakout -0.06, missile:enemyWave 0.05, miner:incoming -0.05, missile:always 0.05
-48 duels (48 decided), 1.1 min. strongest: miner:breakout -0.08, missile:always 0.07, miner:incoming -0.07, missile:enemyWave 0.07, pricey:banked 0.06, econ:failing 0.05
-64 duels (64 decided), 1.3 min. strongest: miner:breakout -0.11, econ:incoming -0.10, pricey:banked 0.09, missile:always 0.08, size:lethal -0.07, econ:failing 0.07
-80 duels (80 decided), 1.8 min. strongest: econ:incoming -0.15, miner:breakout -0.12, pricey:banked 0.08, armor:incoming -0.08, skip:banked -0.08, missile:enemyWave 0.07
-96 duels (96 decided), 2.1 min. strongest: econ:incoming -0.17, pricey:banked 0.16, econ:econGap 0.13, skip:banked -0.13, miner:breakout -0.12, missile:enemyWave 0.08
-112 duels (112 decided), 2.5 min. strongest: econ:incoming -0.20, econ:econGap 0.14, pricey:banked 0.13, miner:incoming -0.11, miner:breakout -0.10, skip:banked -0.08
-128 duels (128 decided), 2.9 min. strongest: missile:enemyWave 0.24, econ:incoming -0.23, miner:incoming -0.13, econ:econGap 0.12, miner:breakout -0.12, skip:incoming -0.11
-144 duels (144 decided), 3.2 min. strongest: missile:enemyWave 0.24, econ:incoming -0.19, econ:econGap 0.15, miner:always -0.14, miner:breakout -0.14, miner:incoming -0.13
-160 duels (160 decided), 3.6 min. strongest: missile:enemyWave 0.24, econ:incoming -0.22, miner:incoming -0.16, miner:always -0.15, econ:econGap 0.14, miner:breakout -0.12
-176 duels (176 decided), 4.0 min. strongest: econ:incoming -0.29, missile:enemyWave 0.25, miner:always -0.18, econ:econGap 0.17, miner:incoming -0.16, size:breakout 0.14
-192 duels (192 decided), 4.4 min. strongest: econ:incoming -0.33, missile:enemyWave 0.25, miner:always -0.21, miner:incoming -0.17, econ:econGap 0.15, miner:breakout -0.12
-208 duels (208 decided), 4.7 min. strongest: econ:incoming -0.34, missile:enemyWave 0.28, miner:always -0.23, econ:always -0.14, econ:econGap 0.14, miner:incoming -0.13
-224 duels (223 decided), 5.5 min. strongest: econ:incoming -0.32, missile:enemyWave 0.29, miner:always -0.24, econ:econGap 0.15, econ:failing 0.14, miner:breakout -0.14
-240 duels (239 decided), 5.6 min. strongest: econ:incoming -0.33, missile:enemyWave 0.27, miner:always -0.27, miner:breakout -0.20, econ:failing 0.16, miner:incoming -0.14
-256 duels (255 decided), 5.9 min. strongest: econ:incoming -0.30, miner:always -0.27, missile:enemyWave 0.22, miner:breakout -0.18, econ:failing 0.16, miner:incoming -0.14
-272 duels (271 decided), 6.2 min. strongest: econ:incoming -0.27, miner:always -0.25, missile:enemyWave 0.21, econ:failing 0.20, miner:breakout -0.20, armor:incoming 0.15
-288 duels (287 decided), 6.5 min. strongest: econ:incoming -0.30, miner:always -0.26, econ:failing 0.22, missile:enemyWave 0.21, miner:breakout -0.16, miner:incoming -0.16
-304 duels (303 decided), 6.8 min. strongest: miner:always -0.38, econ:incoming -0.33, missile:enemyWave 0.24, miner:incoming -0.18, pricey:banked 0.17, econ:failing 0.15
-320 duels (319 decided), 6.9 min. strongest: miner:always -0.36, econ:incoming -0.32, miner:incoming -0.23, missile:enemyWave 0.22, pricey:banked 0.16, econ:failing 0.15
-336 duels (335 decided), 7.1 min. strongest: miner:always -0.33, econ:incoming -0.29, miner:incoming -0.27, missile:enemyWave 0.24, pricey:banked 0.23, econ:failing 0.17
-352 duels (351 decided), 7.7 min. strongest: miner:always -0.33, econ:incoming -0.32, miner:incoming -0.29, pricey:banked 0.23, missile:enemyWave 0.19, econ:failing 0.17
-368 duels (367 decided), 8.0 min. strongest: miner:always -0.30, miner:incoming -0.28, econ:incoming -0.25, pricey:banked 0.24, missile:enemyWave 0.20, econ:failing 0.18
-384 duels (383 decided), 8.3 min. strongest: miner:always -0.34, miner:incoming -0.29, pricey:banked 0.25, econ:incoming -0.24, missile:enemyWave 0.19, econ:failing 0.17
-400 duels (398 decided), 9.0 min. strongest: miner:always -0.35, miner:incoming -0.30, pricey:banked 0.27, econ:incoming -0.21, missile:enemyWave 0.20, econ:failing 0.18
-416 duels (414 decided), 9.5 min. strongest: miner:incoming -0.33, miner:always -0.33, pricey:banked 0.27, missile:enemyWave 0.21, econ:failing 0.19, econ:incoming -0.19
-432 duels (430 decided), 10.0 min. strongest: miner:always -0.36, miner:incoming -0.26, pricey:banked 0.24, missile:enemyWave 0.22, skip:banked 0.20, econ:incoming -0.19
-448 duels (446 decided), 10.2 min. strongest: miner:always -0.38, skip:banked 0.25, miner:incoming -0.24, missile:enemyWave 0.23, pricey:banked 0.23, econ:incoming -0.18
-464 duels (462 decided), 10.8 min. strongest: miner:always -0.38, skip:banked 0.32, missile:enemyWave 0.24, pricey:banked 0.22, miner:incoming -0.22, econ:incoming -0.16
-480 duels (478 decided), 11.1 min. strongest: miner:always -0.45, skip:banked 0.31, missile:enemyWave 0.27, pricey:banked 0.23, miner:incoming -0.20, skip:incoming -0.17
-496 duels (494 decided), 11.8 min. strongest: miner:always -0.45, skip:banked 0.30, missile:enemyWave 0.26, pricey:banked 0.21, miner:incoming -0.18, skip:incoming -0.18
-512 duels (510 decided), 12.2 min. strongest: miner:always -0.49, skip:banked 0.36, missile:enemyWave 0.30, pricey:banked 0.22, skip:incoming -0.19, econ:breakout -0.18
-528 duels (526 decided), 12.6 min. strongest: miner:always -0.49, skip:banked 0.36, missile:enemyWave 0.26, pricey:banked 0.24, pricey:failing 0.22, skip:incoming -0.19
-544 duels (542 decided), 12.9 min. strongest: miner:always -0.47, skip:banked 0.38, missile:enemyWave 0.29, pricey:banked 0.25, pricey:failing 0.20, skip:incoming -0.19
-560 duels (558 decided), 13.4 min. strongest: miner:always -0.50, skip:banked 0.40, missile:enemyWave 0.30, pricey:banked 0.26, pricey:failing 0.21, size:breakout 0.19
-576 duels (574 decided), 13.8 min. strongest: miner:always -0.47, skip:banked 0.39, missile:enemyWave 0.29, skip:incoming -0.24, pricey:banked 0.23, econ:breakout -0.18
-592 duels (590 decided), 14.5 min. strongest: miner:always -0.47, skip:banked 0.35, missile:enemyWave 0.29, pricey:banked 0.27, pricey:failing 0.20, skip:incoming -0.20
-608 duels (606 decided), 15.4 min. strongest: miner:always -0.42, skip:banked 0.37, missile:enemyWave 0.28, pricey:banked 0.27, size:breakout 0.21, pricey:failing 0.20
-624 duels (622 decided), 15.9 min. strongest: miner:always -0.41, skip:banked 0.39, missile:enemyWave 0.30, pricey:banked 0.26, econ:incoming -0.23, size:breakout 0.21
-640 duels (638 decided), 16.5 min. strongest: miner:always -0.40, skip:banked 0.39, missile:enemyWave 0.30, pricey:banked 0.27, size:breakout 0.22, econ:incoming -0.21
-656 duels (654 decided), 16.9 min. strongest: skip:banked 0.42, miner:always -0.40, missile:enemyWave 0.30, pricey:banked 0.25, econ:always 0.22, econ:incoming -0.21
-672 duels (669 decided), 17.7 min. strongest: skip:banked 0.43, miner:always -0.39, missile:enemyWave 0.32, pricey:banked 0.29, pricey:failing 0.23, econ:always 0.20
-688 duels (685 decided), 18.2 min. strongest: skip:banked 0.42, miner:always -0.37, pricey:banked 0.32, missile:enemyWave 0.32, pricey:failing 0.26, econ:incoming -0.23
-704 duels (701 decided), 18.5 min. strongest: skip:banked 0.43, miner:always -0.37, missile:enemyWave 0.32, pricey:banked 0.31, econ:incoming -0.24, pricey:failing 0.21
-720 duels (717 decided), 18.9 min. strongest: skip:banked 0.44, miner:always -0.37, missile:enemyWave 0.34, pricey:banked 0.31, econ:incoming -0.24, pricey:failing 0.18
-736 duels (733 decided), 19.3 min. strongest: skip:banked 0.44, miner:always -0.35, missile:enemyWave 0.35, pricey:banked 0.30, econ:incoming -0.21, skip:incoming -0.18
-752 duels (749 decided), 19.6 min. strongest: skip:banked 0.47, missile:enemyWave 0.36, miner:always -0.35, pricey:banked 0.29, skip:incoming -0.24, econ:incoming -0.21
-768 duels (765 decided), 19.9 min. strongest: skip:banked 0.48, miner:always -0.36, missile:enemyWave 0.35, pricey:banked 0.29, skip:incoming -0.24, econ:always 0.21
-784 duels (781 decided), 20.0 min. strongest: skip:banked 0.46, miner:always -0.37, missile:enemyWave 0.33, pricey:banked 0.33, skip:incoming -0.23, econ:always 0.23
-800 duels (797 decided), 20.4 min. strongest: skip:banked 0.47, miner:always -0.35, missile:enemyWave 0.34, pricey:banked 0.33, skip:incoming -0.23, econ:always 0.20
-816 duels (812 decided), 21.0 min. strongest: skip:banked 0.47, pricey:banked 0.33, miner:always -0.33, missile:enemyWave 0.32, econ:always 0.27, econ:breakout -0.17
-832 duels (828 decided), 21.2 min. strongest: skip:banked 0.47, miner:always -0.34, missile:enemyWave 0.33, pricey:banked 0.33, econ:always 0.27, econ:breakout -0.20
-848 duels (844 decided), 21.6 min. strongest: skip:banked 0.47, miner:always -0.34, missile:enemyWave 0.34, pricey:banked 0.34, econ:always 0.28, econ:incoming -0.20
-864 duels (860 decided), 21.9 min. strongest: skip:banked 0.46, pricey:banked 0.33, missile:enemyWave 0.33, miner:always -0.33, econ:always 0.30, econ:incoming -0.23
-880 duels (875 decided), 22.6 min. strongest: skip:banked 0.45, miner:always -0.36, pricey:banked 0.34, econ:always 0.33, missile:enemyWave 0.32, skip:always 0.22
-896 duels (891 decided), 22.8 min. strongest: skip:banked 0.46, miner:always -0.39, pricey:banked 0.37, econ:always 0.36, missile:enemyWave 0.32, skip:always 0.25
-912 duels (906 decided), 23.3 min. strongest: miner:always -0.40, skip:banked 0.40, pricey:banked 0.39, econ:always 0.33, missile:enemyWave 0.33, econ:incoming -0.27
-928 duels (922 decided), 23.6 min. strongest: pricey:banked 0.45, skip:banked 0.43, miner:always -0.38, econ:always 0.35, missile:enemyWave 0.34, skip:always 0.25
-944 duels (938 decided), 24.1 min. strongest: skip:banked 0.46, pricey:banked 0.44, miner:always -0.39, missile:enemyWave 0.38, econ:always 0.37, skip:always 0.25
-960 duels (954 decided), 24.5 min. strongest: pricey:banked 0.51, skip:banked 0.47, miner:always -0.38, missile:enemyWave 0.37, econ:always 0.37, missile:always -0.28
-976 duels (970 decided), 25.3 min. strongest: pricey:banked 0.51, skip:banked 0.48, missile:enemyWave 0.38, miner:always -0.38, econ:always 0.37, skip:always 0.29
-992 duels (986 decided), 25.6 min. strongest: pricey:banked 0.49, skip:banked 0.47, missile:enemyWave 0.42, miner:always -0.38, econ:always 0.37, missile:always -0.31
-1008 duels (1002 decided), 26.1 min. strongest: pricey:banked 0.49, skip:banked 0.48, missile:enemyWave 0.39, econ:always 0.38, miner:always -0.35, missile:always -0.31
-1024 duels (1018 decided), 26.6 min. strongest: pricey:banked 0.49, skip:banked 0.47, miner:always -0.41, missile:enemyWave 0.39, econ:always 0.35, econ:incoming -0.32
-1040 duels (1034 decided), 26.8 min. strongest: pricey:banked 0.48, skip:banked 0.47, miner:always -0.41, missile:enemyWave 0.37, econ:always 0.34, missile:always -0.32
-1056 duels (1050 decided), 27.3 min. strongest: pricey:banked 0.56, skip:banked 0.47, miner:always -0.39, missile:enemyWave 0.39, econ:always 0.35, missile:always -0.34
-1072 duels (1065 decided), 28.0 min. strongest: pricey:banked 0.63, skip:banked 0.48, miner:always -0.40, missile:enemyWave 0.39, missile:always -0.36, econ:always 0.35
-1088 duels (1081 decided), 28.6 min. strongest: pricey:banked 0.64, skip:banked 0.47, miner:always -0.41, missile:always -0.36, missile:enemyWave 0.33, econ:incoming -0.32
-1104 duels (1097 decided), 29.0 min. strongest: pricey:banked 0.68, skip:banked 0.48, miner:always -0.42, missile:always -0.39, econ:always 0.34, missile:enemyWave 0.34
-1120 duels (1113 decided), 29.5 min. strongest: pricey:banked 0.68, skip:banked 0.50, miner:always -0.40, missile:always -0.39, missile:enemyWave 0.35, econ:incoming -0.33
-1136 duels (1129 decided), 30.5 min. strongest: pricey:banked 0.65, skip:banked 0.54, missile:always -0.40, missile:enemyWave 0.39, miner:always -0.39, econ:always 0.34
-1152 duels (1145 decided), 30.9 min. strongest: pricey:banked 0.67, skip:banked 0.54, missile:enemyWave 0.43, missile:always -0.39, miner:always -0.38, econ:always 0.36
-1168 duels (1161 decided), 32.0 min. strongest: pricey:banked 0.66, skip:banked 0.53, missile:enemyWave 0.41, missile:always -0.41, econ:always 0.38, miner:incoming -0.35
-1184 duels (1177 decided), 32.9 min. strongest: pricey:banked 0.64, skip:banked 0.51, missile:enemyWave 0.43, missile:always -0.42, econ:always 0.38, miner:incoming -0.37
-1200 duels (1193 decided), 33.4 min. strongest: pricey:banked 0.63, skip:banked 0.51, missile:enemyWave 0.44, econ:always 0.43, missile:always -0.41, miner:incoming -0.38
+=== 2026-10-23T17:31:48.336Z 400 duels, batch 16, lr 0.5, sigma 0.02, spike 0.1, 8 threads
+16 pairs (7 split), learner vs monolith 20% (recent batch 20%), 3.3 min. strongest: miner:breakout 0.07, size:incoming 0.07, miner:always -0.06, skip:banked 0.04, missile:always 0.03, size:lethal -0.03
+32 pairs (14 split), learner vs monolith 29% (recent batch 38%), 7.1 min. strongest: size:lethal 0.10, missile:failing -0.07, pricey:banked 0.07, miner:incoming -0.07, size:breakout 0.07, miner:breakout 0.06
+48 pairs (19 split), learner vs monolith 24% (recent batch 16%), 9.0 min. strongest: size:lethal 0.13, pricey:banked 0.10, miner:breakout 0.09, econ:breakout -0.08, econ:econGap -0.07, missile:failing -0.07
+64 pairs (23 split), learner vs monolith 26% (recent batch 31%), 11.2 min. strongest: missile:failing -0.15, size:lethal 0.13, econ:econGap -0.11, size:incoming 0.11, missile:enemyWave -0.09, miner:always -0.08
+80 pairs (33 split), learner vs monolith 28% (recent batch 38%), 13.1 min. strongest: econ:econGap -0.18, missile:failing -0.12, miner:breakout 0.12, econ:incoming 0.11, size:lethal 0.11, skip:always -0.11
+96 pairs (36 split), learner vs monolith 26% (recent batch 16%), 15.2 min. strongest: econ:econGap -0.19, miner:breakout 0.13, armor:incoming -0.12, skip:always -0.11, size:lethal 0.11, skip:banked 0.10
+112 pairs (44 split), learner vs monolith 27% (recent batch 31%), 17.2 min. strongest: econ:econGap -0.20, skip:always -0.18, size:lethal 0.17, armor:incoming -0.13, miner:breakout 0.11, miner:always -0.11
+128 pairs (47 split), learner vs monolith 26% (recent batch 16%), 19.2 min. strongest: size:lethal 0.17, missile:enemyWave -0.16, econ:econGap -0.16, armor:incoming -0.16, skip:always -0.15, miner:breakout 0.13
+144 pairs (50 split), learner vs monolith 24% (recent batch 9%), 21.6 min. strongest: size:lethal 0.18, missile:enemyWave -0.18, armor:incoming -0.18, econ:econGap -0.17, skip:always -0.14, miner:breakout 0.14
+160 pairs (53 split), learner vs monolith 23% (recent batch 11%), 23.9 min. strongest: size:lethal 0.18, econ:econGap -0.18, missile:enemyWave -0.18, armor:incoming -0.18, skip:always -0.16, econ:incoming 0.15
+176 pairs (58 split), learner vs monolith 24% (recent batch 34%), 26.0 min. strongest: armor:incoming -0.25, size:lethal 0.21, skip:always -0.19, econ:econGap -0.18, skip:incoming -0.16, miner:incoming -0.14
+192 pairs (60 split), learner vs monolith 24% (recent batch 25%), 27.9 min. strongest: armor:incoming -0.24, skip:always -0.21, size:lethal 0.20, econ:econGap -0.18, skip:incoming -0.16, econ:incoming 0.14
+208 pairs (66 split), learner vs monolith 24% (recent batch 31%), 29.6 min. strongest: armor:incoming -0.24, skip:always -0.21, miner:always -0.18, econ:econGap -0.16, size:lethal 0.16, skip:incoming -0.14
+224 pairs (71 split), learner vs monolith 26% (recent batch 47%), 31.4 min. strongest: armor:incoming -0.28, miner:always -0.19, skip:always -0.18, size:lethal 0.17, econ:econGap -0.15, pricey:banked 0.14
+240 pairs (75 split), learner vs monolith 27% (recent batch 44%), 33.2 min. strongest: armor:incoming -0.23, miner:always -0.23, pricey:failing 0.22, econ:econGap -0.18, skip:always -0.16, pricey:banked 0.16
+256 pairs (76 split), learner vs monolith 28% (recent batch 34%), 35.0 min. strongest: armor:incoming -0.24, miner:always -0.24, pricey:failing 0.21, econ:econGap -0.16, size:lethal 0.15, skip:always -0.15
+272 pairs (83 split), learner vs monolith 28% (recent batch 41%), 36.8 min. strongest: armor:incoming -0.21, skip:always -0.20, miner:always -0.19, pricey:failing 0.17, econ:econGap -0.17, econ:incoming 0.14
+288 pairs (86 split), learner vs monolith 28% (recent batch 28%), 38.4 min. strongest: skip:always -0.20, pricey:failing 0.19, armor:incoming -0.19, econ:econGap -0.15, econ:incoming 0.15, miner:always -0.15
+304 pairs (88 split), learner vs monolith 28% (recent batch 25%), 40.2 min. strongest: miner:always -0.27, armor:incoming -0.21, pricey:failing 0.19, skip:always -0.18, econ:incoming 0.16, econ:econGap -0.14
+320 pairs (92 split), learner vs monolith 29% (recent batch 44%), 41.6 min. strongest: miner:always -0.25, armor:incoming -0.25, skip:always -0.20, pricey:failing 0.15, econ:incoming 0.15, missile:always -0.14
+336 pairs (98 split), learner vs monolith 30% (recent batch 50%), 43.4 min. strongest: miner:always -0.38, armor:incoming -0.24, skip:always -0.20, econ:incoming 0.20, size:lethal 0.19, pricey:failing 0.15
+352 pairs (100 split), learner vs monolith 30% (recent batch 31%), 45.3 min. strongest: miner:always -0.39, armor:incoming -0.24, skip:always -0.21, econ:incoming 0.19, size:lethal 0.17, skip:incoming -0.14
+368 pairs (103 split), learner vs monolith 30% (recent batch 34%), 47.2 min. strongest: miner:always -0.41, econ:incoming 0.28, armor:incoming -0.25, skip:always -0.23, size:lethal 0.16, size:breakout 0.14
+384 pairs (104 split), learner vs monolith 31% (recent batch 47%), 48.9 min. strongest: miner:always -0.44, econ:incoming 0.27, armor:incoming -0.25, skip:always -0.23, size:lethal 0.14, size:breakout 0.13
+400 pairs (105 split), learner vs monolith 31% (recent batch 41%), 50.6 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
+
+=== 2026-10-23T18:25:50.826Z 48 duels, batch 16, lr 0, sigma 0, spike 0, 8 threads
+16 pairs (0 split), learner vs monolith 25% (recent batch 25%), 1.6 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
+32 pairs (0 split), learner vs monolith 28% (recent batch 31%), 3.2 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
+48 pairs (0 split), learner vs monolith 25% (recent batch 19%), 5.0 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
