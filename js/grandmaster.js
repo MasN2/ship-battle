@@ -8,6 +8,10 @@
 import { SHIP_NUMS, TEMPLATES } from './templates.js';
 import { cost, economy, maxLoanFor } from './economy.js';
 import { cloneState, stepTurn, canAfford, enemyOf, SimError } from './sim.js';
+import { evolvedEval, evolvedPolicy, seedWeights } from './evolved.js';
+import { EVOLVED_WEIGHTS } from './evolved-weights.js';
+
+const EVO = EVOLVED_WEIGHTS ?? seedWeights();
 
 export const GM_DEFAULTS = {
     depth: 30,          // turns each line is played forward
@@ -26,6 +30,8 @@ export const GM_DEFAULTS = {
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
     winScore: 3e4,
     trust: 1,           // per-turn discount on imagined wins/losses (see evaluate)
+    leaf: 'hand',       // how a rollout's end is scored: 'hand' (sideValue) or 'evolved' (js/evolved.js)
+    leafScale: 1,       // multiplier on the evolved score
     commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
     observe: false,     // weight opponent styles by how well they predicted real moves (styleWeights)
     observeWindow: 10,  // turns of the opponent's history considered
@@ -233,8 +239,12 @@ function snowballer(buffer) {
     };
 }
 
+const evo = evolvedPolicy(EVO);
+
 export const POLICIES = {
     wild,
+    // the AI-vs-AI evolved one-turn bot (js/evolved.js), as an imagined player
+    evo: (S, side) => evo(S, side),
     spend: greedy,
     smart,
     econ: investor(INCOME_GAIN, 40),
@@ -269,7 +279,9 @@ function sideValue(S, side, cfg) {
 }
 
 export function evaluate(S, side, cfg, ahead = 0) {
-    const v = sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
+    const v = cfg.leaf === 'evolved' && !S.over
+        ? cfg.leafScale * evolvedEval(EVO, S, side)
+        : sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
     // Win sooner, lose later; the position still breaks ties, so a lost line keeps fighting.
     // A win `ahead` turns into an imagined future counts trust^ahead as much: the scripted
     // opponents in rollouts defend worse than people, so far-off wins are mostly rumour, and
