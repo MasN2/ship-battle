@@ -15,8 +15,10 @@ export const GM_DEFAULTS = {
     // Follow-up styles tried for itself after the move (the best one counts), and the
     // opponent styles each line is tested against. 'wild' is the Normal AI's random pick;
     // listing it three times tests three different random opponents.
-    mine: ['spend', 'smart', 'econ', 'mine'],
-    theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild'],
+    // 'turtle'/'value' (traders, then Frigate-style fighters stacking at home for a counterwave)
+    // came from a playtest loss; adding them took it from 68 to 96 wins vs that build order.
+    mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value'],
+    theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value'],
     agg: 'mean',        // how scores across their styles combine: 'mean' | 'min'
     horizon: 40,        // turns of future spending that income and ore are worth
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
@@ -75,10 +77,10 @@ function threatened(S, side, reach) {
 }
 
 /** Rollout policy factory: save for the best `gain` per cost, fight when pressed. */
-function investor(gain, minHp) {
+function investor(gain, minHp, fallback = greedy) {
     return (S, side, cfg) => {
         const me = S[side];
-        if (me.hp < minHp || threatened(S, side, 3)) return greedy(S, side, cfg);
+        if (me.hp < minHp || threatened(S, side, 3)) return fallback(S, side, cfg);
         let best = 0;
         let bestRate = 0;
         for (const n of shipMenu(S, side, cfg)) {
@@ -87,9 +89,26 @@ function investor(gain, minHp) {
             const rate = g / cost(n, me.ore);
             if (rate > bestRate) { bestRate = rate; best = n; }
         }
-        if (!best) return greedy(S, side, cfg);
+        if (!best) return fallback(S, side, cfg);
         return cost(best, me.ore) <= me.money ? best : 0;
     };
+}
+
+/** Rollout policy: the sturdiest fighter affordable without a loan (most attack × health),
+    e.g. Frigates over Missiles. Bought every turn, these pile up inside the home sector,
+    where they can't be targeted, and roll out as a counterwave. */
+function value(S, side, cfg) {
+    const me = S[side];
+    let best = 0;
+    let bestV = 0;
+    for (const n of shipMenu(S, side, cfg)) {
+        if (cost(n, me.ore) > me.money) break;
+        if (INCOME_GAIN(n)) continue;
+        const t = TEMPLATES[n];
+        const v = t.attack * t.health;
+        if (v >= bestV) { bestV = v; best = n; }
+    }
+    return best;
 }
 
 /** What the enemy fleet looks like, for sizing up counters. */
@@ -176,6 +195,10 @@ export const POLICIES = {
     spend: greedy,
     smart,
     econ: investor(INCOME_GAIN, 40),
+    value,
+    // Traders while nothing is near, then the sturdiest fighter every turn: the human
+    // turtle-and-counterwave line that beat it in playtesting.
+    turtle: investor(INCOME_GAIN, 40, value),
     mine: investor(ORE_GAIN, 40),
     big,
     skip: () => 0,

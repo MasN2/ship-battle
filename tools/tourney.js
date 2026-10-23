@@ -12,7 +12,7 @@
 
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import os from 'os';
-import { playGame } from './match.js';
+import { playGame, workerCount } from './match.js';
 
 if (!isMainThread) {
     const { jobs, aName, bName, aCfg, bCfg, maxTurns, eps, open } = workerData;
@@ -39,7 +39,7 @@ if (!isMainThread) {
     const games = Number(gamesArg);
 
     const jobs = Array.from({ length: games }, (_, i) => ({ seed: seed0 * 7919 + i, aSide: i % 2 === 0 ? 'red' : 'blue' }));
-    const threads = Math.max(1, Math.min(games, Number(process.env.SB_THREADS) || Math.floor(os.cpus().length * 0.75)));
+    const threads = workerCount(games);
     const chunks = Array.from({ length: threads }, () => []);
     jobs.forEach((j, i) => chunks[i % threads].push(j));
     const t0 = Date.now();

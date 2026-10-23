@@ -8,7 +8,7 @@
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import fs from 'fs';
 import os from 'os';
-import { playGame } from './match.js';
+import { playGame, workerCount } from './match.js';
 
 if (!isMainThread) {
     const { jobs, configs, maxTurns, open } = workerData;
@@ -37,7 +37,7 @@ if (!isMainThread) {
     }
     // longest-first isn't knowable; shuffle so slow pairs spread across threads
     for (let a = jobs.length - 1; a > 0; a--) { const b = (a * 7919 + 13) % (a + 1); [jobs[a], jobs[b]] = [jobs[b], jobs[a]]; }
-    const threads = Math.max(1, Math.min(jobs.length, Number(process.env.SB_THREADS) || Math.floor(os.cpus().length * 0.75)));
+    const threads = workerCount(jobs.length);
     const chunks = Array.from({ length: threads }, () => []);
     jobs.forEach((j, n) => chunks[n % threads].push(j));
     const t0 = Date.now();

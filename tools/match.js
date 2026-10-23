@@ -1,6 +1,7 @@
 // One bot-vs-bot game on the headless rules, plus the bot roster. Shared by tourney.js
 // and roundrobin.js.
 
+import os from 'os';
 import { newSimState, stepTurn, SimError, canAfford } from '../js/sim.js';
 import { mulberry32 } from './rng.js';
 import { normalBot, scriptBot, greedEconBot, grandmasterBot, HUMAN_ORDERS } from './bots.js';
@@ -26,6 +27,8 @@ export function makeBot(name, cfg, eps) {
         case 'econ': return noisy(greedEconBot, eps);
         case 'alice': return noisy(scriptBot(HUMAN_ORDERS.alice_blue), eps);
         case 'alice-red': return noisy(scriptBot(HUMAN_ORDERS.alice_red), eps);
+        // the user's winning playtest order, then the turtle style it was playing
+        case 'user1': return noisy(scriptBot(HUMAN_ORDERS.user1_blue, (S, side, rng) => POLICIES.turtle(S, side, GM_DEFAULTS, rng)), eps);
         default:
             // pol:<name> plays one of grandmaster's rollout styles on its own (spend, smart, econ, mine, big)
             if (name.startsWith('pol:') && POLICIES[name.slice(4)]) {
@@ -84,4 +87,12 @@ export function playGame(seed, aName, bName, aCfg, bCfg, aSide, maxTurns, eps, o
         maxMs: { a: maxMs[aSide], b: maxMs[aSide === 'red' ? 'blue' : 'red'] },
         end: { blue: { hp: S.blue.hp, income: S.blue.income, ore: S.blue.ore }, red: { hp: S.red.hp, income: S.red.income, ore: S.red.ore } },
     };
+}
+
+/** Worker threads for the parallel tools: a quarter of the cores by default so the machine
+    stays cool and usable (SB_THREADS=n overrides), and the process drops to below-normal priority. */
+export function workerCount(cap = Infinity) {
+    try { os.setPriority(0, os.constants.priority.PRIORITY_BELOW_NORMAL); } catch { /* not allowed here */ }
+    const want = Number(process.env.SB_THREADS) || Math.max(1, Math.floor(os.cpus().length / 4));
+    return Math.max(1, Math.min(cap, want));
 }

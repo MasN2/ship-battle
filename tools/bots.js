@@ -68,3 +68,8 @@ export const HUMAN_ORDERS = {
     alice_blue: [2, 3, 3, 3, 3, 3, 0, 0, 7, 0, 7, 0, 7, 0, 7, 5, 5, 5, 7, 4, 7, 3, 9, 0, 9, 3, 9, 9, 7, 7, 7, 7, 0, 21],
     alice_red: [0, 3, 0, 7, 0, 0, 1, 8, 1, 2, 1, 3, 1, 7, 0, 7, 3, 6, 0, 7, 0, 7, 7, 0, 8, 7, 7, 8, 8, 5, 5, 10, 8, 11, 7, 7, 12, 4, 12, 7, 6, 14, 7, 21, 16, 14, 16],
 };
+
+// Playtest 2026-10-23: the user beat grandmaster (as red) with this order: three traders,
+// then Frigates stacked in the home sector, then the counterwave. (Red's moves are also kept.)
+HUMAN_ORDERS.user1_blue = [1, 3, 0, 0, 7, 0, 0, 7, 0, 7, 1, 4, 4, 4, 4, 4, 6, 4, 4, 4, 4, 4, 4, 7, 4, 4, 4];
+HUMAN_ORDERS.user1_red_gm = [0, 0, 0, 0, 8, 3, 2, 2, 4, 4, 0, 3, 3, 0, 0, 7, 0, 3, 0, 7, 1, 4, 5, 5, 4, 4, 4];
