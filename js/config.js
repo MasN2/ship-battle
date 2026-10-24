@@ -70,6 +70,8 @@ const c10tutorial = {
     6: "Once we fend off these destroyers, we'll challenge the prime masters and steal their technology!",
 }
 
+export const GM_VERSION = '1.2';
+
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
     campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [83, 0], tutorial: c2tutorial},
@@ -86,10 +88,13 @@ export const DIFFICULTIES = {
     tricky: { label: 'Tricky', incomeMult: 4, oreMult: 1, oreDelay: 3 / 16, armorGain: 0.04, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
     visionary: { label: 'Visionary', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
     // No handicaps: same base, income and ore as Normal. The edge is all in js/grandmaster.js.
-    grandmaster: { label: 'Grandmaster', ai: 'grandmaster' },
+    // The version is in the label (and so on the red command card in screenshots); bump it
+    // whenever default play changes, so a report can be matched to the AI that played it.
+    // v1.0 first release · v1.1 winScore 3e4 · v1.2 turtle/value styles
+    grandmaster: { label: `Grandmaster v${GM_VERSION}`, ai: 'grandmaster' },
     // Playtest variant: distrusts imagined wins that are far off, so it invests more when a
     // win isn't close (gmCfg overrides GM_DEFAULTS in js/grandmaster.js).
-    grandmasterBeta: { label: 'Grandmaster β (testing)', ai: 'grandmaster', gmCfg: { trust: 0.9 } },
+    grandmasterBeta: { label: `Grandmaster β v${GM_VERSION}β`, ai: 'grandmaster', gmCfg: { trust: 0.9 } },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };
