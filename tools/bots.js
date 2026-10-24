@@ -83,3 +83,7 @@ HUMAN_ORDERS.user2_red_gm = [0, 0, 0, 0, 8, 3, 2, 0, 1, 3, 7, 3, 0, 0, 7, 0, 2, 
 // built from home). Only an economy opening beats this order in replays.
 HUMAN_ORDERS.user4_blue = [1, 3, 0, 0, 7, 0, 0, 7, 4, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2];
 HUMAN_ORDERS.user4_red_gmb = [0, 0, 2, 4, 2, 4, 0, 1, 3, 5, 0, 0, 7, 0, 0, 7, 1, 7, 0, 5, 5, 5, 5, 4, 4, 4, 4];
+
+// Playtest 5 (2026-10-24): user beat Grandmaster β on turn 26 with traders then Frigate spam again.
+HUMAN_ORDERS.user5_blue = [1, 3, 0, 0, 7, 0, 0, 7, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3];
+HUMAN_ORDERS.user5_red_gmb = [0, 0, 2, 4, 1, 1, 3, 4, 3, 5, 0, 7, 0, 0, 7, 0, 3, 3, 4, 5, 5, 5, 5, 2, 4, 4];

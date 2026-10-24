@@ -1,8 +1,9 @@
 // Paired probes: grandmaster variants vs the default grandmaster, each compared seed by seed
 // with the default playing the same seed, so the luck of the starting position cancels out.
 //   node tools/probe.js '[{"fear":20},{"advanceW":0}]' [games=80] [--open 2] [--max 120] [--seed 7919]
-// For every variant: win rate and end-of-game base hp difference (the strongest signal found),
-// each as the per-seed change vs the control, ± one paired standard error.
+// For every variant: win rate, end-of-game base hp difference (the strongest signal found) and a
+// survival score (a loss on turn 60 counts like a win), each as the per-seed change vs the
+// control, ± one paired standard error, plus how long its losses lasted.
 
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import { playGame, workerCount } from './match.js';
@@ -10,7 +11,11 @@ import { playGame, workerCount } from './match.js';
 if (!isMainThread) {
     parentPort.postMessage(workerData.jobs.map(j => {
         const r = playGame(j.seed, 'gm', 'gm', j.cfg, null, j.aSide, j.maxTurns, 0, j.open);
-        return { v: j.v, seed: j.seed, win: r.aWon ? 1 : r.bWon ? 0 : 0.5, hp: r.parts.hp };
+        // survival score: a win is 0.75 + up to 0.25 for base hp left; a loss is 0.75 × turns
+        // survived / 60 (so losing on turn 60 counts like winning); surviving to the cap is 0.75
+        const hpLeft = Math.max(0, Math.min(1, (r.end[j.aSide].hp) / 160));
+        const surv = r.aWon ? 0.75 + 0.25 * hpLeft : r.bWon ? 0.75 * Math.min(1, r.turns / 60) : 0.75;
+        return { v: j.v, seed: j.seed, win: r.aWon ? 1 : r.bWon ? 0 : 0.5, hp: r.parts.hp, surv, turns: r.turns, lost: r.bWon };
     }));
 } else {
     const args = process.argv.slice(2);
@@ -41,6 +46,11 @@ if (!isMainThread) {
         const seeds = Object.keys(by[v]);
         const [dw, sw] = stat(seeds.map(s => by[v][s].win - by[0][s].win));
         const [dh, sh] = stat(seeds.map(s => by[v][s].hp - by[0][s].hp));
+        const [ds, ss] = stat(seeds.map(s => by[v][s].surv - by[0][s].surv));
+        const lossTurns = seeds.filter(s => by[v][s].lost).map(s => by[v][s].turns);
+        const ctlLossTurns = seeds.filter(s => by[0][s].lost).map(s => by[0][s].turns);
+        const avg = xs => (xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(0) : '-');
+        console.log(`${''.padEnd(24)} survival ${ds >= 0 ? '+' : ''}${(100 * ds).toFixed(1)} ±${(100 * ss).toFixed(1)} (${(ds / (ss || 1)).toFixed(1)}σ)   its losses last ${avg(lossTurns)} turns (control's ${avg(ctlLossTurns)})`);
         console.log(`${JSON.stringify(variants[v]).padEnd(24)} wins ${dw >= 0 ? '+' : ''}${(100 * dw).toFixed(1)} ±${(100 * sw).toFixed(1)} pts (${(dw / (sw || 1)).toFixed(1)}σ)   hp ${dh >= 0 ? '+' : ''}${dh.toFixed(3)} ±${sh.toFixed(3)} (${(dh / (sh || 1)).toFixed(1)}σ)`);
     }
 }

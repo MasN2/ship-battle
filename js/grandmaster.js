@@ -25,7 +25,8 @@ export const GM_DEFAULTS = {
     // came from a playtest loss; adding them took it from 68 to 96 wins vs that build order.
     mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value'],
     theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value'],
-    agg: 'mean',        // how scores across their styles combine: 'mean' | 'cautious' | 'min'
+    agg: 'mean',        // how scores across their styles combine: 'mean' | 'cautious' | 'min' | 'risk'
+    risk: 0.5,          // for agg 'risk': how much the spread across opponent styles counts against a move
     horizon: 40,        // turns of future spending that income and ore are worth
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
@@ -35,7 +36,10 @@ export const GM_DEFAULTS = {
     opening: null,      // e.g. { style: 'turtle', turns: 8 }: play that style first (see chooseGrandmaster)
     intuition: false,   // learned move bias (js/intuition.js): true = trained weights, or an object
     intuitionScale: 1,  // multiplier on that bias
-    leaf: 'hand',       // how a rollout's end is scored: 'hand' (sideValue) or 'evolved' (js/evolved.js)
+    leaf: 'hand',       // how a rollout's end is scored: 'hand' (sideValue), 'evolved' (js/evolved.js),
+                        // or 'resolve' (play the board out with no purchases first, see resolveBoard)
+    resolveTurns: 25,   // for leaf 'resolve': turns the board gets to play out
+    resolveWin: 0.5,    // ...and how much a resolution that ends the game counts, as a share of winScore
     leafScale: 1,       // multiplier on the evolved score
     commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
     observe: false,     // weight opponent styles by how well they predicted real moves (styleWeights)
@@ -283,7 +287,29 @@ function sideValue(S, side, cfg) {
     return v + cfg.shipW * ships;
 }
 
+/**
+ * Board resolution (quiescence): freeze all purchases and let the ships on the board march and
+ * fight it out, so a position isn't judged mid-fight. Shows whether an attack is about to feed a
+ * counterwave. Returns the resolved state (both sides skipping for up to `turns` turns, or until
+ * the board is empty).
+ */
+function resolveBoard(S, turns) {
+    const T = cloneState(S);
+    for (let k = 0; k < turns && !T.over; k++) {
+        if (!T.blue.ships.length && !T.red.ships.length) break;
+        stepTurn(T, 0, 0);
+    }
+    return T;
+}
+
 export function evaluate(S, side, cfg, ahead = 0) {
+    if (cfg.leaf === 'resolve' && !S.over) {
+        // judge the position after the board plays out, but keep the economy as it stands
+        const T = resolveBoard(S, cfg.resolveTurns);
+        if (T.over) return (T.over === side ? 1 : -1) * cfg.resolveWin * cfg.winScore
+            + sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
+        return sideValue(T, side, cfg) - sideValue(T, enemyOf(side), cfg);
+    }
     const v = cfg.leaf === 'evolved' && !S.over
         ? cfg.leafScale * evolvedEval(EVO, S, side)
         : sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
@@ -383,8 +409,16 @@ function styleWeights(S, side, cfg, memo) {
 
 /** Combines a move's scores across opponent styles. 'cautious' averages the worse half, so a
     gamble that crushes most styles but dies to one doesn't look good on average. */
-function aggregate(scores, how, weights) {
+function aggregate(scores, how, weights, risk = 0) {
     if (how === 'min') return Math.min(...scores);
+    if (how === 'risk') {
+        // Uncertainty as danger: average minus `risk` × spread across the imagined opponents.
+        // A move that crushes some of them and dies to others is a gamble; one that comes out
+        // decent against all of them is reliable.
+        const m = scores.reduce((a, b) => a + b, 0) / scores.length;
+        const sd = Math.sqrt(scores.reduce((a, b) => a + (b - m) ** 2, 0) / scores.length);
+        return m - risk * sd;
+    }
     if (how === 'cautious') {
         const s = scores.slice().sort((a, b) => a - b);
         const k = Math.ceil(s.length / 2);
@@ -434,7 +468,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
         let score = -Infinity;
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
-            const s = aggregate(scores, cfg.agg, weights) + bias(plan);
+            const s = aggregate(scores, cfg.agg, weights, cfg.risk) + bias(plan);
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
             const pure = !plan.saveFor && plan.first === styleMove[mine];
