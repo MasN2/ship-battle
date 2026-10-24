@@ -87,3 +87,9 @@ HUMAN_ORDERS.user4_red_gmb = [0, 0, 2, 4, 2, 4, 0, 1, 3, 5, 0, 0, 7, 0, 0, 7, 1,
 // Playtest 5 (2026-10-24): user beat Grandmaster β on turn 26 with traders then Frigate spam again.
 HUMAN_ORDERS.user5_blue = [1, 3, 0, 0, 7, 0, 0, 7, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3];
 HUMAN_ORDERS.user5_red_gmb = [0, 0, 2, 4, 1, 1, 3, 4, 3, 5, 0, 7, 0, 0, 7, 0, 3, 3, 4, 5, 5, 5, 5, 2, 4, 4];
+
+// Playtest 7 (2026-10-24): user beat β v1.3β on turn 46; it pushed the player's base to 26 hp
+// but fed Frigates into the counterwave and hoarded ~39 money with 26 ore instead of mining
+// in the open board on the tail of its push.
+HUMAN_ORDERS.user7_blue = [0, 0, 0, 7, 0, 0, 7, 2, 2, 4, 5, 2, 4, 2, 7, 2, 3, 3, 3, 7, 3, 7, 3, 7, 5, 7, 7, 4, 4, 10, 5, 8, 8, 4, 8, 4, 8, 8, 8, 4, 8, 8, 4, 8, 4, 4];
+HUMAN_ORDERS.user7_red_gmb13 = [0, 0, 7, 0, 2, 1, 0, 1, 6, 1, 7, 0, 2, 6, 7, 0, 7, 0, 0, 10, 4, 5, 4, 8, 4, 6, 4, 0, 7, 0, 7, 0, 4, 1, 6, 11, 4, 5, 10, 10, 2, 8, 8, 8, 4, 8];
