@@ -71,6 +71,7 @@ const c10tutorial = {
 }
 
 export const GM_VERSION = '1.2';
+export const GM_BETA_VERSION = '1.3β';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -92,9 +93,10 @@ export const DIFFICULTIES = {
     // whenever default play changes, so a report can be matched to the AI that played it.
     // v1.0 first release · v1.1 winScore 3e4 · v1.2 turtle/value styles
     grandmaster: { label: `Grandmaster v${GM_VERSION}`, ai: 'grandmaster' },
-    // Playtest variant: distrusts imagined wins that are far off, so it invests more when a
-    // win isn't close (gmCfg overrides GM_DEFAULTS in js/grandmaster.js).
-    grandmasterBeta: { label: `Grandmaster β v${GM_VERSION}β`, ai: 'grandmaster', gmCfg: { trust: 0.9 } },
+    // Playtest variant: values income/ore further ahead while its base is safe (safeEcon in
+    // js/grandmaster.js), investing when the defence holds. β v1.2β (distrusting far-off wins)
+    // was dropped: weak to Frigate counterwaves.
+    grandmasterBeta: { label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster', gmCfg: { safeEcon: 2 } },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };

@@ -28,6 +28,7 @@ export const GM_DEFAULTS = {
     agg: 'mean',        // how scores across their styles combine: 'mean' | 'cautious' | 'min' | 'risk'
     risk: 0.5,          // for agg 'risk': how much the spread across opponent styles counts against a move
     horizon: 40,        // turns of future spending that income and ore are worth
+    safeEcon: 0,        // stretch that horizon by up to ×(1 + safeEcon) while the base is safe
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
@@ -230,7 +231,7 @@ function baseThreat(S, side) {
 /** Rollout policy: the human snowball. Base hp is a resource: keep buying income while the
     base can soak the incoming damage for `buffer` turns, else the sturdiest fighter. As
     income grows those fighters become the big ships that end the game. */
-function snowballer(buffer) {
+function snowballer(buffer, fallback = value) {
     return (S, side, cfg) => {
         const me = S[side];
         if (me.hp > 40 && me.hp > buffer * baseThreat(S, side)) {
@@ -244,7 +245,7 @@ function snowballer(buffer) {
             }
             if (best) return costOf(best, me.ore) <= me.money ? best : 0;
         }
-        return value(S, side, cfg);
+        return fallback(S, side, cfg);
     };
 }
 
@@ -262,6 +263,9 @@ export const POLICIES = {
     // turtle-and-counterwave line that beat it in playtesting.
     turtle: investor(INCOME_GAIN, 40, value),
     snowball: snowballer(8),
+    // playtest 6: income whenever the base can soak it, defending with the best counter
+    // (missiles / hellfires into clumped waves) instead of Frigates
+    snowsmart: snowballer(8, smart),
     mine: investor(ORE_GAIN, 40),
     big,
     skip: () => 0,
@@ -444,6 +448,14 @@ export function chooseGrandmaster(state, side, opts = {}) {
     // (tools/crawl.js) found openings that beat grandmaster's own opening.
     if (cfg.opening && state.turn <= cfg.opening.turns) {
         return POLICIES[cfg.opening.style](cloneState(state), side, cfg, opts.rng || Math.random) || 0;
+    }
+    // Invest when it's safe: the longer the base could soak the damage heading for it, the
+    // further ahead income and ore are valued (horizon up to ×(1 + safeEcon)). The way a
+    // player banks on economy only while the defence holds.
+    if (cfg.safeEcon > 0) {
+        const hp = Math.max(1, state[side].hp);
+        const safety = Math.max(0, 1 - 8 * baseThreat(state, side) / hp);
+        Object.assign(cfg, { horizon: cfg.horizon * (1 + cfg.safeEcon * safety) });
     }
     const S = cloneState(state);
     const rng = opts.rng || Math.random;
