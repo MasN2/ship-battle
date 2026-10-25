@@ -119,3 +119,8 @@ HUMAN_ORDERS.user13_red_gmb17 = [0, 0, 0, 4, 2, 2, 0, 6, 1, 5, 5, 0, 0, 7, 2, 0,
 // of pure combat and its hard push fed a counterwave ("whatever crashes into a base comes back doubled").
 HUMAN_ORDERS.user14_blue = [1, 3, 3, 3, 2, 3, 0, 0, 7, 0, 7, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
 HUMAN_ORDERS.user14_red_gmb18 = [0, 0, 0, 4, 4, 4, 0, 0, 6, 3, 0, 7, 0, 3, 3, 6, 3, 3, 3, 5, 0, 0, 4, 5, 5, 0, 7];
+
+// Playtest 15 (2026-10-25): user beat β v2.0β; it gridlocked itself in front of its own base
+// (miners pinned one sector out, unable to mine) while the player mined the centre.
+HUMAN_ORDERS.user15_blue = [1, 3, 3, 2, 2, 4, 4, 2, 2, 4, 2, 3, 3, 3, 3, 3, 3, 0, 5, 0, 7, 0, 7, 0, 7, 4, 5, 5, 5, 5, 4, 4, 5, 5, 5, 8, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
+HUMAN_ORDERS.user15_red_gmb20 = [0, 0, 2, 6, 3, 0, 0, 4, 4, 0, 0, 7, 1, 3, 4, 2, 1, 4, 4, 6, 0, 0, 7, 0, 4, 0, 4, 0, 5, 8, 4, 2, 0, 6, 6, 6, 3, 6, 3, 3, 6, 0, 0, 0, 0, 14];

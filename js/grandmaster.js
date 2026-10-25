@@ -35,6 +35,7 @@ export const GM_DEFAULTS = {
     investSafe: false,  // scale that credit (and oreBias) by how safe the base is
     oreBias: 0,         // score credit per ore/turn a miner makes, while the board is open for it
     orePerCost: false,  // scale that credit by min(1, 5 / price) (ore per money, Driller = 1)
+    deadMiner: 0,       // penalty (share of one imagined win flip) for a fragile miner when it can't reach the centre
     respect: false,     // judge pure-combat moves by their worst case over respected opponents:
                         // 'push' = only while my push holds their half, 'safe' = also whenever its
                         // base is safe (safety >= respectSafety), true = always
@@ -67,9 +68,14 @@ export const GM_DEFAULTS = {
     advanceW: 0.04,     // per sector a ship has pushed toward the enemy
     fwdMult: 1,         // worth of ships within reach of a defended enemy base (counterwave fuel)
     mineTurns: 0,       // count ore that miners now in the centre will mine over this many turns
+    centerW: 0,         // per mining sector (3-5) held with my ships and none of theirs
+    pinW: 0,            // for pinning them in front of their own base (see sideValue)
     visibleOnly: true,  // limit itself to the ships the player's deploy bar shows
     chaos: 0.5,         // opening randomness, as a share of the best-to-4th-best score gap
     chaosTurns: 8,      // turns it applies to
+    openTol: 0,         // variety: while safe, pick at random among moves within this share of one
+    driftTol: 0,        // imagined win/loss flip of the best (openTol for the first openTurns, then driftTol)
+    openTurns: 10,
 };
 
 /** The ships render.js shows on the deploy bar for this side's income and ore. */
@@ -351,6 +357,21 @@ function sideValue(S, side, cfg) {
         const w = Math.sqrt(Math.max(0.5, s.attack) * s.health);
         ships += defended && advance >= 4 ? w * cfg.fwdMult : w * (1 + cfg.advanceW * advance);
     }
+    // Front line (playtest 15): holding the mining centre is worth centerW per sector (3-5) held
+    // with my ships and none of theirs, pinning them in front of their own base (my ships one
+    // sector from it, none of theirs further out) pinW more. Being pinned myself shows up as the
+    // opponent's side of the same terms.
+    if (cfg.centerW || cfg.pinW) {
+        const mineIn = new Array(9).fill(false), theirsIn = new Array(9).fill(false);
+        for (const s of me.ships) if (s.health > 0) mineIn[s.sector] = true;
+        for (const s of S[foe].ships) if (s.health > 0) theirsIn[s.sector] = true;
+        for (let sec = 3; sec <= 5; sec++) if (mineIn[sec] && !theirsIn[sec]) v += cfg.centerW;
+        const step = side === 'blue' ? 1 : -1;
+        const nextToTheirs = foeBase - step;
+        let theirsOut = false;
+        for (const s of S[foe].ships) if (s.health > 0 && s.sector !== foeBase) theirsOut = true;
+        if (cfg.pinW && mineIn[nextToTheirs] && !theirsOut) v += cfg.pinW;
+    }
     return v + cfg.shipW * ships;
 }
 
@@ -574,6 +595,12 @@ export function chooseGrandmaster(state, side, opts = {}) {
         // cheap Driller isn't outbid by a pricey Reaver whose extra hp mostly feeds counterwaves
         const perCost = cfg.orePerCost ? Math.min(1, 5 / costOf(plan.first, S[side].ore)) : 1;
         if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * perCost * scale;
+        // Dead-zone miners (playtest 15): with an enemy ship in my half, a fragile miner deployed
+        // now gets pinned one sector from home - can't mine, gets shot - so it costs deadMiner
+        // (a share of one imagined win/loss flip). Sturdy fighting miners can hold a gridlock.
+        if (cfg.deadMiner && foeInMyHalf && ORE_GAIN(plan.first) && TEMPLATES[plan.first].health < 15) {
+            v -= cfg.deadMiner * 2 * cfg.winScore / cfg.theirs.length;
+        }
         return v;
     };
     // respect 'push': only while my push holds their half (trailing fighters behind a wave);
@@ -627,6 +654,22 @@ export function chooseGrandmaster(state, side, opts = {}) {
     }
     let pick = bestPure ?? bestDev;
     if (bestDev && bestPure && bestDev.v > bestPure.v + cfg.commitMargin) pick = bestDev;
-    const best = pick ? pick.plan.first : 0;
+    let best = pick ? pick.plan.first : 0;
+    // Real variety (playtests: one win shouldn't become infinite wins by replaying it): while
+    // its base is safe, pick uniformly among the moves scoring within a tolerance of the best,
+    // so no fixed line beats it every game. The tolerance is a share of one imagined game
+    // flipping between win and loss, wider in the opening than later; none under threat.
+    const tolShare = S.turn <= cfg.openTurns ? cfg.openTol : cfg.driftTol;
+    if (tolShare > 0 && safety >= 0.8 && pick) {
+        const flip = 2 * cfg.winScore / cfg.theirs.length;
+        const byMove = new Map();
+        for (const e of scored) {
+            const k = e.plan.saveFor ? `s${e.plan.saveFor}` : `m${e.plan.first}`;
+            if (!byMove.has(k) || e.score > byMove.get(k).score) byMove.set(k, e);
+        }
+        const top = Math.max(...[...byMove.values()].map(e => e.score));
+        const near = [...byMove.values()].filter(e => e.score >= top - tolShare * flip);
+        if (near.length > 1) best = near[Math.floor(rng() * near.length)].plan.first;
+    }
     return best;
 }
