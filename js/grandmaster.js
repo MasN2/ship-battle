@@ -78,6 +78,7 @@ export const GM_DEFAULTS = {
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
     book: null,         // wizard lessons (true = js/book-data.js), see js/book.js
     bookW: 3000,        // points per 100% win-probability edge in the book
+    bookPrior: 8,       // a lesson verified n times counts n / (n + bookPrior): higher = fuzzier until confirmed
     oreIncomePerMoney: false, // scale that credit by ore per money relative to a Driller (capped at 1)
     oreIncomeTurns: 0,  // >0: credit miners as the income-equivalent of this many turns of their ore (replaces oreBias)
     oreTiers: null,     // spending rhythms (turns per buy) over which ore's discount is averaged, e.g. [1, 2, 4]
@@ -687,7 +688,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
     const bookOf = {};
     const bias = plan => {
         const n = plan.saveFor ? 0 : plan.first;
-        const b = book ? (bookOf[n] ??= cfg.bookW * bookBias(book, keys, n)) : 0;
+        const b = book ? (bookOf[n] ??= cfg.bookW * bookBias(book, keys, n, cfg.bookPrior)) : 0;
         if (!IW) return b;
         return b + (biasOf[n] ??= cfg.intuitionScale * intuitionBias(IW, n, S, side, sit));
     };

@@ -23,12 +23,18 @@ import { mulberry32 } from './rng.js';
 
 const MAX_TURNS = 90;
 
-// value of an outcome: a win 1, a loss up to 0.3 for surviving long, the cap 0.5
-function outcome(S, side) {
-    if (S.over === side) return 1;
-    if (S.over) return 0.3 * Math.min(1, S.turn / 60);
+// Value of an outcome, graded by margin (playtest 24: "I almost won that" and "no way I could
+// have won that" are different lessons). A win is 0.7 + 0.3 × its own base hp left, so a
+// last-gasp win sits just above the closest loss; a loss is up to 0.3 by how far it got their
+// base down (most) and how long it lasted. The cap counts 0.5.
+export function outcome(S, side) {
+    const opp = side === 'red' ? 'blue' : 'red';
+    const frac = x => Math.max(0, Math.min(1, x / 160));
+    if (S.over === side) return 0.7 + 0.3 * frac(S[side].hp);
+    if (S.over) return 0.3 * (0.65 * (1 - frac(S[opp].hp)) + 0.35 * Math.min(1, S.turn / 60));
     return 0.5;
 }
+const WON = r => r >= 0.7;
 
 /** Plays on from S (learner on `side`), its first move forced to `first` if given.
     Returns the result and the learner's decisions: position keys, move, snapshot, alternatives. */
@@ -69,7 +75,7 @@ function episode({ cfg, oppCfg, seed, side, rewinds, alts }) {
     const game = playOn(newSimState(), side, cfg, oppCfg, seed, undefined, true);
     let best = game.result;
     let fixedAt = null, tried = 0;
-    if (game.result < 1) {
+    if (!WON(game.result)) {
         const L = game.decisions.length;
         // rewind points: 4 turns before the end, then every 4 turns further back
         const points = [];
@@ -82,9 +88,9 @@ function episode({ cfg, oppCfg, seed, side, rewinds, alts }) {
                 const branch = playOn(cloneState(d.snap), side, cfg, oppCfg, seed * 31 + T * 7 + alt, alt, false);
                 rec(branch.decisions, branch.result);
                 if (branch.result > best) best = branch.result;
-                if (branch.result === 1) {
+                if (WON(branch.result)) {
                     // a win existed from here: the path into this position was fine
-                    rec(game.decisions.slice(0, T), 1);
+                    rec(game.decisions.slice(0, T), branch.result);
                     fixedAt = d.snap.turn;
                     break search;
                 }
@@ -141,7 +147,7 @@ if (!isMainThread) {
         const t0 = Date.now();
         const jobs = Array.from({ length: checkGames }, (_, g) => ({ check: true, cfg, oppCfg, seed: 90000 + g, side: g % 2 ? 'blue' : 'red' }));
         const res = await runJobs(jobs, Object.keys(book).length ? book : null);
-        const wins = res.filter(r => r.result === 1).length;
+        const wins = res.filter(r => WON(r.result)).length;
         const lossTurns = res.filter(r => r.result < 0.5).map(r => r.turns);
         const avg = lossTurns.length ? (lossTurns.reduce((a, b) => a + b, 0) / lossTurns.length).toFixed(0) : '-';
         log(`  checkpoint ${label}: held-out ${wins}/${res.length} wins vs opponent, losses last ${avg} turns (${((Date.now() - t0) / 60000).toFixed(1)} min)`);
@@ -154,7 +160,7 @@ if (!isMainThread) {
         let n = 0;
         for (const r of res) for (const [keys, move, result] of r.records) { bookRecord(book, keys, move, result); n++; }
         fs.writeFileSync(bookFile, `// Lessons written by tools/wizard.js (see js/book.js), ${new Date().toISOString()}.\nexport const BOOK = ${JSON.stringify(book)};\n`);
-        const wins = res.filter(r => r.result === 1).length;
+        const wins = res.filter(r => WON(r.result)).length;
         const fixed = res.filter(r => r.fixedAt !== null).map(r => `t${r.fixedAt}`);
         log(`batch ${b + 1}: won ${wins}/${res.length} outright; losses fixed by rewinding: ${fixed.length} (${fixed.join(' ') || '-'}); ` +
             `${res.reduce((a, r) => a + r.tried, 0)} branches tried; ${n} lessons, book ${Object.keys(book).length} positions; ${((Date.now() - t0) / 60000).toFixed(1)} min`);

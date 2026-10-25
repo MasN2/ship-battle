@@ -11,7 +11,7 @@
 
 import { enemyOf } from './sim.js';
 
-export const BOOK_PRIOR = 2;
+export const BOOK_PRIOR = 8;
 const LEVEL_W = [0.5, 1, 1.5];
 
 const bucket = (x, steps) => {
@@ -50,7 +50,7 @@ export function bookKeys(S, side) {
 }
 
 /** Bias (as a win-probability difference, about -1..1) for playing `move` (0 = skip/save). */
-export function bookBias(book, keys, move) {
+export function bookBias(book, keys, move, prior = BOOK_PRIOR) {
     if (!book) return 0;
     let v = 0;
     keys.forEach((key, l) => {
@@ -60,7 +60,7 @@ export function bookBias(book, keys, move) {
         let n = 0, sum = 0;
         for (const k in st) { n += st[k][0]; sum += st[k][1]; }
         const avg = sum / n;
-        v += LEVEL_W[l] * (m[0] / (m[0] + BOOK_PRIOR)) * (m[1] / m[0] - avg);
+        v += LEVEL_W[l] * (m[0] / (m[0] + prior)) * (m[1] / m[0] - avg);
     });
     return v;
 }
