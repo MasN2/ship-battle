@@ -55,6 +55,9 @@ export const GM_DEFAULTS = {
     resolveWin: 0.5,    // ...and how much a resolution that ends the game counts, as a share of winScore
     leafScale: 1,       // multiplier on the evolved score
     commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
+    regretW: 0,         // penalty weight on a move's downside when countered (see Regret in chooseGrandmaster)
+    regretK: 2,         // ...averaged over its this-many biggest regrets
+    advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
     hurryAhead: false,  // hurry counts turns from now instead of the game's turn number
@@ -639,6 +642,18 @@ export function chooseGrandmaster(state, side, opts = {}) {
     const respectNow = cfg.respect === 'push' ? pushWindow(S, side)
         : cfg.respect === 'safe' ? safety >= cfg.respectSafety || pushWindow(S, side)
             : !!cfg.respect;
+    // agg 'adversary' (playtest 18): the real opponent isn't a random draw from my imagined styles,
+    // it hunts for the one that beats me. So every move is judged by the mean of its worst advK
+    // imagined opponents (the random 'wild' ones left out: they are noise, not a counter), i.e.
+    // by how big the downside is when they find the counter, not by how many styles it beats.
+    const agg = scores => {
+        if (cfg.agg !== 'adversary') return aggregate(scores, cfg.agg, weights, cfg.risk);
+        const real = scores.filter((_, j) => cfg.theirs[j] !== 'wild').sort((a, b) => a - b);
+        const k = Math.max(1, Math.min(cfg.advK, real.length));
+        let t = 0;
+        for (let i = 0; i < k; i++) t += real[i];
+        return t / k;
+    };
     // What each of my styles would play right now, if I just followed it.
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
@@ -663,15 +678,39 @@ export function chooseGrandmaster(state, side, opts = {}) {
             // mining is the critical-fail position (a dead investment and a gridlock at home), worth
             // minerFate imagined win/loss flips times the share of imagined futures where it happens.
             const fate = deadShare * (cfg.minerFate || 0) * 2 * cfg.winScore / cfg.theirs.length;
-            const s = (combat ? Math.min(...respected) : aggregate(scores, cfg.agg, weights, cfg.risk)) + bias(plan) + invest(plan) - fate;
+            const s = (combat ? Math.min(...respected) : agg(scores)) + bias(plan) + invest(plan) - fate;
             if (opts.detail) opts.detail.push({ plan, mine, scores, total: s });
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
             const pure = !plan.saveFor && plan.first === styleMove[mine];
-            scored.push({ plan, mine, score: s, pure, raw: aggregate(scores, cfg.agg, weights, cfg.risk) });
+            scored.push({ plan, mine, score: s, pure, raw: agg(scores), scores });
             if (s > score) score = s;
         }
         if (opts.out) opts.out.push({ plan, score });
+    }
+    // Regret (playtest 18): the real opponent reacts and narrows in on the counter, so "beats 7 of
+    // 10 imagined styles" is not 70%, it is a 100% loss if they find one of the 3. What matters is
+    // how much worse this move does against an opponent than the best move against that same
+    // opponent would: its downside when countered, not whether that opponent is strong anyway
+    // (a style everything loses to costs no move anything). Every line of a move pays regretW ×
+    // the mean of its regretK biggest regrets over the non-random opponents, counting for each
+    // opponent the move's best follow-up style (I react too).
+    if (cfg.regretW > 0 && scored.length > 1) {
+        const key = e => (e.plan.saveFor ? `s${e.plan.saveFor}` : `m${e.plan.first}`);
+        const real = cfg.theirs.map((t, j) => (t === 'wild' ? -1 : j)).filter(j => j >= 0);
+        const vec = new Map();
+        for (const e of scored) {
+            const v = vec.get(key(e)) ?? vec.set(key(e), real.map(() => -Infinity)).get(key(e));
+            real.forEach((j, i) => { if (e.scores[j] > v[i]) v[i] = e.scores[j]; });
+        }
+        const best = real.map((_, i) => Math.max(...[...vec.values()].map(v => v[i])));
+        const k = Math.max(1, Math.min(cfg.regretK, real.length));
+        const regret = new Map();
+        for (const [m, v] of vec) {
+            const r = v.map((x, i) => best[i] - x).sort((a, b) => b - a);
+            regret.set(m, r.slice(0, k).reduce((a, b) => a + b, 0) / k);
+        }
+        for (const e of scored) e.score -= cfg.regretW * regret.get(key(e));
     }
     // Opening chaos: early on, every move gets a random nudge sized to the gap between the
     // best and the 4th-best move, so close alternatives trade places and no single memorised
