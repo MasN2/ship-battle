@@ -567,6 +567,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
             const s = aggregate(scores, cfg.agg, weights, cfg.risk) + bias(plan) + invest(plan);
+            if (opts.detail) opts.detail.push({ plan, mine, scores, total: s });
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
             const pure = !plan.saveFor && plan.first === styleMove[mine];

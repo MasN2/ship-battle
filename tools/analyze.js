@@ -11,6 +11,7 @@ const args = process.argv.slice(2);
 const flag = (name, dflt) => { const i = args.indexOf(name); if (i < 0) return dflt; const v = args[i + 1]; args.splice(i, 2); return v; };
 const from = Number(flag('--from', 1));
 const to = Number(flag('--to', 999));
+const detailTurn = Number(flag('--detail', 0)); // show per-opponent scores for this turn's top moves
 const cfg = { chaos: 0, ...JSON.parse(flag('--cfg', '{}')) };
 const parse = s => s.split(/[\s,]+/).filter(Boolean).map(Number);
 const blue = parse(args[0] ?? '');
@@ -29,7 +30,8 @@ for (let t = 0; t < Math.max(blue.length, red.length) && !S.over; t++) {
     if (S.turn >= from && S.turn <= to) {
         const out = [];
         const weights = [];
-        const would = chooseGrandmaster(S, 'red', { out, cfg, memo, weightsOut: weights });
+        const detail = S.turn === detailTurn ? [] : null;
+        const would = chooseGrandmaster(S, 'red', { out, cfg, memo, weightsOut: weights, detail });
         out.sort((x, y) => y.score - x.score);
         const rank = out.findIndex(e => e.plan.first === rp && !e.plan.saveFor) + 1;
         const side = s => `hp ${S[s].hp.toFixed(0)} $${S[s].money.toFixed(1)} inc ${S[s].income} ore ${S[s].ore.toFixed(0)}`;
@@ -37,6 +39,18 @@ for (let t = 0; t < Math.max(blue.length, red.length) && !S.over; t++) {
         console.log(`     blue ${board('blue')}`);
         console.log(`     red  ${board('red')}`);
         console.log(`     grandmaster now: ${out.slice(0, 6).map(e => `${e.plan.saveFor ? 'save' + e.plan.saveFor : e.plan.first}:${Math.round(e.score)}`).join('  ')}`);
+        if (detail) {
+            // best follow-up style per move, then its score against each imagined opponent
+            const best = {};
+            for (const d of detail) { const k = d.plan.saveFor ? `save${d.plan.saveFor}` : `${d.plan.first}`; if (!best[k] || d.total > best[k].total) best[k] = d; }
+            const names = cfg.theirs ?? GM_DEFAULTS.theirs;
+            console.log(`     per-opponent scores (k = thousands; + = it wins that imagined game):`);
+            console.log(`       ${'move'.padEnd(8)}${'then'.padEnd(9)}${names.map(n => n.slice(0, 6).padStart(7)).join('')}   total`);
+            for (const d of Object.values(best).sort((a, b) => b.total - a.total).slice(0, 8)) {
+                const k = d.plan.saveFor ? `save${d.plan.saveFor}` : `${d.plan.first}`;
+                console.log(`       ${k.padEnd(8)}${d.mine.padEnd(9)}${d.scores.map(x => `${(x / 1000).toFixed(0)}k`.padStart(7)).join('')}   ${(d.total / 1000).toFixed(1)}k`);
+            }
+        }
         if (weights.length) {
             const names = (cfg.theirs ?? GM_DEFAULTS.theirs);
             console.log(`     reads blue as: ${names.map((n, j) => [n, weights[j]]).filter(([, x]) => x > (cfg.observePrior ?? GM_DEFAULTS.observePrior) + 0.01).map(([n, x]) => `${n} ${x.toFixed(1)}`).join(', ') || '-'}`);
