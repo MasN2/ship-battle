@@ -6,7 +6,7 @@
 // show (see visibleShips).
 
 import { SHIP_NUMS, TEMPLATES } from './templates.js';
-import { economy, maxLoanFor } from './economy.js';
+import { economy, maxLoanFor, calcOreIncome } from './economy.js';
 import { cloneState, stepTurn, canAfford, enemyOf, SimError, costOf } from './sim.js';
 import { evolvedEval, evolvedPolicy, seedWeights } from './evolved.js';
 import { EVOLVED_WEIGHTS } from './evolved-weights.js';
@@ -65,6 +65,8 @@ export const GM_DEFAULTS = {
     fear: 40,           // ...plus fear·ln(1+hp): the last points matter most
     shipW: 1,           // value of ships on the board (√(attack·health) each)
     advanceW: 0.04,     // per sector a ship has pushed toward the enemy
+    fwdMult: 1,         // worth of ships within reach of a defended enemy base (counterwave fuel)
+    mineTurns: 0,       // count ore that miners now in the centre will mine over this many turns
     visibleOnly: true,  // limit itself to the ships the player's deploy bar shows
     chaos: 0.5,         // opening randomness, as a share of the best-to-4th-best score gap
     chaosTurns: 8,      // turns it applies to
@@ -327,17 +329,27 @@ function sideValue(S, side, cfg) {
     const hp = Math.max(0, me.hp);
     let v = cfg.hpW * hp + cfg.fear * Math.log1p(hp);
     // Income and ore, valued as the ship size they buy each turn over the horizon:
-    // what the income buys at no ore, plus what the ore stock adds on top.
-    const perTurn = me.income > 0 ? economy(me.income, me.ore) : 0;
+    // what the income buys at no ore, plus what the ore stock adds on top. With mineTurns,
+    // the ore stock includes what miners now in the centre will mine over that many more turns
+    // (playtests: a gridlock where I mine more is a winning position, even before the ore lands).
+    const ore = me.ore + (cfg.mineTurns ? cfg.mineTurns * calcOreIncome(side, S) : 0);
+    const perTurn = me.income > 0 ? economy(me.income, ore) : 0;
     const bare = me.income > 0 ? economy(me.income, 0) : 0;
     const horizon = Math.max(8, cfg.horizon - 0.1 * S.turn);
     v += horizon * (cfg.incomeW * bare + cfg.oreW * (perTurn - bare));
     if (me.income > 0) v += me.money * (perTurn / me.income);
+    // Counterwave fuel: ships within reach of an enemy base that has a defending stack are about
+    // to die and feed the counterwave ("whatever crashes into a base comes back doubled"), so
+    // with fwdMult < 1 they count for that much instead of earning the advance bonus.
+    const foe = enemyOf(side);
+    const foeBase = foe === 'blue' ? 1 : 7;
+    const defended = cfg.fwdMult !== 1 && S[foe].ships.some(s => s.health > 0 && s.sector === foeBase);
     let ships = 0;
     for (const s of me.ships) {
         if (s.health <= 0) continue;
         const advance = side === 'blue' ? s.sector - 1 : 7 - s.sector;
-        ships += Math.sqrt(Math.max(0.5, s.attack) * s.health) * (1 + cfg.advanceW * advance);
+        const w = Math.sqrt(Math.max(0.5, s.attack) * s.health);
+        ships += defended && advance >= 4 ? w * cfg.fwdMult : w * (1 + cfg.advanceW * advance);
     }
     return v + cfg.shipW * ships;
 }

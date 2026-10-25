@@ -71,7 +71,7 @@ const c10tutorial = {
 }
 
 export const GM_VERSION = '1.2';
-export const GM_BETA_VERSION = '1.9β';
+export const GM_BETA_VERSION = '2.0β';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -102,11 +102,15 @@ export const DIFFICULTIES = {
     // v1.8β respect 'push': while its push holds the enemy half, a pure-combat move must work
     // against every respected imagined opponent (worst case), so the window goes to miners;
     // v1.9β respect 'safe' (also in the opening / whenever its base is safe) and ore credit per
-    // money (orePerCost: a cheap Driller over a pricey Reaver that feeds counterwaves).
+    // money (orePerCost: a cheap Driller over a pricey Reaver that feeds counterwaves);
+    // v2.0β positions matter, not just imagined win counts: winScore 5000 (credits scaled to
+    // match), ships near a defended enemy base count 0.3 (counterwave fuel), and ore that
+    // centre miners will mine over 6 turns counts.
     grandmasterBeta: {
         label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster',
         gmCfg: {
-            safeEcon: 2, hurry: 0, investBias: 3000, investSafe: true, oreBias: 1500, respect: 'safe', orePerCost: true,
+            safeEcon: 2, hurry: 0, investBias: 500, investSafe: true, oreBias: 250, respect: 'safe', orePerCost: true,
+            winScore: 5000, fwdMult: 0.3, mineTurns: 6,
             mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value', 'gridlock'],
             theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value', 'gridlock'],
         },
