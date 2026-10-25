@@ -1,5 +1,5 @@
 // Bot-vs-bot tournament on the headless rules, in parallel.
-//   node tools/tourney.js <botA> <botB> [games=40] [--max 200] [--a '{json}'] [--b '{json}'] [--seed 1] [--eps 0.1] [--log]
+//   node tools/tourney.js <botA> <botB> [games=40] [--max 120] [--a '{json}'] [--b '{json}'] [--seed 1] [--eps 0.1] [--log]
 // Bots: normal (the live Normal AI), gm (grandmaster; --a/--b override its settings),
 //       econ (scripted trader greed), alice / alice-red (human build orders from scenarios.js, then Normal),
 //       pol:<style> (one of grandmaster's rollout styles played on its own).
@@ -28,7 +28,7 @@ if (!isMainThread) {
         return v;
     };
     const bool = name => { const i = args.indexOf(name); if (i < 0) return false; args.splice(i, 1); return true; };
-    const maxTurns = Number(flag('--max', 200));
+    const maxTurns = Number(flag('--max', 120));
     const aCfg = JSON.parse(flag('--a', 'null'));
     const bCfg = JSON.parse(flag('--b', 'null'));
     const seed0 = Number(flag('--seed', 1));
@@ -51,7 +51,7 @@ if (!isMainThread) {
             results.push(m);
             process.stderr.write(`\r${results.length}/${games}`);
         });
-        w.on('error', reject);
+        w.on('error', e => { console.error(`worker failed: ${e.stack || e}`); process.exit(1); });
     })));
     process.stderr.write('\r');
     results.sort((x, y) => x.seed - y.seed);
@@ -75,6 +75,10 @@ if (!isMainThread) {
         const snr = xs => { const mu = xs.reduce((a, b) => a + b, 0) / xs.length; const sd = Math.sqrt(xs.reduce((a, b) => a + (b - mu) ** 2, 0) / Math.max(1, xs.length - 1)); return `${mu.toFixed(2)} (${(mu / (sd / Math.sqrt(xs.length) || 1)).toFixed(1)}σ)`; };
         console.log(`A minus B at game end: ${Object.keys(results[0].parts).filter(k => k !== 'turns').map(k => `${k} ${snr(results.map(r => r.parts[k]))}`).join('  ')}`);
         console.log(`A score: wins ${(100 * wm).toFixed(1)}% ±${(100 * wse).toFixed(1)}   margin ${(100 * mean).toFixed(1)} ±${(100 * se).toFixed(1)}  (50 = even; ± is one standard error)`);
+    }
+    {
+        const at = (t, who) => { const xs = results.filter(r => r.econ[t]).map(r => r.econ[t][who === 'a' ? r.aSide : (r.aSide === 'red' ? 'blue' : 'red')]); return xs.length ? `inc ${(xs.reduce((a, e) => a + e.income, 0) / xs.length).toFixed(1)} ore ${(xs.reduce((a, e) => a + e.ore, 0) / xs.length).toFixed(0)}` : '-'; };
+        console.log(`economy at turn 30: A ${at(30, 'a')}, B ${at(30, 'b')}`);
     }
     console.log(`A as red: ${count(r => r.aSide === 'red' && r.aWon)}/${count(r => r.aSide === 'red')}   A as blue: ${count(r => r.aSide === 'blue' && r.aWon)}/${count(r => r.aSide === 'blue')}`);
     const aWins = results.filter(r => r.aWon);

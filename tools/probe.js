@@ -35,7 +35,7 @@ if (!isMainThread) {
     const t0 = Date.now();
     const res = (await Promise.all(chunks.map(c => new Promise((ok, bad) => {
         const w = new Worker(new URL(import.meta.url), { workerData: { jobs: c } });
-        w.on('message', ok); w.on('error', bad);
+        w.on('message', ok); w.on('error', e => { console.error(`worker failed: ${e.stack || e}`); process.exit(1); });
     })))).flat();
     const by = variants.map((_, v) => Object.fromEntries(res.filter(r => r.v === v).map(r => [r.seed, r])));
     const stat = xs => { const m = xs.reduce((a, b) => a + b, 0) / xs.length; const se = Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1) / xs.length); return [m, se]; };

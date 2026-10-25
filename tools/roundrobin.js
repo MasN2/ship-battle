@@ -45,7 +45,7 @@ if (!isMainThread) {
     await Promise.all(chunks.map(chunk => new Promise((resolve, reject) => {
         const w = new Worker(new URL(import.meta.url), { workerData: { jobs: chunk, configs, maxTurns, open } });
         w.on('message', m => { if (m === 'done') return resolve(); results.push(m); process.stderr.write(`\r${results.length}/${jobs.length}`); });
-        w.on('error', reject);
+        w.on('error', e => { console.error(`worker failed: ${e.stack || e}`); process.exit(1); });
     })));
     process.stderr.write('\r');
 

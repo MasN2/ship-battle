@@ -71,7 +71,7 @@ const c10tutorial = {
 }
 
 export const GM_VERSION = '1.2';
-export const GM_BETA_VERSION = '1.4β';
+export const GM_BETA_VERSION = '1.5β';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -93,11 +93,18 @@ export const DIFFICULTIES = {
     // whenever default play changes, so a report can be matched to the AI that played it.
     // v1.0 first release · v1.1 winScore 3e4 · v1.2 turtle/value styles
     grandmaster: { label: `Grandmaster v${GM_VERSION}`, ai: 'grandmaster' },
-    // Playtest variant: values income/ore further ahead while its base is safe (safeEcon), and
-    // has no "win fastest" tie-break (hurry 0), so when every line wins it picks the safest one
-    // (economy, insurance) instead of the quickest. β log: v1.2β distrusted far-off wins (weak to
-    // Frigate counterwaves); v1.3β safeEcon 2; v1.4β adds hurry 0.
-    grandmasterBeta: { label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster', gmCfg: { safeEcon: 2, hurry: 0 } },
+    // Playtest variant: values income/ore further ahead while its base is safe (safeEcon), has no
+    // "win fastest" tie-break (hurry 0), and knows the mining gridlock (the 'gridlock' style, for
+    // itself and as a model of the player). β log: v1.2β distrusted far-off wins (weak to Frigate
+    // counterwaves); v1.3β safeEcon 2; v1.4β + hurry 0; v1.5β + gridlock.
+    grandmasterBeta: {
+        label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster',
+        gmCfg: {
+            safeEcon: 2, hurry: 0,
+            mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value', 'gridlock'],
+            theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value', 'gridlock'],
+        },
+    },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };

@@ -27,6 +27,8 @@ export const GM_DEFAULTS = {
     theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value'],
     agg: 'mean',        // how scores across their styles combine: 'mean' | 'cautious' | 'min' | 'risk'
     risk: 0.5,          // for agg 'risk': how much the spread across opponent styles counts against a move
+    swarmShips: 40,     // above this many ships on the board, the lookahead shortens proportionally
+    budgetMs: 2500,     // stop scoring further moves after this long and play the best so far
     horizon: 40,        // turns of future spending that income and ore are worth
     safeEcon: 0,        // stretch that horizon by up to ×(1 + safeEcon) while the base is safe
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
@@ -251,6 +253,45 @@ function snowballer(buffer, fallback = value) {
 
 const evo = evolvedPolicy(EVO);
 
+/**
+ * Rollout policy from playtest 8, the mining gridlock:
+ * - enemy pushing into my half: fighters, no miners (a trader first while their wave is mid-field)
+ * - my front in the centre with the enemy pinned near its own base: fighting miners (Reaver,
+ *   Excavator, Behemoth... the best ore per cost with health to hold the line), so the gridlock
+ *   that keeps them from mining also mines for me; Drillers only on a quiet board
+ * - quiet board: traders and miners
+ */
+function gridlock(S, side, cfg) {
+    const me = S[side];
+    const adv = (s, owner) => (owner === 'blue' ? s.sector - 1 : 7 - s.sector); // 0 = own base
+    const foe = enemyOf(side);
+    let foeNear = 0, foeMid = 0, myCenter = 0;
+    for (const s of S[foe].ships) {
+        if (s.health <= 0) continue;
+        const d = 6 - adv(s, foe); // distance of their ship from my base
+        if (d <= 2) foeNear++;
+        else if (d <= 4) foeMid++;
+    }
+    for (const s of me.ships) if (s.health > 0 && adv(s, side) >= 2 && adv(s, side) <= 4) myCenter++;
+    const menu = shipMenu(S, side, cfg);
+    const affordable = n => costOf(n, me.ore) <= me.money;
+    if (foeNear) return value(S, side, cfg);
+    if (foeMid) return affordable(7) && menu.includes(7) && foeMid <= 2 ? 7 : value(S, side, cfg);
+    // my push holds the middle, or nothing is happening: mine
+    let best = 0, bestRate = 0;
+    for (const n of menu) {
+        const g = ORE_GAIN(n);
+        if (!g || !affordable(n)) continue;
+        const sturdy = TEMPLATES[n].health >= 15;
+        if (myCenter && !sturdy) continue; // only miners that can hold a line in a gridlock
+        const rate = g / costOf(n, me.ore) * (sturdy ? 1.5 : 1);
+        if (rate > bestRate) { bestRate = rate; best = n; }
+    }
+    if (best) return best;
+    if (!myCenter && affordable(7) && menu.includes(7)) return 7;
+    return myCenter ? value(S, side, cfg) : 0;
+}
+
 export const POLICIES = {
     wild,
     // the AI-vs-AI evolved one-turn bot (js/evolved.js), as an imagined player
@@ -266,6 +307,7 @@ export const POLICIES = {
     // playtest 6: income whenever the base can soak it, defending with the best counter
     // (missiles / hellfires into clumped waves) instead of Frigates
     snowsmart: snowballer(8, smart),
+    gridlock,
     mine: investor(ORE_GAIN, 40),
     big,
     skip: () => 0,
@@ -344,6 +386,9 @@ function plans(S, side, cfg) {
     return out;
 }
 
+// Hard ceiling on one decision's thinking time, checked inside rollouts (see chooseGrandmaster).
+let deadline = Infinity;
+
 function seededRandom(a) {
     return () => {
         a |= 0; a = (a + 0x6D2B79F5) | 0;
@@ -364,6 +409,7 @@ function rollout(S, side, plan, mine, theirs, cfg, stream = 0) {
     const rand = seededRandom(S.turn * 7919 + 17 + 104729 * stream);
     try {
         for (let d = 0; d < cfg.depth && !sim.over; d++) {
+            if (d > 0 && Date.now() > deadline) break; // out of thinking time: score it as it stands
             let a;
             if (d === 0) a = plan.first;
             else if (plan.saveFor && d <= plan.wait) a = canAfford(sim, side, plan.saveFor) ? plan.saveFor : 0;
@@ -457,6 +503,13 @@ export function chooseGrandmaster(state, side, opts = {}) {
         const safety = Math.max(0, 1 - 8 * baseThreat(state, side) / hp);
         Object.assign(cfg, { horizon: cfg.horizon * (1 + cfg.safeEcon * safety) });
     }
+    // Bounded thinking: an imagined future costs ships × turns, so with a big swarm on the board
+    // (carriers spawning every turn, long gridlocks) the lookahead shortens to keep that roughly
+    // constant; normal games (under ~40 ships) are unaffected.
+    const ships = state.blue.ships.length + state.red.ships.length;
+    if (ships > cfg.swarmShips) Object.assign(cfg, { depth: Math.max(8, Math.round(cfg.depth * cfg.swarmShips / ships)) });
+    const started = Date.now();
+    deadline = started + 2 * cfg.budgetMs;
     const S = cloneState(state);
     const rng = opts.rng || Math.random;
     const weights = styleWeights(state, side, cfg, opts.memo);
@@ -476,6 +529,8 @@ export function chooseGrandmaster(state, side, opts = {}) {
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
     for (const plan of plans(S, side, cfg)) {
+        // hard stop: keep the best move found so far rather than freeze the game
+        if (scored.length && Date.now() - started > cfg.budgetMs) break;
         // Every follow-up style of mine after this move, judged across their styles.
         let score = -Infinity;
         for (const mine of cfg.mine) {

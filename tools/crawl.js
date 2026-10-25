@@ -69,7 +69,7 @@ if (!isMainThread) {
     const t0 = Date.now();
     const res = (await Promise.all(chunks.map(c => new Promise((ok, bad) => {
         const w = new Worker(new URL(import.meta.url), { workerData: { jobs: c } });
-        w.on('message', ok); w.on('error', bad);
+        w.on('message', ok); w.on('error', e => { console.error(`worker failed: ${e.stack || e}`); process.exit(1); });
     })))).flat();
     console.log(`${res.length} games, ${((Date.now() - t0) / 1000).toFixed(0)}s. Concept side's record (W-L), game length, and its economy at handover -> end vs grandmaster's at end.`);
     const cells = {};
