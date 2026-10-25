@@ -114,3 +114,8 @@ HUMAN_ORDERS.user12_red_gmb17 = [0, 0, 0, 4, 4, 4, 0, 0, 6, 3, 0, 7, 1, 0, 7, 3,
 // started miners late. Basis for respect: 'push'.
 HUMAN_ORDERS.user13_blue = [1, 3, 3, 2, 4, 2, 4, 4, 2, 2, 2, 2, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 7, 0, 7, 5, 5, 5, 4, 4, 5, 5, 3, 4, 4, 4, 6, 4, 6, 4, 4, 4, 4, 4];
 HUMAN_ORDERS.user13_red_gmb17 = [0, 0, 0, 4, 2, 2, 0, 6, 1, 5, 5, 0, 0, 7, 2, 0, 4, 4, 2, 4, 2, 0, 7, 1, 2, 4, 4, 4, 3, 4, 5, 3, 0, 0, 9, 3, 1, 7, 2, 6, 1, 4, 5, 5, 5, 5, 4];
+
+// Playtest 14 (2026-10-25): user beat β v1.8β with traders then Frigate spam; it opened with 8 turns
+// of pure combat and its hard push fed a counterwave ("whatever crashes into a base comes back doubled").
+HUMAN_ORDERS.user14_blue = [1, 3, 3, 3, 2, 3, 0, 0, 7, 0, 7, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
+HUMAN_ORDERS.user14_red_gmb18 = [0, 0, 0, 4, 4, 4, 0, 0, 6, 3, 0, 7, 0, 3, 3, 6, 3, 3, 3, 5, 0, 0, 4, 5, 5, 0, 7];

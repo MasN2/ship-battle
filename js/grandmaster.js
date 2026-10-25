@@ -34,8 +34,11 @@ export const GM_DEFAULTS = {
     investBias: 0,      // score credit per +1 income a move buys (see chooseGrandmaster)
     investSafe: false,  // scale that credit (and oreBias) by how safe the base is
     oreBias: 0,         // score credit per ore/turn a miner makes, while the board is open for it
+    orePerCost: false,  // scale that credit by min(1, 5 / price) (ore per money, Driller = 1)
     respect: false,     // judge pure-combat moves by their worst case over respected opponents:
-                        // 'push' = only while my push holds their half, true = always
+                        // 'push' = only while my push holds their half, 'safe' = also whenever its
+                        // base is safe (safety >= respectSafety), true = always
+    respectSafety: 0.8,
     pushMiners: 0,      // in a push window, drop pure fighters cheaper than this many turns of income
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
@@ -555,12 +558,18 @@ export function chooseGrandmaster(state, side, opts = {}) {
         if (plan.saveFor || !plan.first) return 0;
         const scale = cfg.investSafe ? safety : 1;
         let v = cfg.investBias * INCOME_GAIN(plan.first) * scale;
-        if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * scale;
+        // per ore/turn, or (orePerCost) per ore/turn per money relative to a 5-money Driller, so a
+        // cheap Driller isn't outbid by a pricey Reaver whose extra hp mostly feeds counterwaves
+        const perCost = cfg.orePerCost ? Math.min(1, 5 / costOf(plan.first, S[side].ore)) : 1;
+        if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * perCost * scale;
         return v;
     };
     // respect 'push': only while my push holds their half (trailing fighters behind a wave);
     // respect true: always (too timid: it stops defending properly)
-    const respectNow = cfg.respect === 'push' ? pushWindow(S, side) : !!cfg.respect;
+    // respect 'safe': whenever its own base is safe (opening, quiet board, pushes), not under threat
+    const respectNow = cfg.respect === 'push' ? pushWindow(S, side)
+        : cfg.respect === 'safe' ? safety >= cfg.respectSafety || pushWindow(S, side)
+            : !!cfg.respect;
     // What each of my styles would play right now, if I just followed it.
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
