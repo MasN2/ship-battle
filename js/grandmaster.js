@@ -55,6 +55,7 @@ export const GM_DEFAULTS = {
     resolveWin: 0.5,    // ...and how much a resolution that ends the game counts, as a share of winScore
     leafScale: 1,       // multiplier on the evolved score
     commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
+    minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
     hurryAhead: false,  // hurry counts turns from now instead of the game's turn number
     idleCash: false,    // no skipping/saving when it could buy now and still afford anything next turn
@@ -458,6 +459,9 @@ function plans(S, side, cfg) {
     return out;
 }
 
+// Set by rollout(): the plan's fragile miner died in that imagined future without ever mining.
+let rolloutDeadMiner = false;
+
 // Hard ceiling on one decision's thinking time, checked inside rollouts (see chooseGrandmaster).
 let deadline = Infinity;
 
@@ -479,6 +483,10 @@ function rollout(S, side, plan, mine, theirs, cfg, stream = 0) {
     // Every move is tested against the same random streams (one per opponent-style slot),
     // so lines differ only by the moves being compared.
     const rand = seededRandom(S.turn * 7919 + 17 + 104729 * stream);
+    // minerFate: follow a fragile miner bought by this plan; did it die before ever mining?
+    const watch = cfg.minerFate && !plan.saveFor && ORE_GAIN(plan.first) && TEMPLATES[plan.first].health < 15;
+    let miner = null, mined = false;
+    rolloutDeadMiner = false;
     try {
         for (let d = 0; d < cfg.depth && !sim.over; d++) {
             if (d > 0 && Date.now() > deadline) break; // out of thinking time: score it as it stands
@@ -489,7 +497,13 @@ function rollout(S, side, plan, mine, theirs, cfg, stream = 0) {
             const b = theirPol(sim, opp, cfg, rand);
             if (side === 'blue') stepTurn(sim, a, b);
             else stepTurn(sim, b, a);
+            if (watch) {
+                const own = sim[side].ships;
+                if (d === 0) miner = own.findLast(s => s.number === plan.first) ?? null;
+                if (miner && own.includes(miner) && miner.sector >= 3 && miner.sector <= 5) mined = true;
+            }
         }
+        if (watch && miner && !mined && !sim[side].ships.includes(miner)) rolloutDeadMiner = true;
     } catch (e) {
         if (!(e instanceof SimError)) throw e;
         return -5e5; // a line that freezes the live game: avoid it
@@ -634,13 +648,22 @@ export function chooseGrandmaster(state, side, opts = {}) {
         // Every follow-up style of mine after this move, judged across their styles.
         let score = -Infinity;
         for (const mine of cfg.mine) {
-            const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
+            let deadShare = 0;
+            const scores = cfg.theirs.map((t, j) => {
+                const x = rollout(S, side, plan, mine, t, cfg, j);
+                if (rolloutDeadMiner) deadShare += 1 / cfg.theirs.length;
+                return x;
+            });
             // Respect the opponent (playtest 13): a pure-combat move only counts as good if it works
             // against every respected imagined opponent (all but the random 'wild' ones) - its
             // worst case. Investments (miners, traders, saving) keep the usual average.
             const combat = respectNow && !plan.saveFor && plan.first && !INCOME_GAIN(plan.first) && !ORE_GAIN(plan.first);
             const respected = combat ? scores.filter((_, j) => cfg.theirs[j] !== 'wild') : null;
-            const s = (combat ? Math.min(...respected) : aggregate(scores, cfg.agg, weights, cfg.risk)) + bias(plan) + invest(plan);
+            // Miner fate (playtest 17): a fragile miner that dies in its own column before ever
+            // mining is the critical-fail position (a dead investment and a gridlock at home), worth
+            // minerFate imagined win/loss flips times the share of imagined futures where it happens.
+            const fate = deadShare * (cfg.minerFate || 0) * 2 * cfg.winScore / cfg.theirs.length;
+            const s = (combat ? Math.min(...respected) : aggregate(scores, cfg.agg, weights, cfg.risk)) + bias(plan) + invest(plan) - fate;
             if (opts.detail) opts.detail.push({ plan, mine, scores, total: s });
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.

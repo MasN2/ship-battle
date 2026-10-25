@@ -71,7 +71,7 @@ const c10tutorial = {
 }
 
 export const GM_VERSION = '1.2';
-export const GM_BETA_VERSION = '2.2β';
+export const GM_BETA_VERSION = '2.3β';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -110,14 +110,16 @@ export const DIFFICULTIES = {
     // wins in 30 turns; centre/pin terms; dead-zone miner penalty; real opening variety;
     // v2.2β close-out: when a whole plan (a style played from now on) wins most imagined games it
     // plays that plan instead of re-planning into one-off traders/skips until the win is gone;
-    // no banking past the priciest visible ship (idleCash); variety only among its top 3 moves.
+    // no banking past the priciest visible ship (idleCash); variety only among its top 3 moves;
+    // v2.3β miner fate: a fragile miner costs a share of an imagined flip for every imagined future
+    // where it dies before ever mining (the column-1 critical fail; was 7% of its miners, now 0%).
     grandmasterBeta: {
         label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster',
         gmCfg: {
             safeEcon: 2, hurry: 0, investBias: 500, investSafe: true, oreBias: 250, respect: 'safe', orePerCost: true,
             winScore: 5000, fwdMult: 0.3, mineTurns: 6,
             depth: 16, centerW: 100, pinW: 100, deadMiner: 0.5, openTol: 0.3, driftTol: 0.1,
-            closeOut: 0.6, idleCash: true, varietyTop: 3,
+            closeOut: 0.6, idleCash: true, varietyTop: 3, minerFate: 1,
             mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value', 'gridlock'],
             theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value', 'gridlock'],
         },
