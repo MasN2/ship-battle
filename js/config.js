@@ -71,7 +71,7 @@ const c10tutorial = {
 }
 
 export const GM_VERSION = '1.2';
-export const GM_BETA_VERSION = '2.4β';
+export const GM_BETA_VERSION = '2.5β';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -116,7 +116,12 @@ export const DIFFICULTIES = {
     // v2.4β loses gracefully: a decided imagined game counts base hp and ships only (bank and
     // income are worthless once it's over), investment credit only for games not already lost,
     // and a loss further off scores better (lossDelay) - it fights to the last turn instead of
-    // buying Caravans, which also makes all-in attacks against it a real risk.
+    // buying Caravans, which also makes all-in attacks against it a real risk;
+    // v2.5β ore as indirect income: prices are n^(1 + e²/(e + d(ore))), so ore discounts big
+    // ships far more than small ones; the economy is valued over a few spending rhythms
+    // (oreTiers) and a miner is credited like a trader by the income-equivalent of its next 10
+    // turns of ore at the tiers its income reaches (a Quarry ~1.8 traders early, a Driller ~0.4),
+    // only while the board is open and its base safe.
     grandmasterBeta: {
         label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster',
         gmCfg: {
@@ -124,7 +129,7 @@ export const DIFFICULTIES = {
             winScore: 5000, fwdMult: 0.3, mineTurns: 6,
             depth: 16, centerW: 100, pinW: 100, deadMiner: 0.5, openTol: 0.3, driftTol: 0.1,
             closeOut: 0.6, idleCash: true, varietyTop: 3, minerFate: 1,
-            decidedCombat: true, lossDelay: 150,
+            decidedCombat: true, lossDelay: 150, oreIncomeTurns: 10, oreTiers: [1, 2, 4],
             mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value', 'gridlock'],
             theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value', 'gridlock'],
         },

@@ -60,6 +60,8 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    oreIncomeTurns: 0,  // >0: credit miners as the income-equivalent of this many turns of their ore (replaces oreBias)
+    oreTiers: null,     // spending rhythms (turns per buy) over which ore's discount is averaged, e.g. [1, 2, 4]
     respectSkip: false, // respect also holds skipping/saving to their worst case (they aren't investments)
     decidedCombat: false, // a decided imagined game scores base hp and ships only, not bank/income/ore
     lossDelay: 0,       // a decided loss scores this much better per turn it lies ahead (fight on when lost)
@@ -359,8 +361,21 @@ function sideValue(S, side, cfg, combatOnly = false) {
     // the ore stock includes what miners now in the centre will mine over that many more turns
     // (playtests: a gridlock where I mine more is a winning position, even before the ore lands).
     const ore = me.ore + (cfg.mineTurns ? cfg.mineTurns * calcOreIncome(side, S) : 0);
-    const perTurn = me.income > 0 ? economy(me.income, ore) : 0;
-    const bare = me.income > 0 ? economy(me.income, 0) : 0;
+    // oreTiers (playtest 22): ore is an income multiplier whose size depends on the tier being
+    // bought - prices are n^(1 + e²/(e + d(ore))) with e growing in n, so ore barely discounts a
+    // Driller but halves a Dreadnought. Buying every turn alone only sees row-1 discounts, so
+    // value the economy as the average ship size per turn over a few spending rhythms (every
+    // turn, every 2nd, every 4th: missile-hellfire alternation, short save-ups), which counts
+    // the discount on the tiers this income is reaching for.
+    const rate = (inc, o) => {
+        if (inc <= 0) return 0;
+        if (!cfg.oreTiers) return economy(inc, o);
+        let t = 0;
+        for (const k of cfg.oreTiers) t += economy(k * inc, o) / k;
+        return t / cfg.oreTiers.length;
+    };
+    const perTurn = rate(me.income, ore);
+    const bare = rate(me.income, 0);
     const horizon = Math.max(8, cfg.horizon - 0.1 * S.turn);
     v += horizon * (cfg.incomeW * bare + cfg.oreW * (perTurn - bare));
     if (me.income > 0) v += me.money * (perTurn / me.income);
@@ -650,7 +665,19 @@ export function chooseGrandmaster(state, side, opts = {}) {
         // per ore/turn, or (orePerCost) per ore/turn per money relative to a 5-money Driller, so a
         // cheap Driller isn't outbid by a pricey Reaver whose extra hp mostly feeds counterwaves
         const perCost = cfg.orePerCost ? Math.min(1, 5 / costOf(plan.first, S[side].ore)) : 1;
-        if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * perCost * scale;
+        if (cfg.oreIncomeTurns && !foeInMyHalf && ORE_GAIN(plan.first)) {
+            // Ore as indirect income (playtest 22): credit a miner like a trader, scaled by how
+            // much income its next oreIncomeTurns of mining are worth at the tiers this income
+            // reaches (the real price formula: big for a Quarry at low/mid ore, little for a
+            // Driller at 200 ore). Only while the board is open and the base safe: the tail of
+            // a push, not an always-on frenzy.
+            const me = S[side];
+            const r = (inc, o) => [1, 2, 4].reduce((t, k) => t + economy(k * inc, o) / k, 0) / 3;
+            const inc = Math.max(1, me.income);
+            const eq = (r(inc, me.ore + ORE_GAIN(plan.first) * cfg.oreIncomeTurns) - r(inc, me.ore))
+                / Math.max(1e-6, r(inc + 1, me.ore) - r(inc, me.ore));
+            v += cfg.investBias * eq * scale;
+        } else if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * perCost * scale;
         // Dead-zone miners (playtest 15): with an enemy ship in my half, a fragile miner deployed
         // now gets pinned one sector from home - can't mine, gets shot - so it costs deadMiner
         // (a share of one imagined win/loss flip). Sturdy fighting miners can hold a gridlock.
