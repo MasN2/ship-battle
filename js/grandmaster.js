@@ -31,6 +31,7 @@ export const GM_DEFAULTS = {
     budgetMs: 2500,     // stop scoring further moves after this long and play the best so far
     horizon: 40,        // turns of future spending that income and ore are worth
     safeEcon: 0,        // stretch that horizon by up to ×(1 + safeEcon) while the base is safe
+    investBias: 0,      // score credit per +1 income a move buys (see chooseGrandmaster)
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
@@ -525,6 +526,11 @@ export function chooseGrandmaster(state, side, opts = {}) {
         const n = plan.saveFor ? 0 : plan.first;
         return biasOf[n] ??= cfg.intuitionScale * intuitionBias(IW, n, S, side, sit);
     };
+    // Investment credit: income pays off forever, mostly after the lookahead ends, and most
+    // imagined lines are decided (win or loss) before then, so on its own the search can't see a
+    // trader's payback. investBias points per +1 income break ties toward investing; it is meant
+    // to be smaller than one imagined line flipping between win and loss, so safety still wins.
+    const invest = plan => (cfg.investBias && !plan.saveFor ? cfg.investBias * INCOME_GAIN(plan.first) : 0);
     // What each of my styles would play right now, if I just followed it.
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
@@ -535,7 +541,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
         let score = -Infinity;
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
-            const s = aggregate(scores, cfg.agg, weights, cfg.risk) + bias(plan);
+            const s = aggregate(scores, cfg.agg, weights, cfg.risk) + bias(plan) + invest(plan);
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
             const pure = !plan.saveFor && plan.first === styleMove[mine];
