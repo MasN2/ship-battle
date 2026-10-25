@@ -34,6 +34,8 @@ export const GM_DEFAULTS = {
     investBias: 0,      // score credit per +1 income a move buys (see chooseGrandmaster)
     investSafe: false,  // scale that credit (and oreBias) by how safe the base is
     oreBias: 0,         // score credit per ore/turn a miner makes, while the board is open for it
+    respect: false,     // judge pure-combat moves by their worst case over respected opponents:
+                        // 'push' = only while my push holds their half, true = always
     pushMiners: 0,      // in a push window, drop pure fighters cheaper than this many turns of income
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
@@ -556,6 +558,9 @@ export function chooseGrandmaster(state, side, opts = {}) {
         if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * scale;
         return v;
     };
+    // respect 'push': only while my push holds their half (trailing fighters behind a wave);
+    // respect true: always (too timid: it stops defending properly)
+    const respectNow = cfg.respect === 'push' ? pushWindow(S, side) : !!cfg.respect;
     // What each of my styles would play right now, if I just followed it.
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
@@ -566,7 +571,12 @@ export function chooseGrandmaster(state, side, opts = {}) {
         let score = -Infinity;
         for (const mine of cfg.mine) {
             const scores = cfg.theirs.map((t, j) => rollout(S, side, plan, mine, t, cfg, j));
-            const s = aggregate(scores, cfg.agg, weights, cfg.risk) + bias(plan) + invest(plan);
+            // Respect the opponent (playtest 13): a pure-combat move only counts as good if it works
+            // against every respected imagined opponent (all but the random 'wild' ones) - its
+            // worst case. Investments (miners, traders, saving) keep the usual average.
+            const combat = respectNow && !plan.saveFor && plan.first && !INCOME_GAIN(plan.first) && !ORE_GAIN(plan.first);
+            const respected = combat ? scores.filter((_, j) => cfg.theirs[j] !== 'wild') : null;
+            const s = (combat ? Math.min(...respected) : aggregate(scores, cfg.agg, weights, cfg.risk)) + bias(plan) + invest(plan);
             if (opts.detail) opts.detail.push({ plan, mine, scores, total: s });
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.

@@ -109,3 +109,8 @@ HUMAN_ORDERS.user10_red_gmb16 = [0, 0, 0, 0, 8, 0, 0, 7, 0, 0, 6, 2, 1, 2, 3, 6,
 // (spend, econ, mine, wild x2, gridlock) and loses to smart/value; a Quarry wins only vs gridlock.
 HUMAN_ORDERS.user12_blue = [1, 3, 3, 3, 2, 3, 0, 0, 7, 0, 7, 2, 4, 4, 4, 4, 3, 3, 3, 7, 3, 3, 7, 3, 7, 6, 3, 7, 7, 5, 5, 5, 6, 10, 5, 10, 6, 10, 6, 7, 7, 7, 7, 7, 10, 10, 10, 10, 10, 8, 16, 10, 10, 12, 6, 6, 17, 8, 8, 17, 8, 8, 8, 8];
 HUMAN_ORDERS.user12_red_gmb17 = [0, 0, 0, 4, 4, 4, 0, 0, 6, 3, 0, 7, 1, 0, 7, 3, 3, 3, 0, 7, 1, 5, 7, 5, 4, 4, 0, 7, 7, 7, 7, 0, 12, 9, 2, 8, 8, 10, 7, 8, 9, 9, 5, 9, 3, 14, 5, 16, 9, 9, 12, 9, 0, 0, 0, 29, 0, 0, 25, 4, 13, 8, 16, 8];
+
+// Playtest 13 (2026-10-24): user beat β v1.7β; it trailed combat ships behind its pushes and
+// started miners late. Basis for respect: 'push'.
+HUMAN_ORDERS.user13_blue = [1, 3, 3, 2, 4, 2, 4, 4, 2, 2, 2, 2, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 7, 0, 7, 5, 5, 5, 4, 4, 5, 5, 3, 4, 4, 4, 6, 4, 6, 4, 4, 4, 4, 4];
+HUMAN_ORDERS.user13_red_gmb17 = [0, 0, 0, 4, 2, 2, 0, 6, 1, 5, 5, 0, 0, 7, 2, 0, 4, 4, 2, 4, 2, 0, 7, 1, 2, 4, 4, 4, 3, 4, 5, 3, 0, 0, 9, 3, 1, 7, 2, 6, 1, 4, 5, 5, 5, 5, 4];

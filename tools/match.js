@@ -34,6 +34,7 @@ export function makeBot(name, cfg, eps) {
         case 'alice-red': return noisy(scriptBot(HUMAN_ORDERS.alice_red), eps);
         // the user's winning playtest order, then the turtle style it was playing
         case 'user1': return noisy(scriptBot(HUMAN_ORDERS.user1_blue, (S, side, rng) => POLICIES.turtle(S, side, GM_DEFAULTS, rng)), eps);
+        case 'user13': return noisy(scriptBot(HUMAN_ORDERS.user13_blue, (S, side, rng) => POLICIES.value(S, side, GM_DEFAULTS, rng)), eps);
         case 'user7': return noisy(scriptBot(HUMAN_ORDERS.user7_blue, (S, side, rng) => POLICIES.snowsmart(S, side, GM_DEFAULTS, rng)), eps);
         case 'user5': return noisy(scriptBot(HUMAN_ORDERS.user5_blue, (S, side, rng) => POLICIES.value(S, side, GM_DEFAULTS, rng)), eps);
         case 'user4': return noisy(scriptBot(HUMAN_ORDERS.user4_blue, (S, side, rng) => POLICIES.value(S, side, GM_DEFAULTS, rng)), eps);
