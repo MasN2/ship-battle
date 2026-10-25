@@ -52,3 +52,28 @@ batch 8: won 5/8 outright; losses fixed by rewinding: 1 (t15); 67 branches tried
 
 === 2026-10-25T15:33:42.601Z 0 batches × 8 games, rewinds 6 × 3 alternatives, book 0 positions
   checkpoint start (book 0 positions): held-out 28/64 wins vs opponent, losses last 38 turns (0.7 min)
+
+=== 2026-10-25T15:34:54.727Z 8 batches × 8 games, rewinds 8 × 3 alternatives, book 17670 positions
+  checkpoint start (book 17670 positions): held-out 42/64 wins vs opponent, losses last 43 turns (1.2 min)
+batch 1: won 6/8 outright; losses fixed by rewinding: 1 (t22); 27 branches tried; 728 lessons, book 18025 positions; 0.8 min
+batch 2: won 3/8 outright; losses fixed by rewinding: 5 (t20 t20 t14 t21 t11); 73 branches tried; 1173 lessons, book 18309 positions; 0.8 min
+batch 3: won 4/8 outright; losses fixed by rewinding: 4 (t15 t15 t18 t14); 49 branches tried; 885 lessons, book 18478 positions; 0.8 min
+batch 4: won 4/8 outright; losses fixed by rewinding: 4 (t15 t31 t9 t11); 69 branches tried; 1206 lessons, book 18824 positions; 0.6 min
+  checkpoint after batch 4: held-out 43/64 wins vs opponent, losses last 39 turns (0.9 min)
+batch 5: won 6/8 outright; losses fixed by rewinding: 2 (t20 t4); 34 branches tried; 807 lessons, book 19113 positions; 0.6 min
+batch 6: won 6/8 outright; losses fixed by rewinding: 2 (t15 t16); 32 branches tried; 643 lessons, book 19204 positions; 0.3 min
+batch 7: won 5/8 outright; losses fixed by rewinding: 2 (t14 t15); 56 branches tried; 1075 lessons, book 19366 positions; 0.5 min
+batch 8: won 5/8 outright; losses fixed by rewinding: 3 (t20 t13 t7); 48 branches tried; 905 lessons, book 19639 positions; 0.6 min
+  checkpoint after batch 8: held-out 43/64 wins vs opponent, losses last 39 turns (0.9 min)
+
+=== 2026-10-25T15:43:13.677Z 0 batches × 8 games, rewinds 6 × 3 alternatives, book 19639 positions
+  checkpoint start (book 19639 positions): held-out 55/64 wins vs opponent, losses last 39 turns (1.2 min)
+
+=== 2026-10-25T15:44:27.472Z 0 batches × 8 games, rewinds 6 × 3 alternatives, book 19639 positions
+  checkpoint start (book 19639 positions): held-out 41/64 wins vs opponent, losses last 39 turns (0.9 min)
+
+=== 2026-10-25T15:45:24.502Z 0 batches × 8 games, rewinds 6 × 3 alternatives, book 19639 positions
+  checkpoint start (book 19639 positions): held-out 55/64 wins vs opponent, losses last 39 turns (1.2 min)
+
+=== 2026-10-25T15:46:33.816Z 0 batches × 8 games, rewinds 6 × 3 alternatives, book 19639 positions
+  checkpoint start (book 19639 positions): held-out 64/64 wins vs opponent, losses last - turns (1.4 min)

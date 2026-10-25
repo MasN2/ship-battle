@@ -104,7 +104,7 @@ function episode({ cfg, oppCfg, seed, side, rewinds, alts }) {
 
 function heldOut({ cfg, oppCfg, seed, side }) {
     const g = playOn(newSimState(), side, cfg, oppCfg, seed, undefined, false);
-    return { result: g.result, turns: g.turns };
+    return { result: g.result, turns: g.turns, line: side + ':' + g.decisions.map(d => d.move).join(',') };
 }
 
 if (!isMainThread) {
@@ -150,7 +150,8 @@ if (!isMainThread) {
         const wins = res.filter(r => WON(r.result)).length;
         const lossTurns = res.filter(r => r.result < 0.5).map(r => r.turns);
         const avg = lossTurns.length ? (lossTurns.reduce((a, b) => a + b, 0) / lossTurns.length).toFixed(0) : '-';
-        log(`  checkpoint ${label}: held-out ${wins}/${res.length} wins vs opponent, losses last ${avg} turns (${((Date.now() - t0) / 60000).toFixed(1)} min)`);
+        const distinct = new Set(res.map(r => r.line)).size;
+        log(`  checkpoint ${label}: held-out ${wins}/${res.length} wins vs opponent, ${distinct} distinct games, losses last ${avg} turns (${((Date.now() - t0) / 60000).toFixed(1)} min)`);
     };
     if (check) await checkpoint(`start (book ${Object.keys(book).length} positions)`);
     for (let b = 0; b < batches; b++) {
@@ -159,7 +160,7 @@ if (!isMainThread) {
         const res = await runJobs(jobs, book);
         let n = 0;
         for (const r of res) for (const [keys, move, result] of r.records) { bookRecord(book, keys, move, result); n++; }
-        fs.writeFileSync(bookFile, `// Lessons written by tools/wizard.js (see js/book.js), ${new Date().toISOString()}.\nexport const BOOK = ${JSON.stringify(book)};\n`);
+        fs.writeFileSync(bookFile, `// Lessons written by tools/wizard.js (see js/book.js), ${new Date().toISOString()}.\nexport const BOOK = ${JSON.stringify(book, (k, v) => (typeof v === 'number' ? Math.round(v * 1000) / 1000 : v))};\n`);
         const wins = res.filter(r => WON(r.result)).length;
         const fixed = res.filter(r => r.fixedAt !== null).map(r => `t${r.fixedAt}`);
         log(`batch ${b + 1}: won ${wins}/${res.length} outright; losses fixed by rewinding: ${fixed.length} (${fixed.join(' ') || '-'}); ` +

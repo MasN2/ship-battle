@@ -78,6 +78,7 @@ export const GM_DEFAULTS = {
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
     book: null,         // wizard lessons (true = js/book-data.js), see js/book.js
     bookW: 3000,        // points per 100% win-probability edge in the book
+    bookTol: 0,         // variety window in book win probability (0.1 = moves within 10% of the best)
     bookPrior: 8,       // a lesson verified n times counts n / (n + bookPrior): higher = fuzzier until confirmed
     oreIncomePerMoney: false, // scale that credit by ore per money relative to a Driller (capped at 1)
     oreIncomeTurns: 0,  // >0: credit miners as the income-equivalent of this many turns of their ore (replaces oreBias)
@@ -856,7 +857,9 @@ export function chooseGrandmaster(state, side, opts = {}) {
             const k = e.plan.saveFor ? `s${e.plan.saveFor}` : `m${e.plan.first}`;
             if (!byMove.has(k) || e.score > byMove.get(k).score) byMove.set(k, e);
         }
-        const tol = tolShare * flip;
+        // with a book, moves it rates within bookTol win probability of the best are all sound
+        // (playtest 25: a strong book otherwise turns one found win into one memorised line)
+        const tol = Math.max(tolShare * flip, book ? cfg.bookTol * cfg.bookW : 0);
         const ranked = [...byMove.values()].sort((a, b) => b.score - a.score);
         const top = ranked[0].score;
         let near = ranked.filter(e => e.score >= top - tol);
