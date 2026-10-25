@@ -129,3 +129,11 @@ HUMAN_ORDERS.user15_red_gmb20 = [0, 0, 2, 6, 3, 0, 0, 4, 4, 0, 0, 7, 1, 3, 4, 2,
 // $20-38 with a lone trader at home, then fed a Reaver out first and got gridlocked by econ.
 HUMAN_ORDERS.user16_blue = [1, 3, 3, 0, 0, 7, 0, 0, 7, 0, 7, 3, 3, 7, 2, 7, 6, 6, 2, 6, 2, 6, 7, 6, 6, 12, 6, 7, 7, 7, 7, 7, 10, 10, 16, 10, 10, 10, 10, 10, 13, 8, 11, 11, 11, 8, 0, 0];
 HUMAN_ORDERS.user16_red_gmb21 = [0, 0, 7, 0, 2, 0, 7, 0, 0, 0, 0, 0, 6, 0, 0, 7, 7, 7, 7, 4, 0, 5, 8, 2, 8, 4, 7, 4, 6, 4, 6, 0, 8, 0, 6, 14, 7, 6, 0, 0, 7, 16, 0, 14, 0, 14, 14, 8];
+
+// Playtest 19 (2026-10-25): user beat β v2.3β. Game 1 (11 turns): a late Driller into a soft push,
+// a Reaver front-loaded into its column 1, skips while gridlocked. Game 2: endgame Excavator wall,
+// skips and Caravans against a lethal wave, no Hellfire with 28 banked.
+HUMAN_ORDERS.user19a_blue = [1, 3, 3, 3, 3, 0, 0, 2, 7, 2, 2];
+HUMAN_ORDERS.user19a_red_gmb23 = [3, 3, 0, 3, 0, 0, 6, 4, 0, 0, 7];
+HUMAN_ORDERS.user19_blue = [1, 3, 3, 3, 0, 0, 7, 0, 0, 7, 0, 7, 3, 2, 5, 3, 7, 5, 6, 6, 5, 6, 5, 6, 5, 5, 8, 5, 5, 4, 4, 8, 3, 7, 7, 4, 8, 8, 8, 8, 4, 6, 6, 6, 6, 10, 8, 8, 4, 8, 8, 8];
+HUMAN_ORDERS.user19_red_gmb23 = [3, 0, 0, 7, 0, 0, 6, 1, 0, 7, 0, 3, 0, 7, 0, 7, 6, 4, 4, 5, 6, 3, 8, 4, 4, 8, 4, 0, 8, 8, 4, 4, 8, 4, 4, 8, 4, 0, 12, 3, 7, 7, 7, 0, 3, 12, 0, 14, 0, 14, 2, 14];

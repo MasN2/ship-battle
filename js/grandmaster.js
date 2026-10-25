@@ -60,6 +60,7 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    lossDelay: 0,       // a decided loss scores this much better per turn it lies ahead (fight on when lost)
     hurryAhead: false,  // hurry counts turns from now instead of the game's turn number
     idleCash: false,    // no skipping/saving when it could buy now and still afford anything next turn
     varietyBuys: false, // ...and only buys, unless skipping/saving is the best move outright
@@ -421,7 +422,9 @@ export function evaluate(S, side, cfg, ahead = 0) {
     // still outscores an undecided line (hurry × turn 40 can eat most of winScore)
     const when = cfg.hurryAhead ? ahead : S.turn;
     if (S.over === side) return (W - hurry * when) * cfg.trust ** ahead + v;
-    if (S.over) return -W + hurry * when + v;
+    // lossDelay (playtest 19): when every line loses, surviving longer is what's left to fight for
+    // (more turns for a counterwave, a mistake, a hellfire), so a loss further off scores better.
+    if (S.over) return -W + hurry * when + (cfg.lossDelay || 0) * ahead + v;
     return v;
 }
 
@@ -557,6 +560,15 @@ function aggregate(scores, how, weights, risk = 0) {
         const m = scores.reduce((a, b) => a + b, 0) / scores.length;
         const sd = Math.sqrt(scores.reduce((a, b) => a + (b - m) ** 2, 0) / scores.length);
         return m - risk * sd;
+    }
+    if (how === 'trim') {
+        // Fuzzy consensus (playtest 19): drop the `risk` most extreme imagined outcomes at each end,
+        // so one silly imagined opponent (a win against a style that never fights) or one fluke
+        // loss can't decide a move; a near-unanimous result still counts in full.
+        const s = scores.slice().sort((a, b) => a - b);
+        const k = Math.min(Math.floor((s.length - 1) / 2), Math.max(0, Math.round(risk)));
+        const mid = s.slice(k, s.length - k);
+        return mid.reduce((a, b) => a + b, 0) / mid.length;
     }
     if (how === 'cautious') {
         const s = scores.slice().sort((a, b) => a - b);
