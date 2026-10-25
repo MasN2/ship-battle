@@ -60,6 +60,7 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    decidedCombat: false, // a decided imagined game scores base hp and ships only, not bank/income/ore
     lossDelay: 0,       // a decided loss scores this much better per turn it lies ahead (fight on when lost)
     hurryAhead: false,  // hurry counts turns from now instead of the game's turn number
     idleCash: false,    // no skipping/saving when it could buy now and still afford anything next turn
@@ -340,10 +341,18 @@ export const POLICIES = {
     skip: () => 0,
 };
 
-function sideValue(S, side, cfg) {
+function sideValue(S, side, cfg, combatOnly = false) {
     const me = S[side];
     const hp = Math.max(0, me.hp);
     let v = cfg.hpW * hp + cfg.fear * Math.log1p(hp);
+    // A decided game (decidedCombat): bank, income and ore are worth nothing once it's over; only
+    // how close it was counts (base hp, ships still fighting). Otherwise a lost line with an extra
+    // Caravan or more money banked looks better than one that fought (playtest 19).
+    if (combatOnly) {
+        let ships = 0;
+        for (const s of me.ships) if (s.health > 0) ships += Math.sqrt(Math.max(0.5, s.attack) * s.health);
+        return v + cfg.shipW * ships;
+    }
     // Income and ore, valued as the ship size they buy each turn over the horizon:
     // what the income buys at no ore, plus what the ore stock adds on top. With mineTurns,
     // the ore stock includes what miners now in the centre will mine over that many more turns
@@ -408,9 +417,10 @@ export function evaluate(S, side, cfg, ahead = 0) {
             + sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
         return sideValue(T, side, cfg) - sideValue(T, enemyOf(side), cfg);
     }
+    const combatOnly = !!(cfg.decidedCombat && S.over);
     const v = cfg.leaf === 'evolved' && !S.over
         ? cfg.leafScale * evolvedEval(EVO, S, side)
-        : sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
+        : sideValue(S, side, cfg, combatOnly) - sideValue(S, enemyOf(side), cfg, combatOnly);
     // Win sooner, lose later; the position still breaks ties, so a lost line keeps fighting.
     // A win `ahead` turns into an imagined future counts trust^ahead as much: the scripted
     // opponents in rollouts defend worse than people, so far-off wins are mostly rumour, and
@@ -690,7 +700,10 @@ export function chooseGrandmaster(state, side, opts = {}) {
             // mining is the critical-fail position (a dead investment and a gridlock at home), worth
             // minerFate imagined win/loss flips times the share of imagined futures where it happens.
             const fate = deadShare * (cfg.minerFate || 0) * 2 * cfg.winScore / cfg.theirs.length;
-            const s = (combat ? Math.min(...respected) : agg(scores)) + bias(plan) + invest(plan) - fate;
+            // decidedCombat also means: investment credit only for the imagined games not already
+            // lost - a trader or miner pays off over time this line doesn't have (playtest 19).
+            const alive = cfg.decidedCombat ? scores.filter(x => x > -cfg.winScore / 2).length / scores.length : 1;
+            const s = (combat ? Math.min(...respected) : agg(scores)) + bias(plan) + alive * invest(plan) - fate;
             if (opts.detail) opts.detail.push({ plan, mine, scores, total: s });
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
