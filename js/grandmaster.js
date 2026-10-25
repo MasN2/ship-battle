@@ -34,6 +34,7 @@ export const GM_DEFAULTS = {
     investBias: 0,      // score credit per +1 income a move buys (see chooseGrandmaster)
     investSafe: false,  // scale that credit (and oreBias) by how safe the base is
     oreBias: 0,         // score credit per ore/turn a miner makes, while the board is open for it
+    pushMiners: 0,      // in a push window, drop pure fighters cheaper than this many turns of income
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
@@ -374,10 +375,24 @@ export function evaluate(S, side, cfg, ahead = 0) {
     return v;
 }
 
+/** My wave is in their half and none of theirs is in mine: the econ window of a push. */
+export function pushWindow(S, side) {
+    const adv = (s, owner) => (owner === 'blue' ? s.sector - 1 : 7 - s.sector);
+    const mineOut = S[side].ships.some(s => s.health > 0 && adv(s, side) >= 3);
+    const theirsIn = S[enemyOf(side)].ships.some(s => s.health > 0 && adv(s, enemyOf(side)) >= 3);
+    return mineOut && !theirsIn;
+}
+
 function plans(S, side, cfg) {
     const out = [{ first: 0 }];
     const me = S[side];
+    // Expert rule (playtests): the push is the econ window. While my wave holds their half and
+    // none of theirs is in mine, cheap pure fighters trailing the push (skiffs, corvettes...)
+    // are off the menu; miners, traders, saving and substantial fighters remain.
+    const window = cfg.pushMiners && pushWindow(S, side);
+    const trailing = n => !INCOME_GAIN(n) && !ORE_GAIN(n) && costOf(n, me.ore) < cfg.pushMiners * me.income;
     for (const n of shipMenu(S, side, cfg)) {
+        if (window && trailing(n)) continue;
         if (canAfford(S, side, n)) { out.push({ first: n }); continue; }
         if (cfg.saveTurns > 0 && me.income > 0) {
             // turns of saving until it's affordable (loan included, as canAfford counts it)
