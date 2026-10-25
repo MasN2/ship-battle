@@ -143,4 +143,7 @@ export const DIFFICULTIES = {
 };
 
 // v3 = the β's settings plus the book
-DIFFICULTIES.grandmasterV3.gmCfg = { ...DIFFICULTIES.grandmasterBeta.gmCfg, book: true };
+// (bookW 10000: the book's verified lessons outweigh imagined-game flips; bookTol 0.1: any move
+// the book rates within 10% win probability of the best is fair game, so it varies its play
+// instead of replaying one memorised win)
+DIFFICULTIES.grandmasterV3.gmCfg = { ...DIFFICULTIES.grandmasterBeta.gmCfg, book: true, bookW: 10000, bookTol: 0.1 };
