@@ -60,6 +60,7 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    oreIncomePerMoney: false, // scale that credit by ore per money relative to a Driller (capped at 1)
     oreIncomeTurns: 0,  // >0: credit miners as the income-equivalent of this many turns of their ore (replaces oreBias)
     oreTiers: null,     // spending rhythms (turns per buy) over which ore's discount is averaged, e.g. [1, 2, 4]
     respectSkip: false, // respect also holds skipping/saving to their worst case (they aren't investments)
@@ -676,7 +677,11 @@ export function chooseGrandmaster(state, side, opts = {}) {
             const inc = Math.max(1, me.income);
             const eq = (r(inc, me.ore + ORE_GAIN(plan.first) * cfg.oreIncomeTurns) - r(inc, me.ore))
                 / Math.max(1e-6, r(inc + 1, me.ore) - r(inc, me.ore));
-            v += cfg.investBias * eq * scale;
+            // ...per money too (playtest 23): a Reaver mines 2/turn for 2.7 Drillers' price, so two
+            // Drillers mine the same for less and feed no counterwave; scale by ore-per-money
+            // relative to a Driller, capped at 1 (a Quarry mines more per money than a Driller)
+            const perMoney = Math.min(1, (ORE_GAIN(plan.first) / costOf(plan.first, me.ore)) / (1 / costOf(3, me.ore)));
+            v += cfg.investBias * eq * (cfg.oreIncomePerMoney ? perMoney : 1) * scale;
         } else if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * perCost * scale;
         // Dead-zone miners (playtest 15): with an enemy ship in my half, a fragile miner deployed
         // now gets pinned one sector from home - can't mine, gets shot - so it costs deadMiner
