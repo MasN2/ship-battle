@@ -1,6 +1,10 @@
 // The time wizard: learns a book of lessons (js/book.js) from real games against a fixed
 // opponent (default: grandmaster v1.2, deterministic but for opening jitter).
 //   node tools/wizard.js [batches=3] [--games 8] [--cfg '{learner cfg}'] [--rewinds 6] [--alts 3] [--fresh]
+//                        [--check 2] [--checkGames 16]
+// Checkpoints: before training and every --check batches, --checkGames held-out games (seeds it
+// never trains on, sides alternating, no rewinds) against the opponent with the current book,
+// so a run shows mid-flight whether the book is actually helping.
 // Each game: the learner (β config + the current book) plays the opponent. On a loss it rewinds:
 // a few turns before the end it tries its next-best moves there, each played out to the end with
 // the same opponent; if none wins it rewinds further back, toward the opening, until one wins or
@@ -92,8 +96,14 @@ function episode({ cfg, oppCfg, seed, side, rewinds, alts }) {
     return { seed, side, result: game.result, turns: game.turns, fixedAt, tried, best, records };
 }
 
+function heldOut({ cfg, oppCfg, seed, side }) {
+    const g = playOn(newSimState(), side, cfg, oppCfg, seed, undefined, false);
+    return { result: g.result, turns: g.turns };
+}
+
 if (!isMainThread) {
-    parentPort.postMessage(workerData.jobs.map(j => episode({ ...j, cfg: { ...j.cfg, book: workerData.book } })));
+    const run = j => (j.check ? heldOut : episode)({ ...j, cfg: { ...j.cfg, book: workerData.book } });
+    parentPort.postMessage(workerData.jobs.map(run));
 } else {
     const args = process.argv.slice(2);
     const flag = (name, dflt) => { const i = args.indexOf(name); if (i < 0) return dflt; const v = args[i + 1]; args.splice(i, 2); return v; };
@@ -115,17 +125,32 @@ if (!isMainThread) {
     // continue seeds after earlier runs so every batch sees new games
     let seed = seed0 + Object.values(book).length;
     log(`\n=== ${new Date().toISOString()} ${batches} batches × ${games} games, rewinds ${rewinds} × ${alts} alternatives, book ${Object.keys(book).length} positions`);
-    for (let b = 0; b < batches; b++) {
-        const t0 = Date.now();
-        const jobs = Array.from({ length: games }, (_, g) => ({ cfg, oppCfg, seed: seed++, side: g % 2 ? 'blue' : 'red', rewinds, alts }));
+    const runJobs = async (jobs, bk) => {
         const threads = workerCount(jobs.length);
         const chunks = Array.from({ length: threads }, () => []);
         jobs.forEach((j, i) => chunks[i % threads].push(j));
-        const res = (await Promise.all(chunks.map(c => new Promise(ok => {
-            const w = new Worker(new URL(import.meta.url), { workerData: { jobs: c, book } });
+        return (await Promise.all(chunks.map(c => new Promise(ok => {
+            const w = new Worker(new URL(import.meta.url), { workerData: { jobs: c, book: bk } });
             w.on('message', ok);
             w.on('error', e => { console.error(`worker failed: ${e.stack || e}`); process.exit(1); });
         })))).flat();
+    };
+    const check = Number(flag('--check', 2));
+    const checkGames = Number(flag('--checkGames', 16));
+    const checkpoint = async label => {
+        const t0 = Date.now();
+        const jobs = Array.from({ length: checkGames }, (_, g) => ({ check: true, cfg, oppCfg, seed: 90000 + g, side: g % 2 ? 'blue' : 'red' }));
+        const res = await runJobs(jobs, Object.keys(book).length ? book : null);
+        const wins = res.filter(r => r.result === 1).length;
+        const lossTurns = res.filter(r => r.result < 0.5).map(r => r.turns);
+        const avg = lossTurns.length ? (lossTurns.reduce((a, b) => a + b, 0) / lossTurns.length).toFixed(0) : '-';
+        log(`  checkpoint ${label}: held-out ${wins}/${res.length} wins vs opponent, losses last ${avg} turns (${((Date.now() - t0) / 60000).toFixed(1)} min)`);
+    };
+    if (check) await checkpoint(`start (book ${Object.keys(book).length} positions)`);
+    for (let b = 0; b < batches; b++) {
+        const t0 = Date.now();
+        const jobs = Array.from({ length: games }, (_, g) => ({ cfg, oppCfg, seed: seed++, side: g % 2 ? 'blue' : 'red', rewinds, alts }));
+        const res = await runJobs(jobs, book);
         let n = 0;
         for (const r of res) for (const [keys, move, result] of r.records) { bookRecord(book, keys, move, result); n++; }
         fs.writeFileSync(bookFile, `// Lessons written by tools/wizard.js (see js/book.js), ${new Date().toISOString()}.\nexport const BOOK = ${JSON.stringify(book)};\n`);
@@ -133,5 +158,6 @@ if (!isMainThread) {
         const fixed = res.filter(r => r.fixedAt !== null).map(r => `t${r.fixedAt}`);
         log(`batch ${b + 1}: won ${wins}/${res.length} outright; losses fixed by rewinding: ${fixed.length} (${fixed.join(' ') || '-'}); ` +
             `${res.reduce((a, r) => a + r.tried, 0)} branches tried; ${n} lessons, book ${Object.keys(book).length} positions; ${((Date.now() - t0) / 60000).toFixed(1)} min`);
+        if (check && (b + 1) % check === 0) await checkpoint(`after batch ${b + 1}`);
     }
 }

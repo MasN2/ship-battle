@@ -6,7 +6,21 @@
 // show (see visibleShips).
 
 import { SHIP_NUMS, TEMPLATES } from './templates.js';
-import { economy, maxLoanFor, calcOreIncome } from './economy.js';
+import { economy as economyRaw, maxLoanFor, calcOreIncome } from './economy.js';
+
+// economy() is a bisection over the price formula (~40 evaluations); positions repeat the same
+// income/ore pairs endlessly, so remember results (same numbers, a fraction of the time).
+const econMemo = new Map();
+function economy(income, ore) {
+    const key = income * 100003 + ore;
+    let v = econMemo.get(key);
+    if (v === undefined) {
+        if (econMemo.size > 200000) econMemo.clear();
+        v = economyRaw(income, ore);
+        econMemo.set(key, v);
+    }
+    return v;
+}
 import { cloneState, stepTurn, canAfford, enemyOf, SimError, costOf } from './sim.js';
 import { evolvedEval, evolvedPolicy, seedWeights } from './evolved.js';
 import { EVOLVED_WEIGHTS } from './evolved-weights.js';
@@ -98,9 +112,23 @@ export const GM_DEFAULTS = {
 };
 
 /** The ships render.js shows on the deploy bar for this side's income and ore. */
+// The bar depends only on income and ore; rollouts ask for it every imagined turn, so remember
+// it (callers only read the list).
+const visibleMemo = new Map();
 export function visibleShips(S, side) {
     const inc = S[side].income;
     const ore = S[side].ore;
+    const key = inc * 100003 + ore;
+    let v = visibleMemo.get(key);
+    if (v === undefined) {
+        if (visibleMemo.size > 100000) visibleMemo.clear();
+        v = computeVisible(inc, ore);
+        visibleMemo.set(key, v);
+    }
+    return v;
+}
+
+function computeVisible(inc, ore) {
     const c = n => costOf(n, ore);
     const lim = {
         hideAbove10: c(10) > 3.2 * inc, hideAbove20: c(20) > 3 * inc, hideAbove30: c(30) > 2.8 * inc,

@@ -82,7 +82,13 @@ function recomputeRows(S) {
         for (const b of rowBuckets) b.length = 0;
         for (const s of S[owner].ships) rowBuckets[s.sector].push(s);
         for (const b of rowBuckets) {
-            if (b.length > 1) b.sort((a, c) => a.row - c.row);
+            // stable insertion sort by row (buckets hold a few ships; same order as Array.sort)
+            for (let i = 1; i < b.length; i++) {
+                const x = b[i];
+                let j = i - 1;
+                while (j >= 0 && b[j].row > x.row) { b[j + 1] = b[j]; j--; }
+                b[j + 1] = x;
+            }
             for (let i = 0; i < b.length; i++) b[i].row = i;
         }
     }
