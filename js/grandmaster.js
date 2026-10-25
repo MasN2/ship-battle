@@ -60,6 +60,7 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    respectSkip: false, // respect also holds skipping/saving to their worst case (they aren't investments)
     decidedCombat: false, // a decided imagined game scores base hp and ships only, not bank/income/ore
     lossDelay: 0,       // a decided loss scores this much better per turn it lies ahead (fight on when lost)
     hurryAhead: false,  // hurry counts turns from now instead of the game's turn number
@@ -694,7 +695,12 @@ export function chooseGrandmaster(state, side, opts = {}) {
             // Respect the opponent (playtest 13): a pure-combat move only counts as good if it works
             // against every respected imagined opponent (all but the random 'wild' ones) - its
             // worst case. Investments (miners, traders, saving) keep the usual average.
-            const combat = respectNow && !plan.saveFor && plan.first && !INCOME_GAIN(plan.first) && !ORE_GAIN(plan.first);
+            // respectSkip (playtest 21): skipping and saving aren't investments either, so they must
+            // also work against every respected opponent - otherwise sitting still gets the lenient
+            // average while every fighter is held to its worst case, and it skips in front of a
+            // pile of vulnerable miners.
+            const passive = cfg.respectSkip && (plan.saveFor || !plan.first);
+            const combat = respectNow && (passive || (!plan.saveFor && plan.first && !INCOME_GAIN(plan.first) && !ORE_GAIN(plan.first)));
             const respected = combat ? scores.filter((_, j) => cfg.theirs[j] !== 'wild') : null;
             // Miner fate (playtest 17): a fragile miner that dies in its own column before ever
             // mining is the critical-fail position (a dead investment and a gridlock at home), worth
