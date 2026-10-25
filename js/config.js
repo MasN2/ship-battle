@@ -71,7 +71,7 @@ const c10tutorial = {
 }
 
 export const GM_VERSION = '1.2';
-export const GM_BETA_VERSION = '1.6β';
+export const GM_BETA_VERSION = '1.7β';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -97,11 +97,12 @@ export const DIFFICULTIES = {
     // "win fastest" tie-break (hurry 0), and knows the mining gridlock (the 'gridlock' style, for
     // itself and as a model of the player). β log: v1.2β distrusted far-off wins (weak to Frigate
     // counterwaves); v1.3β safeEcon 2; v1.4β + hurry 0; v1.5β + gridlock; v1.6β + investBias 3000
-    // (a trader pays itself off within ~10 turns, so ties go to investing).
+    // (a trader pays itself off within ~10 turns, so ties go to investing); v1.7β scales that by
+    // base safety (no traders mid-defence) and adds ore credit 1500 while the board is open.
     grandmasterBeta: {
         label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster',
         gmCfg: {
-            safeEcon: 2, hurry: 0, investBias: 3000,
+            safeEcon: 2, hurry: 0, investBias: 3000, investSafe: true, oreBias: 1500,
             mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value', 'gridlock'],
             theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value', 'gridlock'],
         },

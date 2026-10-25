@@ -32,6 +32,8 @@ export const GM_DEFAULTS = {
     horizon: 40,        // turns of future spending that income and ore are worth
     safeEcon: 0,        // stretch that horizon by up to ×(1 + safeEcon) while the base is safe
     investBias: 0,      // score credit per +1 income a move buys (see chooseGrandmaster)
+    investSafe: false,  // scale that credit (and oreBias) by how safe the base is
+    oreBias: 0,         // score credit per ore/turn a miner makes, while the board is open for it
     // A line that ends in a win (loss) scores this much (less), sooner is bigger. Big enough that
     // results dominate, small enough that the position still counts: 3e4 beat 1e6 113-87.
     // Lower values (3e3, 1e3) build more economy but lost in round robins.
@@ -499,11 +501,11 @@ export function chooseGrandmaster(state, side, opts = {}) {
     // Invest when it's safe: the longer the base could soak the damage heading for it, the
     // further ahead income and ore are valued (horizon up to ×(1 + safeEcon)). The way a
     // player banks on economy only while the defence holds.
-    if (cfg.safeEcon > 0) {
-        const hp = Math.max(1, state[side].hp);
-        const safety = Math.max(0, 1 - 8 * baseThreat(state, side) / hp);
-        Object.assign(cfg, { horizon: cfg.horizon * (1 + cfg.safeEcon * safety) });
-    }
+    const safety = Math.max(0, 1 - 8 * baseThreat(state, side) / Math.max(1, state[side].hp));
+    if (cfg.safeEcon > 0) Object.assign(cfg, { horizon: cfg.horizon * (1 + cfg.safeEcon * safety) });
+    // Is the board open for my miners? No enemy ships in my half, so a miner can walk out to
+    // the centre and mine (playtests: drillers on the tail of a push, not into a wave).
+    const foeInMyHalf = state[enemyOf(side)].ships.some(s => s.health > 0 && (side === 'blue' ? s.sector <= 4 : s.sector >= 4));
     // Bounded thinking: an imagined future costs ships × turns, so with a big swarm on the board
     // (carriers spawning every turn, long gridlocks) the lookahead shortens to keep that roughly
     // constant; normal games (under ~40 ships) are unaffected.
@@ -530,7 +532,15 @@ export function chooseGrandmaster(state, side, opts = {}) {
     // imagined lines are decided (win or loss) before then, so on its own the search can't see a
     // trader's payback. investBias points per +1 income break ties toward investing; it is meant
     // to be smaller than one imagined line flipping between win and loss, so safety still wins.
-    const invest = plan => (cfg.investBias && !plan.saveFor ? cfg.investBias * INCOME_GAIN(plan.first) : 0);
+    // Scaled by safety (no trader-buying while the base is being destroyed), plus ore credit per
+    // ore/turn a miner produces, only while the board is open for it to reach the centre.
+    const invest = plan => {
+        if (plan.saveFor || !plan.first) return 0;
+        const scale = cfg.investSafe ? safety : 1;
+        let v = cfg.investBias * INCOME_GAIN(plan.first) * scale;
+        if (cfg.oreBias && !foeInMyHalf) v += cfg.oreBias * ORE_GAIN(plan.first) * scale;
+        return v;
+    };
     // What each of my styles would play right now, if I just followed it.
     const styleMove = {};
     for (const mine of cfg.mine) styleMove[mine] = POLICIES[mine](S, side, cfg, () => 0.5);
