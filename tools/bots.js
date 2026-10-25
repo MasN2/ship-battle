@@ -124,3 +124,8 @@ HUMAN_ORDERS.user14_red_gmb18 = [0, 0, 0, 4, 4, 4, 0, 0, 6, 3, 0, 7, 0, 3, 3, 6,
 // (miners pinned one sector out, unable to mine) while the player mined the centre.
 HUMAN_ORDERS.user15_blue = [1, 3, 3, 2, 2, 4, 4, 2, 2, 4, 2, 3, 3, 3, 3, 3, 3, 0, 5, 0, 7, 0, 7, 0, 7, 4, 5, 5, 5, 5, 4, 4, 5, 5, 5, 8, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
 HUMAN_ORDERS.user15_red_gmb20 = [0, 0, 2, 6, 3, 0, 0, 4, 4, 0, 0, 7, 1, 3, 4, 2, 1, 4, 4, 6, 0, 0, 7, 0, 4, 0, 4, 0, 5, 8, 4, 2, 0, 6, 6, 6, 3, 6, 3, 3, 6, 0, 0, 0, 0, 14];
+
+// Playtest 16 (2026-10-25): user beat β v2.1β by mining behind traders/drillers while it banked
+// $20-38 with a lone trader at home, then fed a Reaver out first and got gridlocked by econ.
+HUMAN_ORDERS.user16_blue = [1, 3, 3, 0, 0, 7, 0, 0, 7, 0, 7, 3, 3, 7, 2, 7, 6, 6, 2, 6, 2, 6, 7, 6, 6, 12, 6, 7, 7, 7, 7, 7, 10, 10, 16, 10, 10, 10, 10, 10, 13, 8, 11, 11, 11, 8, 0, 0];
+HUMAN_ORDERS.user16_red_gmb21 = [0, 0, 7, 0, 2, 0, 7, 0, 0, 0, 0, 0, 6, 0, 0, 7, 7, 7, 7, 4, 0, 5, 8, 2, 8, 4, 7, 4, 6, 4, 6, 0, 8, 0, 6, 14, 7, 6, 0, 0, 7, 16, 0, 14, 0, 14, 14, 8];

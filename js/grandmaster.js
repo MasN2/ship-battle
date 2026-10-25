@@ -55,6 +55,11 @@ export const GM_DEFAULTS = {
     resolveWin: 0.5,    // ...and how much a resolution that ends the game counts, as a share of winScore
     leafScale: 1,       // multiplier on the evolved score
     commitMargin: 0,    // a one-off move must beat the best whole style by this much (see chooseGrandmaster)
+    closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    hurryAhead: false,  // hurry counts turns from now instead of the game's turn number
+    idleCash: false,    // no skipping/saving when it could buy now and still afford anything next turn
+    varietyBuys: false, // ...and only buys, unless skipping/saving is the best move outright
+    varietyTop: 0,      // variety picks only among this many best buys, weighted to the better (0 = any, uniform)
     observe: false,     // weight opponent styles by how well they predicted real moves (styleWeights)
     observeWindow: 10,  // turns of the opponent's history considered
     observeDecay: 0.85, // a match k turns ago counts observeDecay^k
@@ -408,8 +413,11 @@ export function evaluate(S, side, cfg, ahead = 0) {
     // full weight: a counterwave seen far off is still a real threat.
     const W = cfg.winScore;
     const hurry = cfg.hurry ?? W / 1000;
-    if (S.over === side) return (W - hurry * S.turn) * cfg.trust ** ahead + v;
-    if (S.over) return -W + hurry * S.turn + v;
+    // hurryAhead: count the turns from now, not the game's turn number, so a late-game win
+    // still outscores an undecided line (hurry × turn 40 can eat most of winScore)
+    const when = cfg.hurryAhead ? ahead : S.turn;
+    if (S.over === side) return (W - hurry * when) * cfg.trust ** ahead + v;
+    if (S.over) return -W + hurry * when + v;
     return v;
 }
 
@@ -422,8 +430,16 @@ export function pushWindow(S, side) {
 }
 
 function plans(S, side, cfg) {
-    const out = [{ first: 0 }];
     const me = S[side];
+    // Idle cash (playtest 16): banking past the priciest ship it can see buys nothing - one ship
+    // per turn, and saving doesn't unlock tiers (income does). If it could buy the cheapest ship
+    // now and still afford any visible ship next turn, skipping and saving are off the menu.
+    let idle = false;
+    if (cfg.idleCash) {
+        const costs = shipMenu(S, side, cfg).map(n => costOf(n, me.ore));
+        if (costs.length) idle = me.money - Math.min(...costs) + me.income >= Math.max(...costs);
+    }
+    const out = idle ? [] : [{ first: 0 }];
     // Expert rule (playtests): the push is the econ window. While my wave holds their half and
     // none of theirs is in mine, cheap pure fighters trailing the push (skiffs, corvettes...)
     // are off the menu; miners, traders, saving and substantial fighters remain.
@@ -432,7 +448,7 @@ function plans(S, side, cfg) {
     for (const n of shipMenu(S, side, cfg)) {
         if (window && trailing(n)) continue;
         if (canAfford(S, side, n)) { out.push({ first: n }); continue; }
-        if (cfg.saveTurns > 0 && me.income > 0) {
+        if (cfg.saveTurns > 0 && me.income > 0 && !idle) {
             // turns of saving until it's affordable (loan included, as canAfford counts it)
             const short = costOf(n, me.ore) - me.money - maxLoanFor(me.income);
             const wait = Math.ceil(short / me.income);
@@ -629,7 +645,7 @@ export function chooseGrandmaster(state, side, opts = {}) {
             // "pure": this move is simply the style's own move, so the line is a plan it will
             // keep following. Anything else is a one-off deviation before the style.
             const pure = !plan.saveFor && plan.first === styleMove[mine];
-            scored.push({ plan, mine, score: s, pure });
+            scored.push({ plan, mine, score: s, pure, raw: aggregate(scores, cfg.agg, weights, cfg.risk) });
             if (s > score) score = s;
         }
         if (opts.out) opts.out.push({ plan, score });
@@ -655,6 +671,15 @@ export function chooseGrandmaster(state, side, opts = {}) {
     let pick = bestPure ?? bestDev;
     if (bestDev && bestPure && bestDev.v > bestPure.v + cfg.commitMargin) pick = bestDev;
     let best = pick ? pick.plan.first : 0;
+    // Close out (playtest 16): when a whole plan - a style played from now on, its own move first -
+    // wins most imagined games, play that plan. Otherwise every turn a one-off (a trader, a skip,
+    // a miner) also "wins, if I play properly from next turn", the next turn re-plans the same way,
+    // and the won position is traded away one deviation at a time. No variety, no credits.
+    if (cfg.closeOut) {
+        let close = null;
+        for (const e of scored) if (e.pure && e.raw >= cfg.closeOut * cfg.winScore && (!close || e.raw > close.raw)) close = e;
+        if (close) return close.plan.first;
+    }
     // Real variety (playtests: one win shouldn't become infinite wins by replaying it): while
     // its base is safe, pick uniformly among the moves scoring within a tolerance of the best,
     // so no fixed line beats it every game. The tolerance is a share of one imagined game
@@ -667,9 +692,21 @@ export function chooseGrandmaster(state, side, opts = {}) {
             const k = e.plan.saveFor ? `s${e.plan.saveFor}` : `m${e.plan.first}`;
             if (!byMove.has(k) || e.score > byMove.get(k).score) byMove.set(k, e);
         }
-        const top = Math.max(...[...byMove.values()].map(e => e.score));
-        const near = [...byMove.values()].filter(e => e.score >= top - tolShare * flip);
-        if (near.length > 1) best = near[Math.floor(rng() * near.length)].plan.first;
+        const tol = tolShare * flip;
+        const ranked = [...byMove.values()].sort((a, b) => b.score - a.score);
+        const top = ranked[0].score;
+        let near = ranked.filter(e => e.score >= top - tol);
+        if (cfg.varietyTop) {
+            // Coherent variety (playtest 16: skip, Driller, Skiff, skip): only the few best buys,
+            // the better ones likelier; skipping/saving only when that is the best move outright.
+            const isBuy = e => !e.plan.saveFor && e.plan.first;
+            if (cfg.varietyBuys && isBuy(ranked[0])) near = near.filter(isBuy);
+            near = near.slice(0, cfg.varietyTop);
+            const w = near.map(e => 1 - (top - e.score) / (tol || 1) + 0.25);
+            let r = rng() * w.reduce((a, b) => a + b, 0);
+            const i = w.findIndex(x => (r -= x) < 0);
+            best = near[i < 0 ? near.length - 1 : i].plan.first;
+        } else if (near.length > 1) best = near[Math.floor(rng() * near.length)].plan.first;
     }
     return best;
 }
