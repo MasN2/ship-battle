@@ -34,6 +34,13 @@ export function makeBot(name, cfg, eps) {
         case 'alice-red': return noisy(scriptBot(HUMAN_ORDERS.alice_red), eps);
         // the user's winning playtest order, then the turtle style it was playing
         case 'user1': return noisy(scriptBot(HUMAN_ORDERS.user1_blue, (S, side, rng) => POLICIES.turtle(S, side, GM_DEFAULTS, rng)), eps);
+        // uniformly random affordable deploy-bar ship, or skip (a blindspot probe: anything that
+        // loses to this has a hole outside the v1.2 bubble)
+        case 'rand': return (S, side, rng) => {
+            const menu = visibleShips(S, side).filter(n => canAfford(S, side, n));
+            const k = Math.floor(rng() * (menu.length + 1));
+            return k < menu.length ? menu[k] : 0;
+        };
         case 'user21': return noisy(scriptBot(HUMAN_ORDERS.user21_blue, (S, side, rng) => POLICIES.snowsmart(S, side, GM_DEFAULTS, rng)), eps);
         case 'user16': return noisy(scriptBot(HUMAN_ORDERS.user16_blue, (S, side, rng) => POLICIES.snowsmart(S, side, GM_DEFAULTS, rng)), eps);
         case 'user14': return noisy(scriptBot(HUMAN_ORDERS.user14_blue, (S, side, rng) => POLICIES.value(S, side, GM_DEFAULTS, rng)), eps);

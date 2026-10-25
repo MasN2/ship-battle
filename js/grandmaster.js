@@ -28,6 +28,23 @@ import { intuitionBias, situation } from './intuition.js';
 import { INTUITION_WEIGHTS } from './intuition-weights.js';
 import { bookKeys, bookBias } from './book.js';
 import { BOOK } from './book-data.js';
+import { positionFeatures } from './features.js';
+import { VALUE_NET } from './value-weights.js';
+
+/** Learned win probability for `side` (js/value-weights.js, fitted by tools/fiteval.js). */
+function netWinProb(S, side, N = VALUE_NET) {
+    const f = positionFeatures(S, side);
+    const x = f.map((v, i) => (v - N.mu[i]) / N.sd[i]);
+    let z = N.b2;
+    for (let i = 0; i < x.length; i++) z += N.wl[i] * x[i];
+    for (let k = 0; k < N.W1.length; k++) {
+        let a = N.b1[k];
+        const w = N.W1[k];
+        for (let i = 0; i < x.length; i++) a += w[i] * x[i];
+        z += N.W2[k] * Math.tanh(a);
+    }
+    return 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
+}
 
 const EVO = EVOLVED_WEIGHTS ?? seedWeights();
 
@@ -76,6 +93,12 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    tactical: false,    // v3.1: decide by the simultaneous-move tactics table (see tactics()), long view as influence
+    tacticTurns: 6,     // turns each (my buy, their buy) pair is played out
+    tacticPolicy: 'value', // how both sides play after that first turn in the table
+    tacticIters: 300,   // regret-matching iterations
+    longW: 0.1,         // weight of the long-horizon rollout score
+    tacticTol: 30,      // variety window (score points) among the best tactical moves
     book: null,         // wizard lessons (true = js/book-data.js), see js/book.js
     bookW: 3000,        // points per 100% win-probability edge in the book
     bookTol: 0,         // variety window in book win probability (0.1 = moves within 10% of the best)
@@ -379,7 +402,7 @@ export const POLICIES = {
     skip: () => 0,
 };
 
-function sideValue(S, side, cfg, combatOnly = false) {
+export function sideValue(S, side, cfg, combatOnly = false) {
     const me = S[side];
     const hp = Math.max(0, me.hp);
     let v = cfg.hpW * hp + cfg.fear * Math.log1p(hp);
@@ -468,6 +491,10 @@ export function evaluate(S, side, cfg, ahead = 0) {
             + sideValue(S, side, cfg) - sideValue(S, enemyOf(side), cfg);
         return sideValue(T, side, cfg) - sideValue(T, enemyOf(side), cfg);
     }
+    // leaf 'net' (v3.1): an undecided position is scored by the learned evaluator, in the same
+    // units as a decided game (winScore × (P(I win) - P(they win))). The hand-written score
+    // turned out to point the wrong way early on: the side it favoured at turns 1-8 lost 68%.
+    if (cfg.leaf === 'net' && !S.over) return cfg.winScore * (netWinProb(S, side) - netWinProb(S, enemyOf(side)));
     const combatOnly = !!(cfg.decidedCombat && S.over);
     const v = cfg.leaf === 'evolved' && !S.over
         ? cfg.leafScale * evolvedEval(EVO, S, side)
@@ -647,6 +674,63 @@ function aggregate(scores, how, weights, risk = 0) {
 }
 
 /**
+ * Tactics (v3.1): this turn as the simultaneous game it is. For every buy of mine and every buy
+ * they could make, play the pair out tacticTurns turns (both sides then following tacticPolicy)
+ * and score the position; then solve that table as a zero-sum game by regret matching, so their
+ * replies are the mix an opponent hunting for my counter would use - not one scripted style,
+ * not the single worst case. Returns { value: Map(move -> my expected score vs their mix), mix }.
+ */
+function tactics(S, side, cfg, mine) {
+    const opp = enemyOf(side);
+    const theirs = [0, ...visibleShips(S, opp).filter(n => canAfford(S, opp, n))];
+    const pol = POLICIES[cfg.tacticPolicy];
+    const P = mine.map(() => new Array(theirs.length).fill(0));
+    for (let i = 0; i < mine.length; i++) {
+        for (let j = 0; j < theirs.length; j++) {
+            const sim = cloneState(S);
+            let score;
+            try {
+                for (let d = 0; d < cfg.tacticTurns && !sim.over; d++) {
+                    const a = d === 0 ? mine[i] : pol(sim, side, cfg, () => 0.5);
+                    const b = d === 0 ? theirs[j] : pol(sim, opp, cfg, () => 0.5);
+                    if (side === 'blue') stepTurn(sim, a, b);
+                    else stepTurn(sim, b, a);
+                }
+                score = evaluate(sim, side, cfg, sim.turn - S.turn);
+            } catch (e) {
+                if (!(e instanceof SimError)) throw e;
+                score = -5e5;
+            }
+            P[i][j] = score;
+        }
+    }
+    // regret matching for both players; the average strategies approach a Nash equilibrium
+    const m = mine.length, n = theirs.length;
+    const rA = new Array(m).fill(0), rB = new Array(n).fill(0);
+    const sumB = new Array(n).fill(0);
+    const strat = r => {
+        const pos = r.map(x => Math.max(0, x));
+        const t = pos.reduce((a, b) => a + b, 0);
+        return t > 0 ? pos.map(x => x / t) : r.map(() => 1 / r.length);
+    };
+    for (let it = 0; it < cfg.tacticIters; it++) {
+        const pa = strat(rA), pb = strat(rB);
+        for (let j = 0; j < n; j++) sumB[j] += pb[j];
+        const ua = P.map(row => row.reduce((t, x, j) => t + x * pb[j], 0));
+        const ub = theirs.map((_, j) => -P.reduce((t, row, i) => t + row[j] * pa[i], 0));
+        const va = ua.reduce((t, x, i) => t + x * pa[i], 0);
+        const vb = ub.reduce((t, x, j) => t + x * pb[j], 0);
+        for (let i = 0; i < m; i++) rA[i] += ua[i] - va;
+        for (let j = 0; j < n; j++) rB[j] += ub[j] - vb;
+    }
+    const tot = sumB.reduce((a, b) => a + b, 0);
+    const q = sumB.map(x => x / tot);
+    const value = new Map();
+    mine.forEach((mv, i) => value.set(mv, P[i].reduce((t, x, j) => t + x * q[j], 0)));
+    return { value, mix: new Map(theirs.map((mv, j) => [mv, q[j]])) };
+}
+
+/**
  * The grandmaster's pick for `side` this turn (0 = skip).
  * opts.cfg overrides GM_DEFAULTS; opts.out, if an array, receives every plan's score.
  */
@@ -814,6 +898,31 @@ export function chooseGrandmaster(state, side, opts = {}) {
             regret.set(m, r.slice(0, k).reduce((a, b) => a + b, 0) / k);
         }
         for (const e of scored) e.score -= cfg.regretW * regret.get(key(e));
+    }
+    // v3.1: tactics decide, the long view influences (playtest 26: "I never calculate 20 turns
+    // ahead; the far future is a fuzzy influence, short-term tactics are the clinchers"). Each
+    // first move scores its tactical value against their equilibrium mix of replies, plus
+    // longW × its long-horizon score (the rollouts above, credits and book included).
+    if (cfg.tactical && scored.length) {
+        const longOf = new Map();
+        for (const e of scored) {
+            const mv = e.plan.saveFor ? 0 : e.plan.first;
+            if (!longOf.has(mv) || e.score > longOf.get(mv)) longOf.set(mv, e.score);
+        }
+        const moves = [...longOf.keys()];
+        const tac = tactics(S, side, cfg, moves);
+        const final = moves.map(mv => ({ mv, v: tac.value.get(mv) + cfg.longW * longOf.get(mv) }));
+        final.sort((a, b) => b.v - a.v);
+        if (opts.tacticsOut) opts.tacticsOut.push(...final.map(f => ({ ...f, tac: tac.value.get(f.mv), long: longOf.get(f.mv) })));
+        // variety among moves within tacticTol of the best, the better ones likelier
+        const near = final.filter(f => f.v >= final[0].v - cfg.tacticTol).slice(0, cfg.varietyTop || 3);
+        if (near.length > 1 && safety >= 0.8) {
+            const w = near.map(f => 1 - (final[0].v - f.v) / (cfg.tacticTol || 1) + 0.25);
+            let r = rng() * w.reduce((a, b) => a + b, 0);
+            const i = w.findIndex(x => (r -= x) < 0);
+            return near[i < 0 ? near.length - 1 : i].mv;
+        }
+        return final[0].mv;
     }
     // Opening chaos: early on, every move gets a random nudge sized to the gap between the
     // best and the 4th-best move, so close alternatives trade places and no single memorised
