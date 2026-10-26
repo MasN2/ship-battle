@@ -70,7 +70,7 @@ export function initScenarios() {
                     input.value = `${state.blue.history}`;
                 } else if (input.value === "zero"){
                     state.blue.ai = "zero";
-                    input.value = "";
+                    await load(new Array(1984).fill(0));
                 } else {
                     await load(JSON.parse(`[${input.value}]`));
                     input.value = "";
