@@ -90,16 +90,16 @@ export async function deployShip(owner, num, sector, hp, atk) {
 }
 
 async function triggerOnDeploy(owner, num, sector, ship){
-if (num === 53) ship.attack += state[owner].income;
+if (num === 59) ship.attack += state[owner].income;
     if (num > 0 && (num % 7 === 0)) {
         state[owner].income += num / 7;
-        state[owner].hp -= 3;
-        log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
+        state[owner].hp -= 4;
+        log(`${owner.toUpperCase()} trades 4 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num > 0 && (num % 49 === 0)) {
         state[owner].income += num / 7;
-        state[owner].hp -= 3;
-        log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
+        state[owner].hp -= 4;
+        log(`${owner.toUpperCase()} trades 4 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num === 73) state[owner].hp += ship.attack;
     if (TEMPLATES[num].win) {
@@ -111,10 +111,10 @@ if (num === 53) ship.attack += state[owner].income;
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num % 31 === 0) {
-        for (let i = 1; i <= 10 * num/31; i++) await deployShip(owner, i, sector);
+    if (num % 37 === 0) {
+        for (let i = 1; i <= 12; i++) await deployShip(owner, i, sector);
     }
-    if (num === 59) {
+    if (num === 53) {
         for (const s of state[owner].ships){
             s.attack += 1;
         }
@@ -236,12 +236,17 @@ export async function executeStrike(ship, enemyOwner, atkTarget, atkBaseTarget, 
     return { leftover };
 }
 
+export function getRange(number) {
+    if (number % 31 === 0) return 4;
+    if (number % 11 === 0) return 3;
+    return 2;
+}
+
 export async function runAttacks() {
     clearRectCache();
     state.newlyKilled = [];
-    const getRange = ship => (ship.template.number % 11 === 0 ? 3 : ATTACK_RANGE);
     function findTarget(ship, enemyOwner) {
-        const range = getRange(ship);
+        const range = getRange(ship.template.number);
         const enemyShips = state[enemyOwner].ships.filter(s => s.health > 0 && !s.dying);
         const baseSec = ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX;
 
@@ -417,17 +422,16 @@ export async function runTurn(playerPick = 0) {
         const deployments = [];
 
         for (const s of state[owner].ships) {
-            if (s.template.number % 37 === 0) s.attack *= 1 + s.template.number / 37;
-            if (s.template.number % 23 === 0) state[owner].income += s.template.number / 23;
+            if (s.template.number % 43 === 0) s.attack *= 3;
+            if (s.template.number % 23 === 0) {
+                state[owner].hp -= 1;
+                state[owner].income += s.template.number / 23;
+            }
             if (s.template.number % 17 === 0) state[enemy].hp -= s.template.number / 17;
             if (s.template.number % 13 === 0) deployments.push([owner, 2 * s.template.number / 13, s.sector]);
             if (s.template.number % 47 === 0) {
                 deployments.push([owner, s.attack, s.sector]);
                 s.attack += 2;
-            }
-            if (s.template.number % 43 === 0) {
-                s.attack += 1;
-                for (let i = 0; i < s.attack; i++) deployments.push([owner, 2, s.sector]);
             }
             if (s.template.number % 29 === 0) state[owner].armor += s.template.number / 29;
             if (s.template.number % 58 === 0) state[owner].armor *= 2;

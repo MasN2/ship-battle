@@ -4,7 +4,7 @@ export const RED_BASE_IDX = 7;
 export const BLUE_DEPLOY_IDX = 1; // Sector B (index 1)
 export const RED_DEPLOY_IDX = 7;  // Sector H (index 7)
 
-export const BASE_START_HP = 160;
+export const BASE_START_HP = 200;
 export const START_INCOME = 4;
 export const START_ORE = 0;
 export const ORE_POW = 0.8;

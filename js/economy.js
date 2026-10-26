@@ -10,7 +10,7 @@ export function oreDivisor(ore) {
 
 export function excessExponent(shipNum) {
     if (shipNum < 20.5) return 0.34 + 0.01*shipNum;
-    return 0.56 * (1.021 ** (shipNum - 21));
+    return 0.57 * (1.02 ** (shipNum - 21));
 }
 
 // Per-ship price multipliers set by game modifiers (js/modifiers.js); all 1 in a standard game,
