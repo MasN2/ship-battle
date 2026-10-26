@@ -1137,6 +1137,9 @@ html, body {
     grid-template-columns: repeat(10, minmax(0, 1fr));
     gap: 5px;
     align-items: stretch;
+
+    max-height: 150px;
+    overflow-y: auto;
 }
 
 .ship-btn {
