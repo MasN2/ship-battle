@@ -74,3 +74,13 @@ export function bookRecord(book, keys, move, result) {
         m[1] += result;
     }
 }
+
+/** How often `move` was verified at the finest summary that knows it (0 = the book has no opinion). */
+export function bookEvidence(book, keys, move) {
+    if (!book) return 0;
+    for (let l = keys.length - 1; l >= 0; l--) {
+        const m = book[keys[l]]?.[move];
+        if (m) return m[0];
+    }
+    return 0;
+}

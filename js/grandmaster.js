@@ -26,7 +26,7 @@ import { evolvedEval, evolvedPolicy, seedWeights } from './evolved.js';
 import { EVOLVED_WEIGHTS } from './evolved-weights.js';
 import { intuitionBias, situation } from './intuition.js';
 import { INTUITION_WEIGHTS } from './intuition-weights.js';
-import { bookKeys, bookBias } from './book.js';
+import { bookKeys, bookBias, bookEvidence } from './book.js';
 import { BOOK } from './book-data.js';
 import { positionFeatures } from './features.js';
 import { VALUE_NET } from './value-weights.js';
@@ -101,7 +101,8 @@ export const GM_DEFAULTS = {
     tacticTol: 30,      // variety window (score points) among the best tactical moves
     book: null,         // wizard lessons (true = js/book-data.js), see js/book.js
     bookW: 3000,        // points per 100% win-probability edge in the book
-    bookTol: 0,         // variety window in book win probability (0.1 = moves within 10% of the best)
+    bookTol: 0,
+    bookEvidence: 4,    // ...counting only moves verified at least this often in such positions         // variety window in book win probability (0.1 = moves within 10% of the best)
     bookPrior: 8,       // a lesson verified n times counts n / (n + bookPrior): higher = fuzzier until confirmed
     oreIncomePerMoney: false, // scale that credit by ore per money relative to a Driller (capped at 1)
     oreIncomeTurns: 0,  // >0: credit miners as the income-equivalent of this many turns of their ore (replaces oreBias)
@@ -968,10 +969,15 @@ export function chooseGrandmaster(state, side, opts = {}) {
         }
         // with a book, moves it rates within bookTol win probability of the best are all sound
         // (playtest 25: a strong book otherwise turns one found win into one memorised line)
-        const tol = Math.max(tolShare * flip, book ? cfg.bookTol * cfg.bookW : 0);
+        // The wide book window only between moves the book has verified here (playtest 27: with
+        // no lessons for a position, a 1000-point window made every skip "sound" and it played
+        // the opening at random).
+        const tol = tolShare * flip;
         const ranked = [...byMove.values()].sort((a, b) => b.score - a.score);
         const top = ranked[0].score;
-        let near = ranked.filter(e => e.score >= top - tol);
+        const known = e => book && bookEvidence(book, keys, e.plan.saveFor ? 0 : e.plan.first) >= cfg.bookEvidence;
+        const bookTol = book && known(ranked[0]) ? cfg.bookTol * cfg.bookW : 0;
+        let near = ranked.filter(e => e.score >= top - tol || (bookTol && known(e) && e.score >= top - bookTol));
         if (cfg.varietyTop) {
             // Coherent variety (playtest 16: skip, Driller, Skiff, skip): only the few best buys,
             // the better ones likelier; skipping/saving only when that is the best move outright.
