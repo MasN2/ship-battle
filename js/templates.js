@@ -31,7 +31,7 @@ export const TEMPLATES = {
     28: { number: 28, name: 'Convoy', attack: 4, health: 60, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
     29: { number: 29, name: 'Armory', attack: 1, health: 130, tags: [] },
     30: { number: 30, name: 'Dynamite', attack: 2, health: 40, tags: ['×2 CMB', 'MIN', '×7 AOE'], mining: 0.30, missile: true },
-    31: { number: 31, name: 'Ruler', attack: 1, health: 70, tags: [] },
+    31: { number: 31, name: 'Crossbowman', attack: 7, health: 60, tags: [] },
     32: { number: 32, name: 'Battlecruiser', attack: 32, health: 80, tags: ['×2 CMB'] },
     33: { number: 33, name: 'Reaper', attack: 5, health: 80, tags: ['MIN', 'CARRIER'], split: true },
     34: { number: 34, name: 'Eraser', attack: 2, health: 60, tags: ['×2 CMB', 'SIEGE'], siege: true },
@@ -43,7 +43,7 @@ export const TEMPLATES = {
     40: { number: 40, name: 'Obliterator', attack: 27, health: 60, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
     41: { number: 41, name: 'Abacus', attack: 1, health: 20 },
     42: { number: 42, name: 'Refinery', attack: 3, health: 25, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
-    43: { number: 43, name: 'Crossbowman', attack: 20, health: 50 },
+    43: { number: 43, name: 'Ruler', attack: 1, health: 60 },
     44: { number: 44, name: 'Sharpshooter', attack: 45, health: 60 },
     45: { number: 45, name: 'Reactor', attack: 1, health: 34 },
     46: { number: 46, name: 'Starfinder', attack: 3, health: 60 },
@@ -62,7 +62,7 @@ export const TEMPLATES = {
     59: { number: 59, name: 'Economist', attack: 1, health: 240 },
     60: { number: 60, name: 'Nobel', attack: 9, health: 120 },
     61: { number: 61, name: 'Shinobi', attack: 61, health: 130 },
-    62: { number: 62, name: 'MeterStick', attack: 3, health: 90 },
+    62: { number: 62, name: 'Xbowman', attack: 21, health: 150 },
     63: { number: 63, name: 'Forge', attack: 1, health: 30 },
     64: { number: 64, name: 'Power', attack: 729, health: 140 },
     65: { number: 65, name: 'Firebase', attack: 1, health: 120 },
@@ -110,10 +110,10 @@ export function listAbilities(n) {
             case 19: lines.push(`<b style="color: #8a63fe;">19 ›</b> I take ${n / 19} less damage from all sources.`); break;
             case 23: lines.push(`<b style="color: yellow;">23 › End of turn:</b> Gain ${n / 23} income.`); break;
             case 29: lines.push(`<b style="color: white;">29 › End of turn:</b> Modify your base with +1 armor.`); break;
-            case 31: lines.push(`<b style="color: #5e7488;">31 › Deploy:</b> Also deploy ships up to #${10 * n / 31} in my sector.`); break;
+            case 31: lines.push(`<b style="color: #5e7488;">31 › I have +2 range and x7 attack.`); break;
             case 37: lines.push(`<b style="color: white;">37 › End of turn:</b> Modify me with ×${1+n/37} attack.`); break;
             case 41: lines.push(`<b style="color: #5e7488;">41 › Deploy:</b> Also deploy prime ships up to #23 in my sector.`); break;
-            case 43: lines.push(`<b style="color: #5e7488;">43 › I have +2 range and x20 attack.`); break;
+            case 43: lines.push(`<b style="color: #5e7488;">43 › Deploy:</b> Also deploy ships up to #15 in my sector.`); break;
             case 47: lines.push(`<b style="color: white;">47 › End of turn:</b> Deploy ship #(my attack) in my sector, then modify me with +2 attack.`); break;
             case 53: lines.push(`<b style="color: white;">53 › Deploy:</b> Modify your ships with +1 attack.`); break;
             case 59: lines.push(`<b style="color: white;">59 › Deploy:</b> Modify me with +attack equal to your income.`); break;

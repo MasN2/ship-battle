@@ -106,8 +106,8 @@ if (num === 59) ship.attack += state[owner].income;
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num % 31 === 0) {
-        for (let i = 1; i <= 10 * num/31; i++) await deployShip(owner, i, sector);
+    if (num % 43 === 0) {
+        for (let i = 1; i <= 15; i++) await deployShip(owner, i, sector);
     }
     if (num === 53) {
         for (const s of state[owner].ships){
@@ -232,7 +232,7 @@ export async function executeStrike(ship, enemyOwner, atkTarget, atkBaseTarget, 
 }
 
 export function getRange(number) {
-    if (number % 43 === 0) return 4;
+    if (number % 31 === 0) return 4;
     if (number % 11 === 0) return 3;
     return 2;
 }
