@@ -60,7 +60,7 @@ function hintFor(key) {
 
 function buildOpponents() {
     const sel = document.getElementById('setup-opponent');
-    const groups = { classic: 'Classic AI', grandmaster: 'Grandmaster', learned: 'Learned', campaign: 'Campaign', other: 'Online & Custom' };
+    const groups = { classic: 'Weak', grandmaster: 'Near-Human', other: 'Human', learned: 'Superhuman', campaign: 'Campaign' };
     for (const [g, label] of Object.entries(groups)) {
         const og = document.createElement('optgroup');
         og.label = label;

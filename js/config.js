@@ -88,10 +88,10 @@ export const DIFFICULTIES = {
     campaign17: { label: 'Campaign 17', lockedFactor: 17, botHp: 1160, priority: [17, 7, 0], botIncome: 10, oreIncome: 2},
     // campaign19: { label: 'Campaign 19', lockedFactor: 19, botHp: 160, priority: [19, 14, 7, 0], botIncome: 15, oreIncome: 2},
     normal: { label: 'Normal', incomeMult: 4, oreMult: 1, hpMult: 1, aiNoise: 0.4, aiSkipChance: 0.08, ai: false },
-    hard: { label: 'Hard', incomeMult: 4, oreMult: 1, oreDelay: 1 / 16, armorGain: 0.02, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
-    challenging: { label: 'Challenging', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
-    tricky: { label: 'Tricky', incomeMult: 4, oreMult: 1, oreDelay: 3 / 16, armorGain: 0.04, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
-    visionary: { label: 'Visionary', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
+    // hard: { label: 'Hard', incomeMult: 4, oreMult: 1, oreDelay: 1 / 16, armorGain: 0.02, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
+    // challenging: { label: 'Challenging', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
+    // tricky: { label: 'Tricky', incomeMult: 4, oreMult: 1, oreDelay: 3 / 16, armorGain: 0.04, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
+    // visionary: { label: 'Visionary', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
     // No handicaps: same base, income and ore as Normal. The edge is all in js/grandmaster.js.
     // The version is in the label (and so on the red command card in screenshots); bump it
     // whenever default play changes, so a report can be matched to the AI that played it.
@@ -144,9 +144,9 @@ export const DIFFICULTIES = {
     // Taught itself by self-play (tools/zero/): a learned policy, no search, no book, no handicaps.
     // Shown as "Alpha 0.75" (spoken: alpha zero point seven five); the version keeps its leading
     // zero and creeps toward 0.99 rather than ever reaching 1.0, in shrinking steps since 0.7.
-    zero: { label: `Alpha ${ZERO_VERSION}`, ai: 'zero' },
+    zero: { label: `LormandZero ${ZERO_VERSION}`, ai: 'zero' },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
-    custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
+    // custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };
 
 // v3 = the β's settings plus the book
