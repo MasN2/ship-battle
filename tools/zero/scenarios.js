@@ -7,8 +7,8 @@
 // a start: { money, income, ore, hp: [blue, red], fleet: [[ship, sector from blue's side]...] }.
 // resetRules() puts the standard rules back.
 //
-// Held out of training on purpose: every New Game preset (most are far outside the training
-// noise), price changes to ×5, ×11 and ×13 ships (missiles, archers, carriers). (Big fleets
+// Held out of training on purpose: the New Game presets other than Glass and Juggernaut (those two
+// are trained on in small doses, the 'variant' family), price changes to ×5, ×11 and ×13 ships (missiles, archers, carriers). (Big fleets
 // are trained on now, in the rich 'mirror' family, so Warzone is less of a stretch.) The 'primeShift' and 'warzone' / 'missiles' tests ask
 // whether what it learned about prices and fleets carries over to rules it has never seen.
 
@@ -155,6 +155,17 @@ function mirror(rng, st) {
     if (rng() < 0.3) st.hp = Array(2).fill(pick([120, 200, 260, 320]));
 }
 
+/**
+ * Real variants in small doses: juggernaut-like tough ships (long games; capped ones still score
+ * through the self-play tie-break) and glass-like fragile ones. They play differently enough from
+ * the standard game that a big share would pull its habits, so they stay a few percent.
+ */
+function variant(rng, st) {
+    const { uni } = tools(rng);
+    const k = rng() < 0.7 ? uni(3, 5) : uni(0.25, 0.4);
+    for (const n of SHIP_NUMS) TEMPLATES[n].health = Math.max(1, Math.round(TEMPLATES[n].health * k));
+}
+
 function lopsided(rng, st) {
     const { pick } = tools(rng);
     const s = rng() < 0.5 ? 0 : 1;
@@ -172,6 +183,7 @@ export const TRAIN_FAMILIES = {
     long: 0.1,      // sturdier ships / deeper bases (to 480): longer games where an economy lead wins
     mirror: 0.2,    // rich mirror of higher-tier fleets on normal rules
     combo: 0.12,    // jitter plus one of the others
+    variant: 0.06,  // a little juggernaut (ship hp ×3-5) and glass (×0.25-0.4)
 };
 
 /** A training scenario; `std` = chance of a plain standard game. Returns { start, family }. */
@@ -192,6 +204,7 @@ export function trainingScenario(rng, std = 0.25) {
         else if (p === 'wide') wide(rng, st);
         else if (p === 'long') longGame(rng, st);
         else if (p === 'mirror') mirror(rng, st);
+        else if (p === 'variant') variant(rng, st);
     }
     if (rng() < 0.15) lopsided(rng, st);
     clearMemos();
@@ -213,7 +226,7 @@ function preset(mods, rng) {
 }
 
 /** 'near' tests are fresh draws from what training sees; 'far' ones it never trains on. */
-export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress'];
+export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress', 'glass', 'juggernaut'];
 
 // Held-out tests. Presets are the game's own New Game options, mostly far more extreme than
 // anything in training; 'midfight' and 'econ' are fresh draws from training families.
