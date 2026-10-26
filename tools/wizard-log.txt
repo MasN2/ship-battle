@@ -108,3 +108,21 @@ batch 10: won 5/8 outright; losses fixed by rewinding: 3 (t14 t15 t9); 54 branch
 batch 11: won 4/8 outright; losses fixed by rewinding: 3 (t14 t13 t4); 74 branches tried; 1466 lessons, book 28598 positions; 1.2 min
 batch 12: won 3/8 outright; losses fixed by rewinding: 5 (t16 t15 t15 t15 t15); 80 branches tried; 1256 lessons, book 28659 positions; 0.5 min
   checkpoint after batch 12: held-out 37/48 wins vs opponent, 37 distinct games, losses last 39 turns (0.8 min)
+
+=== 2026-10-26T00:53:19.357Z 12 batches × 8 games, rewinds 8 × 3 alternatives, book 28659 positions
+  checkpoint start (book 28659 positions): held-out 37/48 wins vs opponent, 37 distinct games, losses last 39 turns (0.9 min)
+batch 1: won 7/8 outright; losses fixed by rewinding: 1 (t11); 19 branches tried; 534 lessons, book 28786 positions; 0.6 min
+batch 2: won 6/8 outright; losses fixed by rewinding: 2 (t28 t18); 29 branches tried; 580 lessons, book 28948 positions; 0.5 min
+batch 3: won 7/8 outright; losses fixed by rewinding: 1 (t24); 16 branches tried; 440 lessons, book 29129 positions; 0.6 min
+batch 4: won 6/8 outright; losses fixed by rewinding: 2 (t23 t14); 34 branches tried; 743 lessons, book 29302 positions; 0.9 min
+  checkpoint after batch 4: held-out 33/48 wins vs opponent, 33 distinct games, losses last 39 turns (0.9 min)
+batch 5: won 7/8 outright; losses fixed by rewinding: 1 (t14); 16 branches tried; 445 lessons, book 29305 positions; 0.4 min
+batch 6: won 7/8 outright; losses fixed by rewinding: 1 (t13); 19 branches tried; 519 lessons, book 29326 positions; 0.5 min
+batch 7: won 6/8 outright; losses fixed by rewinding: 2 (t26 t15); 29 branches tried; 579 lessons, book 29470 positions; 0.5 min
+batch 8: won 5/8 outright; losses fixed by rewinding: 3 (t15 t14 t13); 48 branches tried; 841 lessons, book 29509 positions; 0.5 min
+  checkpoint after batch 8: held-out 33/48 wins vs opponent, 30 distinct games, losses last 39 turns (0.8 min)
+batch 9: won 4/8 outright; losses fixed by rewinding: 4 (t15 t15 t13 t14); 64 branches tried; 1047 lessons, book 29552 positions; 0.5 min
+batch 10: won 6/8 outright; losses fixed by rewinding: 2 (t13 t11); 43 branches tried; 909 lessons, book 29591 positions; 0.7 min
+batch 11: won 5/8 outright; losses fixed by rewinding: 3 (t14 t14 t15); 48 branches tried; 851 lessons, book 29601 positions; 0.5 min
+batch 12: won 6/8 outright; losses fixed by rewinding: 2 (t15 t15); 32 branches tried; 621 lessons, book 29604 positions; 0.5 min
+  checkpoint after batch 12: held-out 35/48 wins vs opponent, 23 distinct games, losses last 38 turns (0.6 min)
