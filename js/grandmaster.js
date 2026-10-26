@@ -30,7 +30,9 @@ import { bookKeys, bookBias, bookEvidence } from './book.js';
 import { BOOK } from './book-data.js';
 import { positionFeatures } from './features.js';
 import { VALUE_NET } from './value-weights.js';
-import { plannerChoice } from './planner.js';
+import { plannerChoice, mineWindowPick } from './planner.js';
+import { windowGain } from './window.js';
+import { WINDOW_MODEL } from './window-weights.js';
 
 /** Learned win probability for `side` (js/value-weights.js, fitted by tools/fiteval.js). */
 function netWinProb(S, side, N = VALUE_NET) {
@@ -97,6 +99,8 @@ export const GM_DEFAULTS = {
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
     plannerMode: false, // decide with js/planner.js (real-board ledger) instead of imagined games
     plannerTol: 1,      // variety window (money) among the planner's best moves
+    mineMode: null,     // true / { style, turns, thr }: a learned gate (js/window.js) starts a mining stretch
+    mineWindow: null,   // true / options: a miner replaces the pick when the real board says it's a safe window (js/planner.js)
     planner: null,      // planner settings (see PLANNER_DEFAULTS)
     frontW: 0,          // points for where my lead ship stands, shaped by frontBell (0 = off)
     frontBell: [0, -0.5, -0.2, 1, -0.4, -0.8, -1], // by distance from my base: 0 = home .. 3 = centre .. 6 = their base
@@ -762,7 +766,12 @@ export function chooseGrandmaster(state, side, opts = {}) {
     if (cfg.opening && state.turn <= cfg.opening.turns) {
         return POLICIES[cfg.opening.style](cloneState(state), side, cfg, opts.rng || Math.random) || 0;
     }
-    // Planner mode (js/planner.js): decide from the real board's ledger, not imagined games.
+    // Mining stretch in progress (mineMode): keep playing it, as the gate was fitted to.
+    const mm = cfg.mineMode && { style: 'gridlock', turns: 6, thr: 0, ...(cfg.mineMode === true ? {} : cfg.mineMode) };
+    if (mm && opts.memo?.mineUntil >= state.turn) {
+        return POLICIES[mm.style](cloneState(state), side, cfg, opts.rng || Math.random) || 0;
+    }
+        // Planner mode (js/planner.js): decide from the real board's ledger, not imagined games.
     if (cfg.plannerMode) {
         const rngP = opts.rng || Math.random;
         const vals = plannerChoice(state, side, { ...cfg, menu: (S, s) => shipMenu(S, s, cfg), policies: POLICIES }, rngP, opts.out ? [] : null);
@@ -1023,6 +1032,17 @@ export function chooseGrandmaster(state, side, opts = {}) {
             const i = w.findIndex(x => (r -= x) < 0);
             best = near[i < 0 ? near.length - 1 : i].plan.first;
         } else if (near.length > 1) best = near[Math.floor(rng() * near.length)].plan.first;
+    }
+    // Mining windows (playtest 31): a gate fitted to real games played out both ways says when a
+    // stretch of mining-in-a-held-centre beats the search's pick from here (mostly: when they mine).
+    if (mm && windowGain(WINDOW_MODEL, positionFeatures(state, side), 3, best) > mm.thr) {
+        if (opts.memo) opts.memo.mineUntil = state.turn + mm.turns - 1;
+        return POLICIES[mm.style](cloneState(state), side, cfg, rng) || 0;
+    }
+    if (cfg.mineWindow && !(TEMPLATES[best]?.mining > 0)) {
+        const w = mineWindowPick(state, side, best, { ...cfg, menu: (X, s) => shipMenu(X, s, cfg), policies: POLICIES }, n => TEMPLATES[n]?.mining > 0);
+        if (opts.windowOut) opts.windowOut.push(w);
+        best = w.mv;
     }
     return best;
 }

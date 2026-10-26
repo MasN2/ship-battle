@@ -27,6 +27,7 @@ export const PLANNER_DEFAULTS = {
     lethalScale: 35,     // hp scale of that falloff
     iters: 200,          // regret-matching iterations
     cont: null,          // style both sides follow after the first turn (null = nothing more is bought)
+    bankW: 1,            // value of a money unit left unspent (one deploy a turn: banked money is not yet strength)
 };
 
 const dist = (side, sector) => (side === 'blue' ? sector - 1 : 7 - sector); // 0 = own base .. 6 = theirs
@@ -90,7 +91,7 @@ function ledger(S, side, mine, theirs, P) {
         // ships alive at the start were already counted as assets; remove that baseline
         for (const s of S[who].ships) if (s.health > 0) v[who] -= price(s) * Math.min(1, s.health / s.template.health) * (dist(who, s.sector) >= 4 ? 1 - P.stranded : 1);
         // economy: money, income gained, ore mined
-        v[who] += x.money - money0[who];
+        v[who] += P.bankW * (x.money - money0[who]);
         v[who] += (x.income - inc0[who]) * P.restTurns;
         v[who] += oreMoney(Math.max(1, inc0[who]), ore0[who], x.ore - ore0[who], P);
         // base: only near-lethal damage matters
@@ -126,4 +127,38 @@ export function plannerChoice(S, side, cfg, rng = Math.random, out = null) {
     value.sort((a, b) => b.v - a.v);
     if (out) out.push(...value);
     return value;
+}
+
+// Mining windows (playtest 31): the search above fights well but never sees a mining chance; the
+// ledger sees mining but fights badly. So the fight is the search's pick, and a miner replaces it
+// only when the real board, played out under each continuation style against every reply, says
+// the miner is worth more and its worst reply costs little: a held centre, a quiet board, the tail
+// of a push. In a frenzy the fight terms dominate and the search's pick stands.
+export const WINDOW_DEFAULTS = {
+    turns: 6, conts: ['smart', 'snowsmart'], margin: 2, worst: 6, bankW: 0.6, restTurns: 15,
+};
+
+export function mineWindowPick(S, side, best, cfg, isMiner) {
+    const W = { ...WINDOW_DEFAULTS, ...(cfg.mineWindow === true ? {} : cfg.mineWindow) };
+    const opp = enemyOf(side);
+    const miners = [...new Set(cfg.menu(S, side).filter(n => isMiner(n) && n !== best && canAfford(S, side, n)))];
+    if (!miners.length) return { mv: best };
+    const rows = [best, ...miners];
+    const cols = [0, ...cfg.menu(S, opp).filter(n => canAfford(S, opp, n))];
+    // value per row: averaged over continuation styles, their reply mixed to hurt me most
+    const val = rows.map(() => 0), worst = rows.map(() => 0);
+    for (const cont of W.conts) {
+        const P = { ...PLANNER_DEFAULTS, ...W, cont, policies: cfg.policies, gmCfg: cfg };
+        const M = rows.map(m => cols.map(r => ledger(S, side, m, r, P)));
+        // their best reply against my current pick, and how each miner fares against all replies
+        for (let i = 0; i < rows.length; i++) {
+            val[i] += Math.min(...M[i]) / W.conts.length;
+            worst[i] += Math.min(...M[i].map((x, j) => x - M[0][j])) / W.conts.length;
+        }
+    }
+    let pick = 0;
+    for (let i = 1; i < rows.length; i++) {
+        if (val[i] > val[0] + W.margin && worst[i] > -W.worst && val[i] > val[pick]) pick = i;
+    }
+    return { mv: rows[pick], val, worst, rows };
 }
