@@ -142,7 +142,9 @@ export const DIFFICULTIES = {
     grandmasterV3: { label: `Grandmaster v${GM_V3_VERSION} (wizard)`, ai: 'grandmaster', gmCfg: null },
     grandmasterV3e: { label: `Grandmaster v${GM_V3_VERSION} (learned eval)`, ai: 'grandmaster', gmCfg: null },
     // Taught itself by self-play (tools/zero/): a learned policy, no search, no book, no handicaps.
-    zero: { label: `Zero v${ZERO_VERSION} (self-play)`, ai: 'zero' },
+    // Shown as "Alpha 0.6" (spoken: alpha zero point six); the version keeps its leading zero
+    // and creeps toward 0.99 rather than ever reaching 1.0.
+    zero: { label: `Alpha ${ZERO_VERSION}`, ai: 'zero' },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };
