@@ -73,7 +73,7 @@ const c10tutorial = {
 export const GM_VERSION = '1.2';
 export const GM_BETA_VERSION = '2.6β';
 // v3: the β plus the time wizard's book (lessons from rewinding real games vs v1.2, js/book.js)
-export const GM_V3_VERSION = '3.1';
+export const GM_V3_VERSION = '3.2';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -147,7 +147,13 @@ export const DIFFICULTIES = {
 // (bookW 10000: the book's verified lessons outweigh imagined-game flips; bookTol 0.1: any move
 // the book rates within 10% win probability of the best is fair game, so it varies its play
 // instead of replaying one memorised win)
-DIFFICULTIES.grandmasterV3.gmCfg = { ...DIFFICULTIES.grandmasterBeta.gmCfg, book: true, bookW: 10000, bookTol: 0.1 };
+// v3.2: it imagines only opponents (and plans of its own) that can actually play. A round-robin
+// of the imagined styles (tools/styles.js) showed 6 of its 10 imagined opponents were pushovers
+// (spend, mine, econ weaker than the Normal AI; three random 'wild'), so it kept going for kills
+// that only a player throwing the game would allow.
+const STRONG_STYLES = ['snowsmart', 'snowball', 'gridlock', 'turtle', 'smart', 'value'];
+DIFFICULTIES.grandmasterV3.gmCfg = { ...DIFFICULTIES.grandmasterBeta.gmCfg, book: true, bookW: 10000, bookTol: 0.1,
+    mine: STRONG_STYLES, theirs: STRONG_STYLES };
 // Experimental playtest entry: v3.1 with its imagined futures scored by the learned evaluator
 // (js/value-weights.js: fitted on 29k positions from 454 games, base hp left out) instead of the
 // hand-written score, which favoured the eventual loser 68% of the time in turns 1-8. It contests
