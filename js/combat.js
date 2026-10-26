@@ -106,8 +106,8 @@ if (num === 59) ship.attack += state[owner].income;
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num % 43 === 0) {
-        for (let i = 1; i <= 15; i++) await deployShip(owner, i, sector);
+    if (num % 37 === 0) {
+        for (let i = 1; i <= 12; i++) await deployShip(owner, i, sector);
     }
     if (num === 53) {
         for (const s of state[owner].ships){
@@ -408,7 +408,7 @@ export async function runTurn(playerPick = 0) {
         const deployments = [];
 
         for (const s of state[owner].ships) {
-            if (s.template.number % 37 === 0) s.attack *= 1 + s.template.number / 37;
+            if (s.template.number % 43 === 0) s.attack *= 3;
             if (s.template.number % 23 === 0) state[owner].income += s.template.number / 23;
             if (s.template.number % 17 === 0) state[enemy].hp -= s.template.number / 17;
             if (s.template.number % 13 === 0) deployments.push([owner, 2 * s.template.number / 13, s.sector]);
