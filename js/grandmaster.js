@@ -30,6 +30,7 @@ import { bookKeys, bookBias, bookEvidence } from './book.js';
 import { BOOK } from './book-data.js';
 import { positionFeatures } from './features.js';
 import { VALUE_NET } from './value-weights.js';
+import { plannerChoice } from './planner.js';
 
 /** Learned win probability for `side` (js/value-weights.js, fitted by tools/fiteval.js). */
 function netWinProb(S, side, N = VALUE_NET) {
@@ -94,6 +95,9 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    plannerMode: false, // decide with js/planner.js (real-board ledger) instead of imagined games
+    plannerTol: 1,      // variety window (money) among the planner's best moves
+    planner: null,      // planner settings (see PLANNER_DEFAULTS)
     frontW: 0,          // points for where my lead ship stands, shaped by frontBell (0 = off)
     frontBell: [0, -0.5, -0.2, 1, -0.4, -0.8, -1], // by distance from my base: 0 = home .. 3 = centre .. 6 = their base
     tactical: false,    // v3.1: decide by the simultaneous-move tactics table (see tactics()), long view as influence
@@ -757,6 +761,20 @@ export function chooseGrandmaster(state, side, opts = {}) {
     // (tools/crawl.js) found openings that beat grandmaster's own opening.
     if (cfg.opening && state.turn <= cfg.opening.turns) {
         return POLICIES[cfg.opening.style](cloneState(state), side, cfg, opts.rng || Math.random) || 0;
+    }
+    // Planner mode (js/planner.js): decide from the real board's ledger, not imagined games.
+    if (cfg.plannerMode) {
+        const rngP = opts.rng || Math.random;
+        const vals = plannerChoice(state, side, { ...cfg, menu: (S, s) => shipMenu(S, s, cfg), policies: POLICIES }, rngP, opts.out ? [] : null);
+        const tol = cfg.plannerTol;
+        const near = vals.filter(x => x.v >= vals[0].v - tol).slice(0, 3);
+        if (near.length > 1) {
+            const w = near.map(x => 1 - (vals[0].v - x.v) / (tol || 1) + 0.25);
+            let r = rngP() * w.reduce((a, b) => a + b, 0);
+            const i = w.findIndex(x => (r -= x) < 0);
+            return near[i < 0 ? near.length - 1 : i].mv;
+        }
+        return vals[0].mv;
     }
     // Invest when it's safe: the longer the base could soak the damage heading for it, the
     // further ahead income and ore are valued (horizon up to ×(1 + safeEcon)). The way a
