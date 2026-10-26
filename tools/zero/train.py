@@ -152,12 +152,14 @@ def node(args_list, **kw):
     return subprocess.run(['node', *args_list], cwd=ROOT, capture_output=True, text=True, **kw)
 
 
-def robust(net_path, opp, per, threads, opp_cfg=None):
+def robust(net_path, opp, per, threads, opp_cfg=None, scen=None):
     """Zero (greedy) vs opp over every scenario in tools/zero/scenarios.js: {table, mean, worst}."""
     cmd = ['tools/zero/robust.js', 'zero', opp, str(per), '--a', json.dumps(dict(weights=net_path, temp=0)),
            '--seed', str(random.randint(1, 10**6)), '--threads', str(threads), '--json']
     if opp_cfg:
         cmd += ['--b', json.dumps(opp_cfg)]
+    if scen:
+        cmd += ['--scen', scen]
     r = node(cmd)
     try:
         return json.loads(r.stdout.strip().splitlines()[-1])
@@ -186,6 +188,7 @@ def main():
     ap.add_argument('--eval-every', type=int, default=10)
     ap.add_argument('--eval-games', type=int, default=30, help='per scenario, vs Normal and vs --ref')
     ap.add_argument('--ref', default='runs/zero1/pool/it00140.json', help='a past net to keep beating (shipped v0.2)')
+    ap.add_argument('--std-games', type=int, default=200, help='standard games vs --ref: the deciding number, so a big sample')
     ap.add_argument('--gm-every', type=int, default=100)
     ap.add_argument('--gm-games', type=int, default=10, help='per scenario: a light probe, not a verdict')
     ap.add_argument('--threads', type=int, default=max(1, os.cpu_count() - 1))
@@ -260,6 +263,10 @@ def main():
                     for k in ('near', 'nearWorst', 'far', 'farWorst'):
                         rec[f'{tag}_{k}'] = r[k]
                     rec[f'{tag}_table'] = {k: v['score'] for k, v in r['table'].items()}
+            # standard decides which net is stronger, so it gets a sample big enough to trust (±3)
+            r = robust(net_path, 'zero', args.std_games, args.threads, dict(weights=os.path.join(ROOT, args.ref), temp=0), scen='standard')
+            if r:
+                rec['ref_std'], rec['ref_std_se'] = r['table']['standard']['score'], r['table']['standard']['se']
             rec['eval_s'] = round(time.time() - t2, 1)
         print(json.dumps(rec), flush=True)
         log.write(json.dumps(rec) + '\n'); log.flush()
