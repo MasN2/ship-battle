@@ -145,7 +145,8 @@ export function newGame(handicap) {
         modded: !isDefault(M),
     };
 
-    if (state.red.opening === 960){
+    if (state.red.ai == "zero960"){
+        state.red.ai = "zero";
         state.red.opening = [
             Math.floor(Math.random() * 3), // a: 0 to 2
             Math.floor(Math.random() * 4), // b: 0 to 3
