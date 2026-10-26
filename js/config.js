@@ -74,6 +74,8 @@ export const GM_VERSION = '1.2';
 export const GM_BETA_VERSION = '2.6β';
 // v3: the β plus the time wizard's book (lessons from rewinding real games vs v1.2, js/book.js)
 export const GM_V3_VERSION = '3.2';
+// Zero (js/zero.js): bump with every net shipped to js/zero-weights.js.
+export const ZERO_VERSION = '0.1';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -139,6 +141,8 @@ export const DIFFICULTIES = {
     },
     grandmasterV3: { label: `Grandmaster v${GM_V3_VERSION} (wizard)`, ai: 'grandmaster', gmCfg: null },
     grandmasterV3e: { label: `Grandmaster v${GM_V3_VERSION} (learned eval)`, ai: 'grandmaster', gmCfg: null },
+    // Taught itself by self-play (tools/zero/): a learned policy, no search, no book, no handicaps.
+    zero: { label: `Zero v${ZERO_VERSION} (self-play)`, ai: 'zero' },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };

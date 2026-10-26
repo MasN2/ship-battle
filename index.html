@@ -208,7 +208,7 @@
             'js/economy.js', 'js/evolved-weights.js', 'js/evolved.js', 'js/features.js', 'js/grandmaster.js',
             'js/intuition-weights.js', 'js/intuition.js', 'js/layout.js', 'js/modifiers.js', 'js/planner.js', 'js/render.js',
             'js/scenarios.js', 'js/setup.js', 'js/sim.js', 'js/state.js', 'js/templates.js', 'js/tooltips.js',
-            'js/value-weights.js', 'js/visuals.js', 'js/window-weights.js', 'js/window.js',
+            'js/value-weights.js', 'js/visuals.js', 'js/window-weights.js', 'js/window.js', 'js/zero.js', 'js/zero-weights.js',
         ];
         Promise.all(GAME_FILES.map(f => fetch(f, { cache: 'no-cache' }).catch(() => {}))).then(() => {
             for (const src of ['script.js', 'script.pause.js', 'summary-bar.js']) {

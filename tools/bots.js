@@ -6,6 +6,9 @@ import { SHIP_NUMS } from '../js/templates.js';
 import { cost } from '../js/economy.js';
 import { enemyOf, canAfford } from '../js/sim.js';
 import { chooseGrandmaster } from '../js/grandmaster.js';
+import fs from 'fs';
+import { loadNet, chooseZero } from '../js/zero.js';
+import { ZERO_WEIGHTS } from '../js/zero-weights.js';
 
 /** Sectors as seen from `side`: red's sector 5 is blue's sector 3. */
 const rel = (side, sec) => (side === 'red' ? sec : 8 - sec);
@@ -57,6 +60,14 @@ export function greedEconBot(S, side) {
     if (me.income < 40) return 0;
     for (let i = SHIP_NUMS.length - 1; i >= 0; i--) if (cost(SHIP_NUMS[i], me.ore) <= me.money) return SHIP_NUMS[i];
     return 0;
+}
+
+/** Zero (js/zero.js): cfg.weights = a net file from tools/zero/train.py, else the shipped net;
+    cfg.temp = sampling temperature (0 = always its top move). */
+export function zeroBot(cfg) {
+    const net = loadNet(cfg?.weights ? JSON.parse(fs.readFileSync(cfg.weights, 'utf8')) : ZERO_WEIGHTS);
+    const temp = cfg?.temp ?? 0;
+    return (S, side, rng) => chooseZero(S, side, net, { temp, rng });
 }
 
 export function grandmasterBot(cfg) {

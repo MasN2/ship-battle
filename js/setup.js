@@ -42,7 +42,8 @@ function saveDraft() {
 
 const groupOf = key => key.startsWith('campaign') ? 'campaign'
     : ['pvp', 'custom'].includes(DIFFICULTIES[key].ai) ? 'other'
-    : DIFFICULTIES[key].ai === 'grandmaster' ? 'grandmaster' : 'classic';
+    : DIFFICULTIES[key].ai === 'grandmaster' ? 'grandmaster'
+    : DIFFICULTIES[key].ai === 'zero' ? 'learned' : 'classic';
 /** Modifiers apply to games against an AI (campaign missions and online play keep their rules). */
 export const takesMods = key => !key.startsWith('campaign') && DIFFICULTIES[key]?.ai !== 'pvp';
 
@@ -52,13 +53,14 @@ function hintFor(key) {
         case 'campaign': return `${D.tutorial ? 'Tutorial mission' : 'Prime master mission'} · its own rules, no modifiers`;
         case 'other': return D.ai === 'pvp' ? 'Play a person online · no modifiers' : 'You enter a build order for red';
         case 'grandmaster': return 'Searches ahead, no handicaps';
+        case 'learned': return 'Taught itself by self-play: no search, no book, no handicaps';
         default: return CLASSIC_HINT[key] ?? '';
     }
 }
 
 function buildOpponents() {
     const sel = document.getElementById('setup-opponent');
-    const groups = { classic: 'Classic AI', grandmaster: 'Grandmaster', campaign: 'Campaign', other: 'Online & Custom' };
+    const groups = { classic: 'Classic AI', grandmaster: 'Grandmaster', learned: 'Learned', campaign: 'Campaign', other: 'Online & Custom' };
     for (const [g, label] of Object.entries(groups)) {
         const og = document.createElement('optgroup');
         og.label = label;

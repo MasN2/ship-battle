@@ -5,10 +5,11 @@ import os from 'os';
 import { economy } from '../js/economy.js';
 import { newSimState, stepTurn, SimError, canAfford } from '../js/sim.js';
 import { mulberry32 } from './rng.js';
-import { normalBot, scriptBot, greedEconBot, grandmasterBot, HUMAN_ORDERS } from './bots.js';
+import { normalBot, scriptBot, greedEconBot, grandmasterBot, zeroBot, HUMAN_ORDERS } from './bots.js';
 import { POLICIES, GM_DEFAULTS, visibleShips } from '../js/grandmaster.js';
 import { evolvedBot, seedWeights } from '../js/evolved.js';
 import { EVOLVED_WEIGHTS } from '../js/evolved-weights.js';
+import { DIFFICULTIES } from '../js/config.js';
 
 /** Wraps a deterministic bot: with chance eps (2·eps early on) it plays a random visible ship or skips. */
 export function noisy(bot, eps) {
@@ -27,6 +28,11 @@ export function makeBot(name, cfg, eps) {
     switch (name) {
         case 'normal': return normalBot;
         case 'gm': return grandmasterBot(cfg);
+        // the shipped grandmaster variants: v3.2 wizard, β 2.6
+        case 'gm3': return grandmasterBot(DIFFICULTIES.grandmasterV3.gmCfg);
+        case 'gmb': return grandmasterBot(DIFFICULTIES.grandmasterBeta.gmCfg);
+        // self-play net (js/zero.js); cfg { weights: path, temp }
+        case 'zero': return zeroBot(cfg);
         // evolved one-turn bot: cfg = weights, else the saved champion, else the seed
         case 'evo': return evolvedBot(cfg ?? EVOLVED_WEIGHTS ?? seedWeights());
         case 'econ': return noisy(greedEconBot, eps);
