@@ -43,7 +43,7 @@ function saveDraft() {
 const groupOf = key => key.startsWith('campaign') ? 'campaign'
     : ['pvp', 'custom'].includes(DIFFICULTIES[key].ai) ? 'other'
     : DIFFICULTIES[key].ai === 'grandmaster' ? 'grandmaster'
-    : DIFFICULTIES[key].ai === 'zero' ? 'learned' : 'classic';
+    : DIFFICULTIES[key].ai.startsWith('zero') ? 'learned' : 'classic';
 /** Modifiers apply to games against an AI (campaign missions and online play keep their rules). */
 export const takesMods = key => !key.startsWith('campaign') && DIFFICULTIES[key]?.ai !== 'pvp';
 
