@@ -88,13 +88,13 @@ async function triggerOnDeploy(owner, num, sector, ship){
 if (num === 59) ship.attack += state[owner].income;
     if (num > 0 && (num % 7 === 0)) {
         state[owner].income += num / 7;
-        state[owner].hp -= 3;
-        log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
+        state[owner].hp -= 4;
+        log(`${owner.toUpperCase()} trades 4 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num > 0 && (num % 49 === 0)) {
         state[owner].income += num / 7;
-        state[owner].hp -= 3;
-        log(`${owner.toUpperCase()} trades 3 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
+        state[owner].hp -= 4;
+        log(`${owner.toUpperCase()} trades 4 base hp for +${num / 7} income (now ${state[owner].income}).`, owner);
     }
     if (num === 73) state[owner].hp += ship.attack;
     if (TEMPLATES[num].win) {
@@ -409,7 +409,10 @@ export async function runTurn(playerPick = 0) {
 
         for (const s of state[owner].ships) {
             if (s.template.number % 43 === 0) s.attack *= 3;
-            if (s.template.number % 23 === 0) state[owner].income += s.template.number / 23;
+            if (s.template.number % 23 === 0) {
+                state[owner].hp -= 1;
+                state[owner].income += s.template.number / 23;
+            }
             if (s.template.number % 17 === 0) state[enemy].hp -= s.template.number / 17;
             if (s.template.number % 13 === 0) deployments.push([owner, 2 * s.template.number / 13, s.sector]);
             if (s.template.number % 47 === 0) {
