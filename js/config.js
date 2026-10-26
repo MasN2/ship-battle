@@ -75,7 +75,7 @@ export const GM_BETA_VERSION = '2.6β';
 // v3: the β plus the time wizard's book (lessons from rewinding real games vs v1.2, js/book.js)
 export const GM_V3_VERSION = '3.2';
 // Zero (js/zero.js): bump with every net shipped to js/zero-weights.js.
-export const ZERO_VERSION = '0.1';
+export const ZERO_VERSION = '0.2';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
