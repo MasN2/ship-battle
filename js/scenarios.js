@@ -55,6 +55,7 @@ export function initScenarios() {
             e.preventDefault();
             const r = JSON.parse(`[${emailInput.value}]`);
             const b = JSON.parse(`[${nameInput.value}]`);
+            document.getElementById('formModal')?.classList.remove('active');
             newGame(handicapInput.value);
             state.red.opening = r;
             await load(b);

@@ -12,7 +12,7 @@
 
 import { RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE, BASE_START_HP, START_INCOME, START_ORE } from './config.js';
 import { TEMPLATES, calculatePrimeFactors } from './templates.js';
-import { calcOreIncome, maxLoanFor, oreDivisor, excessExponent } from './economy.js';
+import { calcOreIncome, maxLoanFor, oreDivisor, excessExponent, priceMult } from './economy.js';
 import { SHIP_NUMS } from './templates.js';
 
 // Ship prices for one ore level, all ships at once: the same expression as cost() in
@@ -27,11 +27,13 @@ function priceTable(ore) {
     const d = oreDivisor(ore);
     for (const n of SHIP_NUMS) {
         const excess = excessExponent(n);
-        t[n] = Math.pow(n, 1 + (excess ** 2 / (excess + d)));
+        t[n] = Math.pow(n, 1 + (excess ** 2 / (excess + d))) * priceMult[n];
     }
     priceCache.set(ore, t);
     return t;
 }
+/** Forget cached prices (after game modifiers change priceMult). */
+export function clearPriceCache() { priceCache.clear(); }
 /** cost(num, ore) from economy.js, cached. */
 export const costOf = (num, ore) => priceTable(ore)[num];
 

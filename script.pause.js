@@ -1,37 +1,40 @@
+import { newGame, setup } from './js/state.js';
 import { DIFFICULTIES } from './js/config.js';
+import { describeMods } from './js/modifiers.js';
+import { openSetup, closeSetup, isSetupOpen } from './js/setup.js';
 
 const pauseModal = document.getElementById('pause-modal');
+const importModal = document.getElementById('formModal');
 const btnResume = document.getElementById('btn-resume');
 const btnRestart = document.getElementById('btn-restart');
 const btnRestartTop = document.getElementById('btn-restart-top');
 const menuBtn = document.getElementById('menu-btn');
-const btnScenarios = document.getElementById('btn-open-scenarios');
-const scenarioModal = document.getElementById('formModal');
+const btnNewGame = document.getElementById('btn-new-game');
+const btnImport = document.getElementById('btn-open-import');
+const pauseCurrent = document.getElementById('pause-current');
 
-function togglePauseMenu(force) {
-    const isCurrentlyOpen = pauseModal.classList.contains('active');
-    const shouldOpen = force !== undefined ? force : !isCurrentlyOpen;
-
-    if (shouldOpen) {
-        pauseModal.classList.add('active');
-        pauseModal.setAttribute('aria-hidden', 'false');
-    } else {
-        pauseModal.classList.remove('active');
-        pauseModal.setAttribute('aria-hidden', 'true');
-    }
+function setOpen(modal, open) {
+    modal.classList.toggle('active', open);
+    modal.setAttribute('aria-hidden', open ? 'false' : 'true');
 }
 
-// Global ESC hotkey
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        console.log("esc found");
-        // If scenario modal is open, close that first; otherwise toggle pause menu
-        if (scenarioModal && scenarioModal.style.display === 'flex') {
-            scenarioModal.style.display = 'none';
-        } else {
-            togglePauseMenu();
-        }
+function togglePauseMenu(force) {
+    const shouldOpen = force !== undefined ? force : !pauseModal.classList.contains('active');
+    if (shouldOpen && pauseCurrent) {
+        const mods = setup.chaos ? ['Chaos (random modifiers)'] : describeMods(setup.mods);
+        pauseCurrent.textContent = `${DIFFICULTIES[setup.difficulty]?.label ?? setup.difficulty} · ${mods.length ? mods.join(' · ') : 'Standard rules'}`;
     }
+    setOpen(pauseModal, shouldOpen);
+}
+
+export function closeImport() { setOpen(importModal, false); }
+
+// Global ESC hotkey: closes the top-most dialog, otherwise toggles the pause menu
+window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (importModal.classList.contains('active')) closeImport();
+    else if (isSetupOpen()) closeSetup();
+    else togglePauseMenu();
 });
 
 menuBtn?.addEventListener('click', () => togglePauseMenu(true));
@@ -47,15 +50,24 @@ btnRestartTop?.addEventListener('click', () => {
     newGame();
 });
 
-btnScenarios?.addEventListener('click', () => {
+btnNewGame?.addEventListener('click', () => {
     togglePauseMenu(false);
-    if (scenarioModal) scenarioModal.style.display = 'flex';
+    openSetup();
 });
 
-// Click outside dialog to close
-pauseModal?.addEventListener('click', (e) => {
-    if (e.target === pauseModal) togglePauseMenu(false);
+btnImport?.addEventListener('click', () => {
+    togglePauseMenu(false);
+    setOpen(importModal, true);
 });
+
+document.getElementById('importCancel')?.addEventListener('click', closeImport);
+
+// Click outside a dialog to close it
+for (const modal of [pauseModal, importModal, document.getElementById('setup-modal')]) {
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) setOpen(modal, false);
+    });
+}
 
 
 import { renderShortcutBar } from './js/render.js';
@@ -78,29 +90,3 @@ if (shortcutToggle && shortcutBar) {
         if (showShortcut) renderShortcutBar();
     });
 }
-
-
-// Select the dropdown element
-const selectElement = document.getElementById('handicap-select');
-
-// Define which option should be selected by default
-const defaultSelection = 'normal';
-
-// Loop through the DIFFICULTIES dictionary
-for (const [key, config] of Object.entries(DIFFICULTIES)) {
-    const option = document.createElement('option');
-    
-    // Set the option value to the key (e.g., 'normal', 'hard')
-    option.value = key;
-    
-    // Use the 'label' property from your object for the display text
-    option.textContent = config.label;
-    
-    // Check if this option should be selected by default
-    if (key === defaultSelection) {
-        option.selected = true;
-    }
-    
-    selectElement.appendChild(option);
-}
-

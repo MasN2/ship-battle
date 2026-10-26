@@ -21,7 +21,7 @@
             <div class="hud-top">
                 <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
             </div>
-            <button class="btn-action danger" id="btn-restart-top">↻ Restart Battle</button>
+            <button class="btn-action danger" id="btn-restart-top" title="Restart with the same opponent and modifiers">↻ Restart</button>
             <button class="hud-menu-btn" id="menu-btn" title="Open Menu (ESC)">
                 <span>⚙ Menu</span>
                 <kbd>ESC</kbd>
@@ -31,40 +31,6 @@
                 <div id="fx-layer"></div>
             </div>
 
-
-            <!-- Modal Overlay & Form Container -->
-            <div class="modal-overlay" id="formModal">
-                <div class="modal-content">
-                    <h2>Import Game</h2>
-                    <div class="form-group">
-                        <label for="userSelect">Select a Scenario:</label>
-                        <select id="userSelect">
-                            <option value="">-- Clear --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="handicapSelect">Select a Handicap:</label>
-                        <select id="handicapSelect">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
-                    </div>
-                    <form id="popupForm">
-                        <div class="form-group" style="display:flex">
-                            <label for="name">Blue Build Order:</label>
-                            <input type="text" id="blue-bo" name="name" style="flex-grow:1">
-                        </div>
-                        <div class="form-group" style="display:flex">
-                            <label for="email">Red Build Order:</label>
-                            <input type="text" id="red-bo" name="email" style="flex-grow:1">
-                        </div>
-                        <button type="submit" id="importBtn">Import</button>
-                    </form>
-                </div>
-            </div>
 
             <div class="deploy-bar shortcut-bar" id="shortcut-bar"></div>
         </div>
@@ -119,13 +85,6 @@
             <div class="pause-section-title">Settings</div>
             <div class="pause-grid">
                 <div class="pause-field">
-                    <label for="handicap-select">AI Mode</label>
-                    <select id="handicap-select">
-                        <!-- Options will be populated via JavaScript -->
-                    </select>
-                </div>
-
-                <div class="pause-field">
                     <label>Animation Speed (<span id="speed-val">1×</span>)</label>
                     <input type="range" id="speed-slider" min="0.5" max="15" step="0.5" value="1" />
                 </div>
@@ -151,15 +110,99 @@
                     </div>
                 </label>
             </div>
-            <!--
-            <div class="pause-footer">
-                <button class="btn-action outline" id="btn-open-scenarios">📂 Load Scenarios / Import</button>
+            <div class="pause-section-title">Game</div>
+            <div class="pause-current" id="pause-current"></div>
+            <div class="pause-actions">
+                <button class="btn-action outline" id="btn-new-game">✦ New Game…</button>
+                <button class="btn-action outline" id="btn-open-import">📂 Import Game…</button>
             </div>
-            -->
             <div class="pause-actions">
                 <button class="btn-action primary" id="btn-resume">▶ Resume Battle</button>
-                <button class="btn-action danger" id="btn-restart">↻ Restart Battle</button>
+                <button class="btn-action danger" id="btn-restart">↻ Restart</button>
             </div>
+        </div>
+    </div>
+
+
+    <div class="pause-overlay" id="setup-modal" aria-hidden="true">
+        <div class="pause-dialog setup-dialog" role="dialog" aria-labelledby="setup-title">
+            <div class="pause-header">
+                <h2 id="setup-title">New Game</h2>
+                <span class="esc-hint" id="setup-esc">Press <kbd>ESC</kbd> to cancel</span>
+            </div>
+            <div class="setup-tabs" role="tablist">
+                <button class="setup-tab active" data-tab="skirmish" role="tab">Skirmish</button>
+                <button class="setup-tab" data-tab="campaign" role="tab">Campaign</button>
+                <button class="setup-tab" data-tab="other" role="tab">Online &amp; Custom</button>
+            </div>
+
+            <div class="setup-pane" data-pane="skirmish">
+                <div class="pause-section-title">Opponent</div>
+                <div class="setup-choices" id="setup-opponents"></div>
+
+                <div class="pause-section-title setup-mods-title">
+                    <span>Modifiers</span>
+                    <button class="setup-link" id="setup-reset">Reset to standard</button>
+                </div>
+                <div class="setup-presets" id="setup-presets"></div>
+                <div class="setup-mods" id="setup-mods"></div>
+                <div class="setup-summary" id="setup-summary"></div>
+            </div>
+
+            <div class="setup-pane" data-pane="campaign" hidden>
+                <div class="pause-section-title">Missions</div>
+                <div class="setup-choices" id="setup-campaigns"></div>
+                <p class="setup-note">Campaign missions use their own rules; modifiers are off.</p>
+            </div>
+
+            <div class="setup-pane" data-pane="other" hidden>
+                <div class="pause-section-title">Mode</div>
+                <div class="setup-choices" id="setup-other"></div>
+            </div>
+
+            <div class="pause-actions">
+                <button class="btn-action outline" id="setup-cancel">Cancel</button>
+                <button class="btn-action primary" id="setup-start">▶ Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pause-overlay" id="formModal" aria-hidden="true">
+        <div class="pause-dialog import-dialog" role="dialog" aria-labelledby="import-title">
+            <div class="pause-header">
+                <h2 id="import-title">Import Game</h2>
+                <span class="esc-hint">Press <kbd>ESC</kbd> to close</span>
+            </div>
+            <form id="popupForm" class="pause-grid">
+                <div class="pause-field">
+                    <label for="userSelect">Scenario</label>
+                    <select id="userSelect">
+                        <option value="">-- Clear --</option>
+                    </select>
+                </div>
+                <div class="pause-field">
+                    <label for="handicapSelect">Handicap</label>
+                    <select id="handicapSelect">
+                        <option value="0">0 · Normal</option>
+                        <option value="1">1 · Hard</option>
+                        <option value="2">2 · Challenging</option>
+                        <option value="3">3 · Tricky</option>
+                        <option value="4">4 · Visionary</option>
+                    </select>
+                </div>
+                <div class="pause-field">
+                    <label for="blue-bo">Blue build order</label>
+                    <input type="text" id="blue-bo" placeholder="e.g. 2,3,3,0,7">
+                </div>
+                <div class="pause-field">
+                    <label for="red-bo">Red build order</label>
+                    <input type="text" id="red-bo" placeholder="e.g. 0,3,0,7">
+                </div>
+                <div class="pause-actions">
+                    <button type="button" class="btn-action outline" id="importCancel">Cancel</button>
+                    <button type="submit" class="btn-action primary" id="importBtn">Import</button>
+                </div>
+            </form>
         </div>
     </div>
 

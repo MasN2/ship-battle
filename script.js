@@ -3,6 +3,7 @@ import { setSound, isSoundOn } from './js/audio.js';
 import { initTooltips } from './js/tooltips.js';
 import { initScenarios } from './js/scenarios.js';
 import { renderDeployBar } from './js/render.js';
+import { initSetup } from './js/setup.js';
 
 const tutorialBox = document.getElementById('tutorial-box');
 const tutorialText = document.getElementById('tutorial-text');
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Start first match
+    // A standard match behind the New Game screen, which opens on the last setup used
     newGame();
+    initSetup();
 });

@@ -214,6 +214,8 @@ export function renderBase(owner) {
 }
 
 let deployBarInitialized = false;
+/** Rebuild the deploy bar on its next render (ship stats can change between games). */
+export function resetDeployBar() { deployBarInitialized = false; }
 
 function getBuyCardTooltip(n, t, c) {
     const margin = Math.max(1, calcOreIncome('blue', state));

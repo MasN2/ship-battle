@@ -148,6 +148,9 @@ export const GM_DEFAULTS = {
     openTurns: 10,
 };
 
+/** Forget remembered prices and deploy bars (after game modifiers change prices). */
+export function clearPriceMemos() { econMemo.clear(); visibleMemo.clear(); }
+
 /** The ships render.js shows on the deploy bar for this side's income and ore. */
 // The bar depends only on income and ore; rollouts ask for it every imagined turn, so remember
 // it (callers only read the list).
