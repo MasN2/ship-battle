@@ -1,6 +1,6 @@
 // Self-play games for Zero (js/zero.js), written out as training data for tools/zero/train.py.
 //   node tools/zero/selfplay.js --net net.json --games 2000 --out data/it0001 [--pool a.json,b.json]
-//        [--ppool 0.2] [--pgm 0] [--std 0.25] [--open 3] [--max 200] [--seed 1] [--threads N] [--temp 1]
+//        [--ppool 0.2] [--pgm 0] [--draw 0.5] [--std 0.25] [--open 3] [--max 200] [--seed 1] [--threads N] [--temp 1]
 // Both sides are the current net unless a game draws a past snapshot from --pool as one side's
 // opponent (chance --ppool), or grandmaster v1.2 (chance --pgm: slow, ~7s a game, so keep it to
 // a few percent; its thinking is capped at --gm-ms per move, 150 by default, v1.2 otherwise); then only the current net's moves are kept. Each game's first
@@ -8,6 +8,7 @@
 // --std: share of plain standard games; the rest draw a training scenario (tools/zero/scenarios.js:
 // nudged stats and prices, mid-fight mirrored fleets with low bases, rich starts, econ tweaks).
 // The shuffles only live inside this process's copy of the rules; nothing is saved.
+// --draw: weight of the tie-break score for games that hit a cap (see adjudicate).
 // Writes <out>.bin + <out>.json (array layout) and prints a JSON summary as the last stdout line.
 
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
@@ -16,6 +17,7 @@ import os from 'os';
 import { newSimState, stepTurn, SimError } from '../../js/sim.js';
 import { trainingScenario, applyStart, resetRules, MAX_SHIPS } from './scenarios.js';
 import { grandmasterBot } from '../bots.js';
+import { economy } from '../../js/economy.js';
 import {
     encode, forward, moveProbs, sampleIndex, loadNet, typeTable, legalMoves,
     N_TYPES, TYPE_DIM, SHIP_DYN, ACT_DYN, GLOBAL_DIM,
@@ -23,6 +25,20 @@ import {
 import { mulberry32 } from '../rng.js';
 
 const GAMMA = 0.997, LAMBDA = 0.95;
+
+/**
+ * A game that hits the turn or ship cap has no winner; score it as a probable win for whoever
+ * is ahead, -1..1 from blue's side: base hp, economy (ship size one turn's income buys) and
+ * board strength (sum of sqrt(attack × hp)), each as a share-difference. Scaled by --draw so
+ * it never counts as much as a real win: a lead can still be turned around.
+ */
+function adjudicate(S) {
+    const diff = (a, b) => (a - b) / (Math.abs(a) + Math.abs(b) + 1e-9);
+    const hp = o => Math.max(0, S[o].hp);
+    const econ = o => (S[o].income > 0 ? economy(S[o].income, S[o].ore) : 0);
+    const board = o => S[o].ships.reduce((a, s) => a + (s.health > 0 ? Math.sqrt(Math.max(0.5, s.attack) * s.health) : 0), 0);
+    return 0.4 * diff(hp('blue'), hp('red')) + 0.3 * diff(econ('blue'), econ('red')) + 0.3 * diff(board('blue'), board('red'));
+}
 
 /** One game. Returns { samples, info }; each sample keeps its encoding plus PPO bookkeeping. */
 function playGame(seed, nets, opt) {
@@ -73,10 +89,11 @@ function playGame(seed, nets, opt) {
         }
     }
     const winner = S.over ?? 'none';
+    const lead = winner === 'none' && !crashed ? opt.draw * adjudicate(S) : 0;
     const samples = [];
     for (const side of ['blue', 'red']) {
         const tr = traj[side];
-        const z = winner === side ? 1 : winner === 'none' ? 0 : -1;
+        const z = winner === side ? 1 : winner === 'none' ? (side === 'blue' ? lead : -lead) : -1;
         let adv = 0;
         for (let t = tr.length - 1; t >= 0; t--) {
             const last = t === tr.length - 1;
@@ -149,7 +166,7 @@ if (!isMainThread) {
     const seed0 = Number(flag('--seed', 1));
     const threads = Math.min(games, Number(flag('--threads', Math.max(1, os.cpus().length - 1))));
     const opt = {
-        ppool: Number(flag('--ppool', 0.2)), pgm: Number(flag('--pgm', 0)), gmMs: Number(flag('--gm-ms', 150)), std: Number(flag('--std', 0.25)), open: Number(flag('--open', 3)),
+        ppool: Number(flag('--ppool', 0.2)), pgm: Number(flag('--pgm', 0)), gmMs: Number(flag('--gm-ms', 150)), draw: Number(flag('--draw', 0.5)), std: Number(flag('--std', 0.25)), open: Number(flag('--open', 3)),
         max: Number(flag('--max', 200)), temp: Number(flag('--temp', 1)),
     };
     const seeds = Array.from({ length: games }, (_, i) => seed0 * 1000003 + i);
