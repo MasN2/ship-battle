@@ -16,14 +16,18 @@ const flag = (name, dflt) => { const i = args.indexOf(name); if (i < 0) return d
 const hidden = Number(flag('--hidden', 16));
 const epochs = Number(flag('--epochs', 60));
 const outFile = flag('--out', null);
+// --drop name,name: leave features out (e.g. base hp, which tracks being attacked, not winning)
+const drop = (flag('--drop', '') || '').split(',').filter(Boolean);
 const rows = fs.readFileSync(args[0], 'utf8').trim().split('\n').map(l => JSON.parse(l));
 
 // split by game
 const test = r => (r.g * 2654435761 >>> 0) % 5 === 0;
 const train = rows.filter(r => !test(r)), tst = rows.filter(test);
 
+const use = FEATURE_NAMES.map((n, i) => (drop.includes(n) ? -1 : i)).filter(i => i >= 0);
+for (const r of rows) r.f = use.map(i => r.f[i]);
 // standardise features (stats from training rows)
-const F = FEATURE_NAMES.length;
+const F = use.length;
 const mu = new Array(F).fill(0), sd = new Array(F).fill(0);
 for (const r of train) r.f.forEach((x, i) => (mu[i] += x / train.length));
 for (const r of train) r.f.forEach((x, i) => (sd[i] += (x - mu[i]) ** 2 / train.length));
@@ -74,7 +78,7 @@ function fitNet(H) {
         }
         lr *= 0.95;
     }
-    const model = { mu, sd, W1, b1, W2, wl, b2 };
+    const model = { use, mu, sd, W1, b1, W2, wl, b2 };
     return { predict: r => fwd(r.x).p, model };
 }
 

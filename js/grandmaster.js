@@ -33,7 +33,8 @@ import { VALUE_NET } from './value-weights.js';
 
 /** Learned win probability for `side` (js/value-weights.js, fitted by tools/fiteval.js). */
 function netWinProb(S, side, N = VALUE_NET) {
-    const f = positionFeatures(S, side);
+    const all = positionFeatures(S, side);
+    const f = N.use ? N.use.map(i => all[i]) : all;
     const x = f.map((v, i) => (v - N.mu[i]) / N.sd[i]);
     let z = N.b2;
     for (let i = 0; i < x.length; i++) z += N.wl[i] * x[i];
@@ -93,6 +94,8 @@ export const GM_DEFAULTS = {
     advK: 2,            // agg 'adversary': mean of this many worst non-wild imagined opponents
     minerFate: 0,       // penalty (in imagined win/loss flips) × share of futures where a bought fragile miner dies unmined
     closeOut: 0,        // play a style's own move when that whole plan wins this share of winScore on average
+    frontW: 0,          // points for where my lead ship stands, shaped by frontBell (0 = off)
+    frontBell: [0, -0.5, -0.2, 1, -0.4, -0.8, -1], // by distance from my base: 0 = home .. 3 = centre .. 6 = their base
     tactical: false,    // v3.1: decide by the simultaneous-move tactics table (see tactics()), long view as influence
     tacticTurns: 6,     // turns each (my buy, their buy) pair is played out
     tacticPolicy: 'value', // how both sides play after that first turn in the table
@@ -444,6 +447,19 @@ export function sideValue(S, side, cfg, combatOnly = false) {
     const foe = enemyOf(side);
     const foeBase = foe === 'blue' ? 1 : 7;
     const defended = cfg.fwdMult !== 1 && S[foe].ships.some(s => s.health > 0 && s.sector === foeBase);
+    // Front-line bell (playtest 28, checked on 29k recorded positions): where my lead ship stands
+    // matters, but not "further is better". Holding the centre wins most (58% at turns 8-20),
+    // one sector past it 46%, hanging back near home 45-48%: the ideal push is the one that
+    // barely wins the centre while mining, not one that spills forward into their base.
+    if (cfg.frontW) {
+        let front = -1;
+        for (const s of me.ships) {
+            if (s.health <= 0) continue;
+            const d = side === 'blue' ? s.sector - 1 : 7 - s.sector;
+            if (d > front) front = d;
+        }
+        if (front >= 0) v += cfg.frontW * cfg.frontBell[Math.min(front, cfg.frontBell.length - 1)];
+    }
     let ships = 0;
     for (const s of me.ships) {
         if (s.health <= 0) continue;

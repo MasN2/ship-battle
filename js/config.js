@@ -138,6 +138,7 @@ export const DIFFICULTIES = {
         },
     },
     grandmasterV3: { label: `Grandmaster v${GM_V3_VERSION} (wizard)`, ai: 'grandmaster', gmCfg: null },
+    grandmasterV3e: { label: `Grandmaster v${GM_V3_VERSION} (learned eval)`, ai: 'grandmaster', gmCfg: null },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };
@@ -147,3 +148,8 @@ export const DIFFICULTIES = {
 // the book rates within 10% win probability of the best is fair game, so it varies its play
 // instead of replaying one memorised win)
 DIFFICULTIES.grandmasterV3.gmCfg = { ...DIFFICULTIES.grandmasterBeta.gmCfg, book: true, bookW: 10000, bookTol: 0.1 };
+// Experimental playtest entry: v3.1 with its imagined futures scored by the learned evaluator
+// (js/value-weights.js: fitted on 29k positions from 454 games, base hp left out) instead of the
+// hand-written score, which favoured the eventual loser 68% of the time in turns 1-8. It contests
+// a mining push from the start; vs v1.2 it is weaker (-32.5 vs -10), so playtests decide.
+DIFFICULTIES.grandmasterV3e.gmCfg = { ...DIFFICULTIES.grandmasterV3.gmCfg, leaf: 'net' };
