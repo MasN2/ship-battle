@@ -387,7 +387,7 @@ function barStatus(n) {
     const { ore, income } = state.blue;
     if (n > state.blue.max_ship) return 'hidden';
     if (largestPrimeFactor(n) >= state.blue.locked_factor) return 'hidden';
-    if (cost(40, ore) <= 2.6*income && n <= 10) return 'hidden';
+    /* if (cost(40, ore) <= 2.6*income && n <= 10) return 'hidden';
     if (cost(50, ore) <= 2.5*income && n <= 20) return 'hidden';
     if (cost(60, ore) <= 2.4*income && n <= 30) return 'hidden';
     if (cost(10, ore) > 3.2*income && n >= 10) return 'above';
@@ -396,7 +396,7 @@ function barStatus(n) {
     if (cost(40, ore) > 2.6*income && n >= 40) return 'above';
     if (cost(50, ore) > 2.5*income && n >= 50) return 'above';
     if (cost(60, ore) > 2.4*income && n >= 60) return 'above';
-    if (cost(70, ore) > 4*income && n >= 70) return 'above';
+    if (cost(70, ore) > 4*income && n >= 70) return 'above'; */
     return 'shown';
 }
 
