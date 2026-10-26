@@ -1133,7 +1133,8 @@ html, body {
     background: var(--bg-2);
     padding: 8px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+    /* Ten per row keeps rows lined up by tens (skip + 1-9, then 10-19, ...) */
+    grid-template-columns: repeat(10, minmax(0, 1fr));
     gap: 5px;
     align-items: stretch;
 }
@@ -1576,6 +1577,10 @@ button[data-tip], button[data-tip-text] {
 
 /* Responsive */
 @media (max-width: 1000px) {
+    .deploy-bar {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
     .log-wrap {
         grid-template-columns: 1fr;
     }

@@ -87,7 +87,7 @@ export function newGame(handicap) {
 
     const D = DIFFICULTIES[difficulty];
     // Campaign missions and online play keep their own rules.
-    if (D.tutorial || D.ai === 'pvp') mods = DEFAULT_MODS;
+    if (difficulty.startsWith('campaign') || D.ai === 'pvp') mods = DEFAULT_MODS;
     activeMods = normalizeMods(mods);
     applyBalanceMods(activeMods);
     const M = activeMods;

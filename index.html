@@ -135,35 +135,21 @@
                 <h2 id="setup-title">New Game</h2>
                 <span class="esc-hint" id="setup-esc">Press <kbd>ESC</kbd> to cancel</span>
             </div>
-            <div class="setup-tabs" role="tablist">
-                <button class="setup-tab active" data-tab="skirmish" role="tab">Skirmish</button>
-                <button class="setup-tab" data-tab="campaign" role="tab">Campaign</button>
-                <button class="setup-tab" data-tab="other" role="tab">Online &amp; Custom</button>
+            <div class="setup-opponent">
+                <label class="pause-section-title" for="setup-opponent">Opponent</label>
+                <select id="setup-opponent"></select>
+                <span class="setup-choice-hint" id="setup-opponent-hint"></span>
             </div>
 
-            <div class="setup-pane" data-pane="skirmish">
-                <div class="pause-section-title">Opponent</div>
-                <div class="setup-choices" id="setup-opponents"></div>
-
-                <div class="pause-section-title setup-mods-title">
-                    <span>Modifiers</span>
-                    <button class="setup-link" id="setup-reset">Reset to standard</button>
-                </div>
-                <div class="setup-presets" id="setup-presets"></div>
-                <div class="setup-mods" id="setup-mods"></div>
-                <div class="setup-summary" id="setup-summary"></div>
+            <div class="pause-section-title setup-mods-title">
+                <span>Modifiers</span>
+                <span class="setup-mods-tools">
+                    <select id="setup-preset" aria-label="Presets"></select>
+                    <button class="setup-link" id="setup-reset">Reset</button>
+                </span>
             </div>
-
-            <div class="setup-pane" data-pane="campaign" hidden>
-                <div class="pause-section-title">Missions</div>
-                <div class="setup-choices" id="setup-campaigns"></div>
-                <p class="setup-note">Campaign missions use their own rules; modifiers are off.</p>
-            </div>
-
-            <div class="setup-pane" data-pane="other" hidden>
-                <div class="pause-section-title">Mode</div>
-                <div class="setup-choices" id="setup-other"></div>
-            </div>
+            <div class="setup-mods" id="setup-mods"></div>
+            <div class="setup-summary" id="setup-summary"></div>
 
             <div class="pause-actions">
                 <button class="btn-action outline" id="setup-cancel">Cancel</button>

@@ -66,7 +66,7 @@ onDomReady(() => {
         });
     }
 
-    // A standard match behind the New Game screen, which opens on the last setup used
+    // A standard match to play right away; New Game (menu) picks anything else
     newGame();
     initSetup();
 });
