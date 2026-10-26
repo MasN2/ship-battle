@@ -78,10 +78,10 @@ export const GM_V3_VERSION = '3.2';
 export const ZERO_VERSION = '0.4';
 
 export const DIFFICULTIES = {
-    campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
-    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [83, 0], tutorial: c2tutorial},
+    campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [89, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
+    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [89, 0], tutorial: c2tutorial},
     campaign4: { label: 'Campaign 4', maxShip: 4, playerIncome: 3, playerHp: 100, botHp: 160, botIncome: 7, priority: [4], tutorial: c4tutorial},
-    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [83, 0], tutorial: c6tutorial},
+    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [89, 0], tutorial: c6tutorial},
     campaign10: { label: 'Campaign 10', maxShip: 10, botHp: 160, botIncome: 11, priority: [8, 4], opening: [0, 0, 0, 0, 0], tutorial: c10tutorial},
     campaign11: { label: 'Campaign 11', lockedFactor: 11, botHp: 640, botIncome: 5, priority: [11, 7, 0], oreIncome: 2},
     campaign13: { label: 'Campaign 13', lockedFactor: 13, botHp: 160, priority: [13, 0], botMoney: 96},

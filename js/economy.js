@@ -15,7 +15,7 @@ export function excessExponent(shipNum) {
 
 // Per-ship price multipliers set by game modifiers (js/modifiers.js); all 1 in a standard game,
 // so prices are unchanged to the last bit. Non-integer ship numbers (economy()'s bisection) use 1.
-export const priceMult = new Float64Array(84).fill(1);
+export const priceMult = new Float64Array(90).fill(1);
 
 export function cost(shipNum, ore) {
     const excess = excessExponent(shipNum);

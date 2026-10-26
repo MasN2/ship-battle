@@ -23,7 +23,7 @@ function priceTable(ore) {
     let t = priceCache.get(ore);
     if (t) return t;
     if (priceCache.size > 4096) priceCache.clear();
-    t = new Float64Array(84);
+    t = new Float64Array(90);
     const d = oreDivisor(ore);
     for (const n of SHIP_NUMS) {
         const excess = excessExponent(n);
@@ -120,18 +120,18 @@ function deployShip(S, owner, num, sector) {
 
 function triggerOnDeploy(S, owner, num, sector, ship) {
     const me = S[owner];
-    if (num === 53) ship.attack += me.income;
-    if (num > 0 && num % 7 === 0) { me.income += num / 7; me.hp -= 3; }
-    if (num > 0 && num % 49 === 0) { me.income += num / 7; me.hp -= 3; }
+    if (num === 59) ship.attack += me.income;
+    if (num > 0 && num % 7 === 0) { me.income += num / 7; me.hp -= 4; }
+    if (num > 0 && num % 49 === 0) { me.income += num / 7; me.hp -= 4; }
     if (num === 73) me.hp += ship.attack;
     if (TEMPLATES[num].win) S[enemyOf(owner)].hp -= ship.attack;
     if (num === 41) {
         for (let i = 1; i <= 23; i++) if (calculatePrimeFactors(i).length === 1) deployShip(S, owner, i, sector);
     }
-    if (num % 31 === 0) {
-        for (let i = 1; i <= 10 * num / 31; i++) deployShip(S, owner, i, sector);
+    if (num % 37 === 0) {
+        for (let i = 1; i <= 12; i++) deployShip(S, owner, i, sector);
     }
-    if (num === 59) for (const s of me.ships) s.attack += 1;
+    if (num === 53) for (const s of me.ships) s.attack += 1;
 }
 
 function buyShip(S, owner, num) {
@@ -175,7 +175,7 @@ function frontOf(ix, sec) {
 function findTarget(idx, ship) {
     const enemy = ship.owner === 'blue' ? 'red' : 'blue';
     const ix = idx[enemy];
-    const range = ship.template.number % 11 === 0 ? 3 : ATTACK_RANGE;
+    const range = getRange(ship.template.number);
     const baseSec = ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX;
     const lo = Math.max(1, ship.sector - range);
     const hi = Math.min(7, ship.sector + range);
@@ -202,6 +202,13 @@ function findTarget(idx, ship) {
     }
     if (Math.abs(baseSec - ship.sector) <= range) return { target: null, base: true };
     return null;
+}
+
+/** Same as getRange in combat.js. */
+function getRange(number) {
+    if (number % 31 === 0) return 4;
+    if (number % 11 === 0) return 3;
+    return ATTACK_RANGE;
 }
 
 function hurt(S, idx, ship, dmg) {
@@ -326,15 +333,11 @@ export function stepTurn(S, bluePick, redPick) {
         const deployments = [];
         for (const s of me.ships) {
             const n = s.template.number;
-            if (n % 37 === 0) s.attack *= 1 + n / 37;
-            if (n % 23 === 0) me.income += n / 23;
+            if (n % 43 === 0) s.attack *= 3;
+            if (n % 23 === 0) { me.hp -= 1; me.income += n / 23; }
             if (n % 17 === 0) S[enemy].hp -= n / 17;
             if (n % 13 === 0) deployments.push([2 * n / 13, s.sector]);
             if (n % 47 === 0) { deployments.push([s.attack, s.sector]); s.attack += 2; }
-            if (n % 43 === 0) {
-                s.attack += 1;
-                for (let i = 0; i < s.attack; i++) deployments.push([2, s.sector]);
-            }
             if (n % 29 === 0) me.armor += n / 29;
             if (n % 58 === 0) me.armor *= 2;
         }

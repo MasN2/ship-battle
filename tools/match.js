@@ -105,7 +105,7 @@ export function playGame(seed, aName, bName, aCfg, bCfg, aSide, maxTurns, eps, o
         }
     }
     const winner = S.over ?? (crash ? 'crash' : 'timeout');
-    const terminus = S.over ? picks[S.over][picks[S.over].length - 1] === 83 : false;
+    const terminus = S.over ? picks[S.over][picks[S.over].length - 1] === 89 : false;
     return {
         seed, aSide, winner, aWon: winner === aSide, bWon: winner !== aSide && (winner === 'red' || winner === 'blue'),
         turns: S.turn, terminus, picks, econ, margin: marginScore(S, aSide), parts: marginParts(S, aSide),

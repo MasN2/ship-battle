@@ -20,10 +20,10 @@ import { economy as economyRaw, maxLoanFor, calcOreIncome } from './economy.js';
 import { costOf, canAfford } from './sim.js';
 import { visibleShips } from './grandmaster.js';
 
-export const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 83];
+export const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 89];
 export const N_TYPES = SHIP_NUMS.length;
 export const SKIP_TYPE = N_TYPES; // the type table's extra all-zero row
-export const TYPE_IDX = new Int32Array(84).fill(-1);
+export const TYPE_IDX = new Int32Array(90).fill(-1);
 SHIP_NUMS.forEach((n, i) => { TYPE_IDX[n] = i; });
 
 export const TYPE_DIM = 13 + PRIMES.length;
@@ -50,7 +50,7 @@ export function typeFeatures(n, out = new Float32Array(TYPE_DIM), o = 0) {
     out[o++] = has(7) ? (has(49) ? 2 : 1) : 0;        // base hp paid on deploy, in 3s
     out[o++] = l1p(has(23) ? n / 23 : 0);             // income per turn
     out[o++] = l1p(missile) / 3;
-    out[o++] = has(11) ? 1 : 0;                       // range 3
+    out[o++] = has(31) ? 2 : has(11) ? 1 : 0;         // range beyond 2
     out[o++] = has(19) ? n / 19 / 3 : 0;              // damage reduction
     out[o++] = has(17) ? n / 17 / 3 : 0;              // siege per turn
     out[o++] = has(13) ? l1p(2 * n / 13) / 3 : 0;     // spawns ship #2n/13 per turn

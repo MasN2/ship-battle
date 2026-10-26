@@ -28,6 +28,8 @@ const special = {
 globalThis.document = new Proxy({}, {
     get(_, key) {
         if (key === 'getElementById') return id => special[id] ?? stub;
+        // never 'loaded': script.js would otherwise start its own game mid-run (onDomReady)
+        if (key === 'readyState') return 'loading';
         return stub;
     },
 });

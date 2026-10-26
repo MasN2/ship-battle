@@ -13,6 +13,7 @@
 // whether what it learned about prices and fleets carries over to rules it has never seen.
 
 import { TEMPLATES, SHIP_NUMS, calculatePrimeFactors } from '../../js/templates.js';
+import { BASE_START_HP, START_INCOME, START_ORE } from '../../js/config.js';
 import { priceMult } from '../../js/economy.js';
 import { clearPriceCache } from '../../js/sim.js';
 import { clearPriceMemos } from '../../js/grandmaster.js';
@@ -23,9 +24,9 @@ const ORIG = Object.fromEntries(SHIP_NUMS.map(n => [n, [TEMPLATES[n].attack, TEM
 const PRICE_PRIMES = [2, 3, 7, 17, 19, 23]; // trained on (5, 11, 13 held out)
 const HELD_OUT_PRIMES = [5, 11, 13];
 const FLEET_SHIPS = SHIP_NUMS.filter(n => n <= 73);
-// Ships that make more ships (carriers, Ruler, Abacus, Replicator, Rainbow, Wong): a mirrored
+// Ships that make more ships (carriers, Ruler, Abacus, Rainbow, Wong): a mirrored
 // fleet gets at most one, or mirrored carriers spam each other into the hundreds.
-const SPAWNS = n => [13, 31, 41, 43, 47, 71].some(p => n % p === 0);
+const SPAWNS = n => [13, 37, 41, 47, 71].some(p => n % p === 0);
 
 const clearMemos = () => { clearPriceCache(); clearPriceMemos(); clearZeroMemos(); };
 
@@ -35,7 +36,7 @@ export function resetRules() {
     clearMemos();
 }
 
-const standardStart = () => ({ money: [0, 0], income: [4, 4], ore: [0, 0], hp: [160, 160], fleet: [] });
+const standardStart = () => ({ money: [0, 0], income: [START_INCOME, START_INCOME], ore: [START_ORE, START_ORE], hp: [BASE_START_HP, BASE_START_HP], fleet: [] });
 
 const tools = rng => {
     const gauss = () => Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng());
