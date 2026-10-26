@@ -2,7 +2,9 @@ import { newGame, setSpeedMult, setUsername } from './js/state.js';
 import { setSound, isSoundOn } from './js/audio.js';
 import { initTooltips } from './js/tooltips.js';
 import { initScenarios } from './js/scenarios.js';
-import { renderDeployBar } from './js/render.js';
+import { render, renderDeployBar } from './js/render.js';
+import { initSetup } from './js/setup.js';
+import { initLayout } from './js/layout.js';
 
 const tutorialBox = document.getElementById('tutorial-box');
 const tutorialText = document.getElementById('tutorial-text');
@@ -35,7 +37,10 @@ export function closeTutorial() {
 window.newGame = newGame;
 window.setUsername = setUsername;
 
-document.addEventListener('DOMContentLoaded', () => {
+// Loaded after the page by index.html's file check, so the DOM may already be ready
+onDomReady(() => {
+    // Re-place ships when the window (and so the battlefield) changes size
+    initLayout(() => { if (window.state) { render(); renderDeployBar(); } });
     initTooltips();
     initScenarios();
 
@@ -61,6 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Start first match
+    // A standard match to play right away; New Game (menu) picks anything else
     newGame();
+    initSetup();
 });
+
+
+function onDomReady(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else setTimeout(fn); // after the rest of the module graph (state.js and script.js import each other)
+}

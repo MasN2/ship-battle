@@ -1,11 +1,16 @@
-import { state, processing, gameOver, setProcessing, sleep, timeout, log, startNewTurn, endGame, incrementShipId, socket, getNextMessage } from './state.js';
-import { SECTORS, RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE } from './config.js';
+import { state, processing, gameOver, setProcessing, sleep, timeout, log, startNewTurn, endGame, incrementShipId, socket, getNextMessage, difficulty } from './state.js';
+import { SECTORS, RED_BASE_IDX, BLUE_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE, DIFFICULTIES } from './config.js';
 import { TEMPLATES, calculatePrimeFactors } from './templates.js';
 import { cost, calcOreIncome, maxLoanFor } from './economy.js';
 import { sfx } from './audio.js';
 import { animateAttacker, shootLaser, showDamageNumber, flashBase, clearRectCache } from './visuals.js';
 import { render, renderDeployBar, renderShortcutBar, updateBase } from './render.js';
 import { pickAIR } from './ai.js';
+import { chooseGrandmaster } from './grandmaster.js';
+import { loadNet, chooseZero } from './zero.js';
+import { ZERO_WEIGHTS } from './zero-weights.js';
+
+let zeroNet;
 import { HEART_SVG } from './config.js'; 
 
 function updateHealthDisplay(target, isBase, enemyOwner) {
@@ -347,6 +352,15 @@ export async function runTurn(playerPick = 0) {
         aiPick = parseInt(await getNextMessage(), 10);
     } else if (state.red.ai === "daily") {
         aiPick = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37][state.turn - 1] ?? 0;
+    } else if (state.red.ai === "grandmaster") {
+        // Decided before blue's purchase below, so it never sees this turn's pick.
+        // The book holds lessons from standard games; with modifiers its moves would be misleading.
+        let cfg = DIFFICULTIES[difficulty]?.gmCfg;
+        if (state.modded && cfg?.book) cfg = { ...cfg, book: false };
+        aiPick = chooseGrandmaster(state, 'red', { cfg, memo: (state.red.gmMemo ??= {}) });
+    } else if (state.red.ai === "zero" && ZERO_WEIGHTS) {
+        // Also decided before blue's purchase; it reads the board, not blue's pick.
+        aiPick = chooseZero(state, 'red', (zeroNet ??= loadNet(ZERO_WEIGHTS)));
     }
     for (const num of state.red.priority){
         if (aiPick === undefined && canAfford('red', num)) {aiPick = num;}

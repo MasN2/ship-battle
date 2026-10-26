@@ -1,7 +1,8 @@
-import { BASE_START_HP, START_INCOME, START_ORE, DIFFICULTIES } from './config.js';
+import { DIFFICULTIES } from './config.js';
 import { sfx } from './audio.js';
-import { render, renderDeployBar, renderShortcutBar } from './render.js';
+import { render, renderDeployBar, renderShortcutBar, resetDeployBar } from './render.js';
 import {showTutorial} from '../script.js';
+import { DEFAULT_MODS, chaosMods, normalizeMods, isDefault, describeMods, applyBalanceMods, seedOpening } from './modifiers.js';
 
 export let state = null;
 export let nextShipId = 1;
@@ -12,6 +13,10 @@ export let socket = null;
 export let username = "player";
 export let opponent = "ai";
 export let difficulty = 'normal';
+// What the New Game screen chose: an opponent (a DIFFICULTIES key) and modifiers. `chaos` rolls
+// fresh random modifiers on every (re)start. Restart replays the same setup.
+export let setup = { difficulty: 'normal', mods: { ...DEFAULT_MODS }, chaos: false };
+export let activeMods = { ...DEFAULT_MODS };
 
 export function setProcessing(val) { processing = val; }
 export function setGameOver(val) { gameOver = val; }
@@ -61,18 +66,31 @@ export function startNewTurn() {
     }
 }
 
+/** Starts a game with this setup ({ difficulty, mods, chaos }) and keeps it for restarts. */
+export function startGame(newSetup) {
+    setup = { difficulty: newSetup.difficulty, mods: normalizeMods(newSetup.mods), chaos: !!newSetup.chaos };
+    newGame();
+}
+
 export function newGame(handicap) {
     document.querySelectorAll('.modal-backdrop').forEach(m => m.remove());
 
-    const sel = document.getElementById('handicap-select');
-    if (sel) difficulty = sel.value;
+    difficulty = setup.difficulty;
+    let mods = setup.chaos ? chaosMods() : setup.mods;
 
     if (handicap !== undefined) {
+        // Imported games replay standard rules.
         const idx = parseInt(handicap, 10);
         difficulty = ["normal", "hard", "challenging", "tricky", "visionary"][idx];
+        mods = DEFAULT_MODS;
     }
 
     const D = DIFFICULTIES[difficulty];
+    // Campaign missions and online play keep their own rules.
+    if (difficulty.startsWith('campaign') || D.ai === 'pvp') mods = DEFAULT_MODS;
+    activeMods = normalizeMods(mods);
+    applyBalanceMods(activeMods);
+    const M = activeMods;
 
     if (D.ai === "pvp") {
         socket = new WebSocket("wss://render-echo-wvk1.onrender.com");
@@ -83,18 +101,18 @@ export function newGame(handicap) {
             render();
         }, { once: true });
     } else {
-        opponent = `ai - ${D.label}`;
+        opponent = `ai - ${D.label}${isDefault(M) ? '' : ' · modded'}`;
     }
 
     state = {
         turn: 0,
         blue: {
-            hp: D.playerHp ?? BASE_START_HP,
+            hp: D.playerHp ?? M.baseHp,
             damage_mult: 1,
             regen: 0,
-            income: D.playerIncome ?? START_INCOME,
-            money: 0,
-            ore: START_ORE,
+            income: D.playerIncome ?? M.startIncome,
+            money: M.startMoney,
+            ore: M.startOre,
             ore_boost: 1,
             ore_income: 0,
             armor: 1,
@@ -106,13 +124,13 @@ export function newGame(handicap) {
             locked_factor: D.lockedFactor ?? 999,
         },
         red: {
-            hp: D.botHp ?? BASE_START_HP,
+            hp: D.botHp ?? M.baseHp,
             armor: 1,
             armor_gain: D.armorGain ?? 0,
             regen: D.regen,
-            income: D.botIncome ?? START_INCOME,
-            money: D.botMoney ?? 0,
-            ore: D.botOre ?? START_ORE,
+            income: D.botIncome ?? M.startIncome,
+            money: D.botMoney ?? M.startMoney,
+            ore: D.botOre ?? M.startOre,
             ore_boost: D.oreMult ?? 1,
             ore_delay: D.oreDelay ?? 0,
             ore_income: D.oreIncome ?? 0,
@@ -123,7 +141,8 @@ export function newGame(handicap) {
             priority: D.priority ?? [],
             tutorial: D.tutorial ?? [],
         },
-        log: []
+        log: [],
+        modded: !isDefault(M),
     };
 
     const handicapInput = document.getElementById('handicapSelect');
@@ -136,11 +155,14 @@ export function newGame(handicap) {
     }
 
     nextShipId = 1;
+    seedOpening(state, M, incrementShipId);
     processing = false;
     gameOver = false;
     log(`Battle commenced. Handicap: ${D.label}.`, 'heading');
+    if (state.modded) log(`Modifiers: ${describeMods(M).join(' · ')}.`, 'heading');
     startNewTurn();
     render();
+    resetDeployBar();
     renderDeployBar();
     renderShortcutBar();
 }

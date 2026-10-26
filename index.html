@@ -21,7 +21,7 @@
             <div class="hud-top">
                 <div class="turn-info" id="turn-info" data-tip="turn">TURN 1 · DEPLOY</div>
             </div>
-            <button class="btn-action danger" id="btn-restart-top">↻ Restart Battle</button>
+            <button class="btn-action danger" id="btn-restart-top" title="Restart with the same opponent and modifiers">↻ Restart</button>
             <button class="hud-menu-btn" id="menu-btn" title="Open Menu (ESC)">
                 <span>⚙ Menu</span>
                 <kbd>ESC</kbd>
@@ -31,40 +31,6 @@
                 <div id="fx-layer"></div>
             </div>
 
-
-            <!-- Modal Overlay & Form Container -->
-            <div class="modal-overlay" id="formModal">
-                <div class="modal-content">
-                    <h2>Import Game</h2>
-                    <div class="form-group">
-                        <label for="userSelect">Select a Scenario:</label>
-                        <select id="userSelect">
-                            <option value="">-- Clear --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="handicapSelect">Select a Handicap:</label>
-                        <select id="handicapSelect">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
-                    </div>
-                    <form id="popupForm">
-                        <div class="form-group" style="display:flex">
-                            <label for="name">Blue Build Order:</label>
-                            <input type="text" id="blue-bo" name="name" style="flex-grow:1">
-                        </div>
-                        <div class="form-group" style="display:flex">
-                            <label for="email">Red Build Order:</label>
-                            <input type="text" id="red-bo" name="email" style="flex-grow:1">
-                        </div>
-                        <button type="submit" id="importBtn">Import</button>
-                    </form>
-                </div>
-            </div>
 
             <div class="deploy-bar shortcut-bar" id="shortcut-bar"></div>
         </div>
@@ -116,64 +82,150 @@
                 <span class="esc-hint">Press <kbd>ESC</kbd> to resume</span>
             </div>
 
+            <div class="pause-game">
+                <div class="pause-game-info">
+                    <span class="pause-game-label">Now playing</span>
+                    <span class="pause-game-opp" id="pause-opponent"></span>
+                    <span class="pause-game-mods" id="pause-mods"></span>
+                </div>
+                <div class="pause-game-btns">
+                    <button class="btn-action outline" id="btn-new-game">New Game…</button>
+                    <button class="btn-action outline" id="btn-open-import">Import…</button>
+                </div>
+            </div>
+
             <div class="pause-section-title">Settings</div>
-            <div class="pause-grid">
-                <div class="pause-field">
-                    <label for="handicap-select">AI Mode</label>
-                    <select id="handicap-select">
-                        <!-- Options will be populated via JavaScript -->
-                    </select>
-                </div>
-
-                <div class="pause-field">
-                    <label>Animation Speed (<span id="speed-val">1×</span>)</label>
-                    <input type="range" id="speed-slider" min="0.5" max="15" step="0.5" value="1" />
-                </div>
-
-                <label for="sound-toggle">
-                    <div class="pause-field toggle-row">
-                        <label for="sound-toggle">Enable SFX</label>
-                        <input type="checkbox" id="sound-toggle" />
-                    </div>
+            <div class="pause-settings">
+                <label class="pause-row" for="speed-slider">
+                    <span>Animation speed</span>
+                    <span class="pause-row-ctrl">
+                        <input type="range" id="speed-slider" min="0.5" max="15" step="0.5" value="1" />
+                        <output id="speed-val">1×</output>
+                    </span>
                 </label>
-
-                <label for="tag-toggle">
-                    <div class="pause-field toggle-row">
-                        <label for="tag-toggle">Advanced UI</label>
-                        <input type="checkbox" id="tag-toggle" />
-                    </div>
+                <label class="pause-row" for="sound-toggle">
+                    <span>Sound effects</span>
+                    <input type="checkbox" class="switch" id="sound-toggle" />
                 </label>
-
-                <label for="shortcut-toggle">
-                    <div class="pause-field toggle-row">
-                        <label for="shortcut-toggle">Fast Buy Bar</label>
-                        <input type="checkbox" id="shortcut-toggle" />
-                    </div>
+                <label class="pause-row" for="tag-toggle">
+                    <span>Advanced UI</span>
+                    <input type="checkbox" class="switch" id="tag-toggle" />
+                </label>
+                <label class="pause-row" for="shortcut-toggle">
+                    <span>Fast buy bar</span>
+                    <input type="checkbox" class="switch" id="shortcut-toggle" />
+                </label>
+                <label class="pause-row" for="summary-toggle">
+                    <span>Lane summary bar</span>
+                    <input type="checkbox" class="switch" id="summary-toggle" />
                 </label>
             </div>
-            <!--
-            <div class="pause-footer">
-                <button class="btn-action outline" id="btn-open-scenarios">📂 Load Scenarios / Import</button>
-            </div>
-            -->
+
             <div class="pause-actions">
-                <button class="btn-action primary" id="btn-resume">▶ Resume Battle</button>
-                <button class="btn-action danger" id="btn-restart">↻ Restart Battle</button>
+                <button class="btn-action primary" id="btn-resume">▶ Resume</button>
+                <button class="btn-action danger" id="btn-restart">↻ Restart</button>
             </div>
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
-    <script type="module" src="script.pause.js"></script>
-    <script type="module" src="summary-bar.js"></script>
+
+    <div class="pause-overlay" id="setup-modal" aria-hidden="true">
+        <div class="pause-dialog setup-dialog" role="dialog" aria-labelledby="setup-title">
+            <div class="pause-header">
+                <h2 id="setup-title">New Game</h2>
+                <span class="esc-hint" id="setup-esc">Press <kbd>ESC</kbd> to cancel</span>
+            </div>
+            <div class="setup-opponent">
+                <label class="pause-section-title" for="setup-opponent">Opponent</label>
+                <select id="setup-opponent"></select>
+                <span class="setup-choice-hint" id="setup-opponent-hint"></span>
+            </div>
+
+            <div class="pause-section-title setup-mods-title">
+                <span>Modifiers</span>
+                <span class="setup-mods-tools">
+                    <select id="setup-preset" aria-label="Presets"></select>
+                    <button class="setup-link" id="setup-reset">Reset</button>
+                </span>
+            </div>
+            <div class="setup-mods" id="setup-mods"></div>
+            <div class="setup-summary" id="setup-summary"></div>
+
+            <div class="pause-actions">
+                <button class="btn-action outline" id="setup-cancel">Cancel</button>
+                <button class="btn-action primary" id="setup-start">▶ Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pause-overlay" id="formModal" aria-hidden="true">
+        <div class="pause-dialog import-dialog" role="dialog" aria-labelledby="import-title">
+            <div class="pause-header">
+                <h2 id="import-title">Import Game</h2>
+                <span class="esc-hint">Press <kbd>ESC</kbd> to close</span>
+            </div>
+            <form id="popupForm" class="pause-grid">
+                <div class="pause-field">
+                    <label for="userSelect">Scenario</label>
+                    <select id="userSelect">
+                        <option value="">-- Clear --</option>
+                    </select>
+                </div>
+                <div class="pause-field">
+                    <label for="handicapSelect">Handicap</label>
+                    <select id="handicapSelect">
+                        <option value="0">0 · Normal</option>
+                        <option value="1">1 · Hard</option>
+                        <option value="2">2 · Challenging</option>
+                        <option value="3">3 · Tricky</option>
+                        <option value="4">4 · Visionary</option>
+                    </select>
+                </div>
+                <div class="pause-field">
+                    <label for="blue-bo">Blue build order</label>
+                    <input type="text" id="blue-bo" placeholder="e.g. 2,3,3,0,7">
+                </div>
+                <div class="pause-field">
+                    <label for="red-bo">Red build order</label>
+                    <input type="text" id="red-bo" placeholder="e.g. 0,3,0,7">
+                </div>
+                <div class="pause-actions">
+                    <button type="button" class="btn-action outline" id="importCancel">Cancel</button>
+                    <button type="submit" class="btn-action primary" id="importBtn">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        import('./js/state.js').then(m => {
-            Object.defineProperty(window, 'state', {
-                get() { return m.state; },
-                configurable: true
+        // GitHub Pages lets browsers reuse files for 10 minutes, so right after a deploy a page
+        // could load new modules next to cached old ones and break. Revalidate every game file
+        // first (an unchanged file is a cheap "not modified"), then start the game.
+        // Add new js files here.
+        const GAME_FILES = [
+            'script.js', 'script.pause.js', 'summary-bar.js',
+            'js/ai.js', 'js/audio.js', 'js/book-data.js', 'js/book.js', 'js/combat.js', 'js/config.js',
+            'js/economy.js', 'js/evolved-weights.js', 'js/evolved.js', 'js/features.js', 'js/grandmaster.js',
+            'js/intuition-weights.js', 'js/intuition.js', 'js/layout.js', 'js/modifiers.js', 'js/planner.js', 'js/render.js',
+            'js/scenarios.js', 'js/setup.js', 'js/sim.js', 'js/state.js', 'js/templates.js', 'js/tooltips.js',
+            'js/value-weights.js', 'js/visuals.js', 'js/window-weights.js', 'js/window.js', 'js/zero.js', 'js/zero-weights.js',
+        ];
+        Promise.all(GAME_FILES.map(f => fetch(f, { cache: 'no-cache' }).catch(() => {}))).then(() => {
+            for (const src of ['script.js', 'script.pause.js', 'summary-bar.js']) {
+                const el = document.createElement('script');
+                el.type = 'module';
+                el.src = src;
+                el.async = false; // run in this order, as plain module tags would
+                document.body.appendChild(el);
+            }
+            import('./js/state.js').then(m => {
+                Object.defineProperty(window, 'state', {
+                    get() { return m.state; },
+                    configurable: true
+                });
             });
+            import('./js/economy.js').then(m => window.cost = m.cost);
         });
-        import('./js/economy.js').then(m => window.cost = m.cost);
     </script>
     <!--<script defer src="https://static.itch.io/htmlgame.js" type="text/javascript"></script>-->
 </body>

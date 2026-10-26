@@ -70,11 +70,18 @@ const c10tutorial = {
     6: "Once we fend off these destroyers, we'll challenge the prime masters and steal their technology!",
 }
 
+export const GM_VERSION = '1.2';
+export const GM_BETA_VERSION = '2.6β';
+// v3: the β plus the time wizard's book (lessons from rewinding real games vs v1.2, js/book.js)
+export const GM_V3_VERSION = '3.2';
+// Zero (js/zero.js): bump with every net shipped to js/zero-weights.js.
+export const ZERO_VERSION = '0.75';
+
 export const DIFFICULTIES = {
-    campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [83, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
-    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [83, 0], tutorial: c2tutorial},
+    campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [89, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
+    campaign2: { label: 'Campaign 2', maxShip: 2, playerIncome: 2, botHp: 63, botIncome: 66, botOre: 1000, priority: [89, 0], tutorial: c2tutorial},
     campaign4: { label: 'Campaign 4', maxShip: 4, playerIncome: 3, playerHp: 100, botHp: 160, botIncome: 7, priority: [4], tutorial: c4tutorial},
-    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [83, 0], tutorial: c6tutorial},
+    campaign6: { label: 'Campaign 6', maxShip: 6, botHp: 160, botIncome: 52, botOre: 1000, priority: [89, 0], tutorial: c6tutorial},
     campaign10: { label: 'Campaign 10', maxShip: 10, botHp: 160, botIncome: 11, priority: [8, 4], opening: [0, 0, 0, 0, 0], tutorial: c10tutorial},
     campaign11: { label: 'Campaign 11', lockedFactor: 11, botHp: 640, botIncome: 5, priority: [11, 7, 0], oreIncome: 2},
     campaign13: { label: 'Campaign 13', lockedFactor: 13, botHp: 160, priority: [13, 0], botMoney: 96},
@@ -85,6 +92,76 @@ export const DIFFICULTIES = {
     challenging: { label: 'Challenging', incomeMult: 4, oreMult: 1, oreDelay: 2 / 16, armorGain: 0.03, aiNoise: 0.2, aiSkipChance: 0.04, ai: false },
     tricky: { label: 'Tricky', incomeMult: 4, oreMult: 1, oreDelay: 3 / 16, armorGain: 0.04, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
     visionary: { label: 'Visionary', incomeMult: 4, oreMult: 1, oreDelay: 4 / 16, armorGain: 0.05, regen: 0, aiNoise: 0.1, aiSkipChance: 0.02, ai: false },
+    // No handicaps: same base, income and ore as Normal. The edge is all in js/grandmaster.js.
+    // The version is in the label (and so on the red command card in screenshots); bump it
+    // whenever default play changes, so a report can be matched to the AI that played it.
+    // v1.0 first release · v1.1 winScore 3e4 · v1.2 turtle/value styles
+    grandmaster: { label: `Grandmaster v${GM_VERSION}`, ai: 'grandmaster' },
+    // Playtest variant: values income/ore further ahead while its base is safe (safeEcon), has no
+    // "win fastest" tie-break (hurry 0), and knows the mining gridlock (the 'gridlock' style, for
+    // itself and as a model of the player). β log: v1.2β distrusted far-off wins (weak to Frigate
+    // counterwaves); v1.3β safeEcon 2; v1.4β + hurry 0; v1.5β + gridlock; v1.6β + investBias 3000
+    // (a trader pays itself off within ~10 turns, so ties go to investing); v1.7β scales that by
+    // base safety (no traders mid-defence) and adds ore credit 1500 while the board is open;
+    // v1.8β respect 'push': while its push holds the enemy half, a pure-combat move must work
+    // against every respected imagined opponent (worst case), so the window goes to miners;
+    // v1.9β respect 'safe' (also in the opening / whenever its base is safe) and ore credit per
+    // money (orePerCost: a cheap Driller over a pricey Reaver that feeds counterwaves);
+    // v2.0β positions matter, not just imagined win counts: winScore 5000 (credits scaled to
+    // match), ships near a defended enemy base count 0.3 (counterwave fuel), and ore that
+    // centre miners will mine over 6 turns counts; v2.1β positional lookahead: 16 turns instead
+    // of 30, so the middle game (centre control, pinning, fuel, mining) decides rather than who
+    // wins in 30 turns; centre/pin terms; dead-zone miner penalty; real opening variety;
+    // v2.2β close-out: when a whole plan (a style played from now on) wins most imagined games it
+    // plays that plan instead of re-planning into one-off traders/skips until the win is gone;
+    // no banking past the priciest visible ship (idleCash); variety only among its top 3 moves;
+    // v2.3β miner fate: a fragile miner costs a share of an imagined flip for every imagined future
+    // where it dies before ever mining (the column-1 critical fail; was 7% of its miners, now 0%);
+    // v2.4β loses gracefully: a decided imagined game counts base hp and ships only (bank and
+    // income are worthless once it's over), investment credit only for games not already lost,
+    // and a loss further off scores better (lossDelay) - it fights to the last turn instead of
+    // buying Caravans, which also makes all-in attacks against it a real risk;
+    // v2.5β ore as indirect income: prices are n^(1 + e²/(e + d(ore))), so ore discounts big
+    // ships far more than small ones; the economy is valued over a few spending rhythms
+    // (oreTiers) and a miner is credited like a trader by the income-equivalent of its next 10
+    // turns of ore at the tiers its income reaches (a Quarry ~1.8 traders early, a Driller ~0.4),
+    // only while the board is open and its base safe; v2.6β that miner credit also scales by ore
+    // per money vs a Driller (no trailing Reaver tanks where two Drillers mine the same for less).
+    grandmasterBeta: {
+        label: `Grandmaster β v${GM_BETA_VERSION}`, ai: 'grandmaster',
+        gmCfg: {
+            safeEcon: 2, hurry: 0, investBias: 500, investSafe: true, oreBias: 250, respect: 'safe', orePerCost: true,
+            winScore: 5000, fwdMult: 0.3, mineTurns: 6,
+            depth: 16, centerW: 100, pinW: 100, deadMiner: 0.5, openTol: 0.3, driftTol: 0.1,
+            closeOut: 0.6, idleCash: true, varietyTop: 3, minerFate: 1,
+            decidedCombat: true, lossDelay: 150, oreIncomeTurns: 10, oreTiers: [1, 2, 4], oreIncomePerMoney: true,
+            mine: ['spend', 'smart', 'econ', 'mine', 'turtle', 'value', 'gridlock'],
+            theirs: ['spend', 'smart', 'econ', 'mine', 'wild', 'wild', 'wild', 'turtle', 'value', 'gridlock'],
+        },
+    },
+    grandmasterV3: { label: `Grandmaster v${GM_V3_VERSION} (wizard)`, ai: 'grandmaster', gmCfg: null },
+    grandmasterV3e: { label: `Grandmaster v${GM_V3_VERSION} (learned eval)`, ai: 'grandmaster', gmCfg: null },
+    // Taught itself by self-play (tools/zero/): a learned policy, no search, no book, no handicaps.
+    // Shown as "Alpha 0.75" (spoken: alpha zero point seven five); the version keeps its leading
+    // zero and creeps toward 0.99 rather than ever reaching 1.0, in shrinking steps since 0.7.
+    zero: { label: `Alpha ${ZERO_VERSION}`, ai: 'zero' },
     pvp: { label: 'PVP', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'pvp' },
     custom: { label: 'Custom', incomeMult: 4, oreMult: 1, hpMult: 0, aiNoise: 1.6, aiSkipChance: 0.32, ai: 'custom' },
 };
+
+// v3 = the β's settings plus the book
+// (bookW 10000: the book's verified lessons outweigh imagined-game flips; bookTol 0.1: any move
+// the book rates within 10% win probability of the best is fair game, so it varies its play
+// instead of replaying one memorised win)
+// v3.2: it imagines only opponents (and plans of its own) that can actually play. A round-robin
+// of the imagined styles (tools/styles.js) showed 6 of its 10 imagined opponents were pushovers
+// (spend, mine, econ weaker than the Normal AI; three random 'wild'), so it kept going for kills
+// that only a player throwing the game would allow.
+const STRONG_STYLES = ['snowsmart', 'snowball', 'gridlock', 'turtle', 'smart', 'value'];
+DIFFICULTIES.grandmasterV3.gmCfg = { ...DIFFICULTIES.grandmasterBeta.gmCfg, book: true, bookW: 10000, bookTol: 0.1,
+    mine: STRONG_STYLES, theirs: STRONG_STYLES };
+// Experimental playtest entry: v3.1 with its imagined futures scored by the learned evaluator
+// (js/value-weights.js: fitted on 29k positions from 454 games, base hp left out) instead of the
+// hand-written score, which favoured the eventual loser 68% of the time in turns 1-8. It contests
+// a mining push from the start; vs v1.2 it is weaker (-32.5 vs -10), so playtests decide.
+DIFFICULTIES.grandmasterV3e.gmCfg = { ...DIFFICULTIES.grandmasterV3.gmCfg, leaf: 'net' };

@@ -234,7 +234,7 @@
 
 /* Shortcut Bar Layout */
 .shortcut-bar {
-	margin: auto;
+	margin: 0 auto;
 	grid-template-columns: repeat(7, 1fr);
 }
 
@@ -288,3 +288,316 @@
     white-space: pre-line;
     margin: 0;
 }
+/* ============================================================
+   NEW GAME SETUP & IMPORT DIALOGS
+   ============================================================ */
+.setup-dialog {
+	max-width: 760px;
+	max-height: calc(100vh - 32px);
+	overflow-y: auto;
+	gap: 12px;
+}
+
+.import-dialog {
+	max-width: 560px;
+}
+
+	.import-dialog .pause-field:nth-child(n+3), .import-dialog .pause-actions {
+		grid-column: span 2;
+	}
+
+	.import-dialog input[type="text"] {
+		background: #0d1117;
+		border: 1px solid #30363d;
+		color: #c9d1d9;
+		padding: 8px;
+		border-radius: 6px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.8rem;
+	}
+
+.pause-game {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	background: #0d1117;
+	border: 1px solid #21262d;
+	border-radius: 8px;
+	padding: 12px;
+}
+
+.pause-game-info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.pause-game-label {
+	font-size: 0.68rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #8b949e;
+}
+
+.pause-game-opp {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #f0f6fc;
+}
+
+.pause-game-mods {
+	font-size: 0.75rem;
+	color: #8b949e;
+}
+
+	.pause-game-mods.modded { color: #e3b341; }
+
+.pause-game-btns {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+	.pause-game-btns .btn-action {
+		padding: 6px 12px;
+		font-size: 0.8rem;
+	}
+
+.pause-settings {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #21262d;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.pause-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 12px;
+	font-size: 0.85rem;
+	color: #c9d1d9;
+	background: #0d1117;
+	cursor: pointer;
+}
+
+	.pause-row + .pause-row { border-top: 1px solid #21262d; }
+
+	.pause-row:hover { background: #11161d; }
+
+.pause-row-ctrl {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+	.pause-row-ctrl input[type="range"] {
+		width: 140px;
+		accent-color: #2ea043;
+	}
+
+	.pause-row-ctrl output {
+		width: 4.5ch;
+		flex-shrink: 0;
+		text-align: right;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.8rem;
+		color: #f0f6fc;
+	}
+
+.switch {
+	appearance: none;
+	position: relative;
+	width: 34px;
+	height: 20px;
+	margin: 0;
+	border-radius: 999px;
+	background: #30363d;
+	cursor: pointer;
+	flex-shrink: 0;
+	transition: background 0.1s ease;
+}
+
+	.switch::after {
+		content: '';
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: #c9d1d9;
+		transition: transform 0.1s ease;
+	}
+
+	.switch:checked { background: #2ea043; }
+
+		.switch:checked::after {
+			transform: translateX(14px);
+			background: #fff;
+		}
+
+.setup-opponent {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 6px 12px;
+}
+
+	.setup-opponent .pause-section-title { margin: 0; }
+
+	.setup-opponent .setup-choice-hint { grid-column: 2; }
+
+.setup-dialog select {
+	background: #0d1117;
+	border: 1px solid #30363d;
+	color: #c9d1d9;
+	padding: 6px 8px;
+	border-radius: 6px;
+	font: inherit;
+	font-size: 0.85rem;
+}
+
+	.setup-dialog select:disabled { opacity: 0.5; }
+
+.setup-choice-hint {
+	font-size: 0.75rem;
+	color: #8b949e;
+}
+
+.setup-mods-title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.setup-mods-tools {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: 400;
+}
+
+	.setup-mods-tools select {
+		max-width: 260px;
+		font-size: 0.78rem !important;
+		padding: 4px 6px !important;
+	}
+
+.setup-link {
+	background: none;
+	border: 0;
+	color: #58a6ff;
+	font: inherit;
+	font-size: 0.75rem;
+	cursor: pointer;
+}
+
+	.setup-link:hover { text-decoration: underline; }
+
+.setup-mods {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px 20px;
+	background: #0d1117;
+	border: 1px solid #21262d;
+	border-radius: 8px;
+	padding: 10px 12px;
+}
+
+	.setup-mods.disabled { opacity: 0.45; }
+
+.setup-mod {
+	display: grid;
+	grid-template-columns: 110px 1fr 4.5ch;
+	align-items: center;
+	gap: 8px;
+	min-height: 28px;
+	font-size: 0.8rem;
+	color: #8b949e;
+}
+
+	.setup-mod.changed .setup-mod-label, .setup-price.changed span { color: #e3b341; }
+
+	.setup-mod input[type="range"] {
+		width: 100%;
+		accent-color: #2ea043;
+	}
+
+	.setup-mod output {
+		text-align: right;
+		font-family: 'JetBrains Mono', monospace;
+		color: #f0f6fc;
+	}
+
+.setup-prices {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: 110px 1fr;
+	align-items: start;
+	gap: 8px;
+	padding-top: 6px;
+	border-top: 1px solid #21262d;
+	font-size: 0.8rem;
+	color: #8b949e;
+}
+
+	.setup-prices .setup-mod-label { padding-top: 6px; cursor: help; }
+
+.setup-price-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+	gap: 6px 14px;
+}
+
+.setup-price {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 4px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.75rem;
+}
+
+	.setup-price select {
+		padding: 3px 4px !important;
+		font-size: 0.75rem !important;
+		font-family: 'JetBrains Mono', monospace !important;
+	}
+
+.setup-summary {
+	font-size: 0.8rem;
+	color: #8b949e;
+}
+
+	.setup-summary.modded { color: #e3b341; }
+
+@media (max-width: 640px) {
+	.setup-mods { grid-template-columns: 1fr; }
+	.setup-mod { grid-template-columns: 110px 1fr 4.5ch; }
+	.setup-prices { grid-template-columns: 1fr; }
+}
+
+/* Ships above the current price band: previewed, not buyable yet (js/render.js) */
+.ship-btn.locked {
+	opacity: 0.22;
+	filter: grayscale(0.85);
+	cursor: default;
+	box-shadow: none !important;
+	border-style: dashed;
+}
+
+	.ship-btn.locked:hover {
+		transform: none !important;
+		background: var(--bg-3) !important;
+		border-color: var(--line) !important;
+		opacity: 0.4;
+	}

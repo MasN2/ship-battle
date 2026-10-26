@@ -1,0 +1,358 @@
+
+=== 2026-10-23T13:10:48.070Z evolve 150 gens, 12 mutants, 40 h2h, 6/pool member, 8 threads
+gen 1: champ pool 21.5/48 (value 3 snowball 4 turtle 2 user1 4 user4 2 normal 2/6 each)  1s
+gen 2: champ pool 31/48 (value 5 snowball 3 turtle 2 user1 6 user4 3 normal 3/6 each)  1s
+gen 3: champ pool 22/48 (value 5 snowball 2 turtle 2 user1 3 user4 1 normal 2/6 each) -> NEW champ (beat old 28/40, pool 26, spike opp.income)  1s
+gen 4: champ pool 35/54 (value 5 snowball 5 turtle 2 user1 5 user4 1 normal 3/6 each)  1s
+gen 5: champ pool 36/54 (value 3 snowball 6 turtle 1 user1 6 user4 2 normal 4/6 each)  1s
+gen 6: champ pool 31/54 (value 5 snowball 2 turtle 2 user1 4 user4 2 normal 3/6 each)  1s
+gen 7: champ pool 34/54 (value 3 snowball 6 turtle 1 user1 4 user4 2 normal 4/6 each)  1s
+gen 8: champ pool 32/54 (value 4 snowball 6 turtle 4 user1 3 user4 1 normal 2/6 each)  1s
+gen 9: champ pool 38/54 (value 4 snowball 5 turtle 3 user1 5 user4 3 normal 3/6 each)  1s
+gen 10: champ pool 29/54 (value 5 snowball 5 turtle 0 user1 4 user4 1 normal 1/6 each)  1s
+gen 11: champ pool 35/54 (value 5 snowball 6 turtle 2 user1 5 user4 1 normal 3/6 each)  1s
+gen 12: champ pool 38/54 (value 4 snowball 5 turtle 4 user1 6 user4 1 normal 5/6 each)  1s
+gen 13: champ pool 33/54 (value 4 snowball 6 turtle 2 user1 4 user4 4 normal 3/6 each)  1s
+gen 14: champ pool 29/54 (value 3 snowball 4 turtle 4 user1 5 user4 0 normal 3/6 each)  1s
+gen 15: champ pool 36/54 (value 5 snowball 5 turtle 2 user1 5 user4 2 normal 2/6 each)  1s
+gen 16: champ pool 38/54 (value 5 snowball 4 turtle 4 user1 4 user4 1 normal 4/6 each)  1s
+gen 17: champ pool 32/54 (value 6 snowball 5 turtle 1 user1 4 user4 2 normal 5/6 each) -> NEW champ (beat old 27/40, pool 32, spike me.income)  1s
+gen 18: champ pool 31/60 (value 3 snowball 3 turtle 1 user1 5 user4 3 normal 2/6 each)  1s
+gen 19: champ pool 37/60 (value 4 snowball 5 turtle 1 user1 5 user4 3 normal 1/6 each)  1s
+gen 20: champ pool 35/60 (value 5 snowball 3 turtle 3 user1 5 user4 3 normal 1/6 each)  1s
+gen 21: champ pool 39/60 (value 5 snowball 5 turtle 3 user1 6 user4 1 normal 3/6 each) -> NEW champ (beat old 31/40, pool 39, spike opp.missile)  1s
+gen 22: champ pool 41.5/66 (value 5 snowball 4 turtle 2 user1 5 user4 2 normal 4/6 each)  1s
+gen 23: champ pool 34/66 (value 3 snowball 3 turtle 1 user1 4 user4 1 normal 2/6 each)  1s
+gen 24: champ pool 43/66 (value 5 snowball 4 turtle 1 user1 4 user4 0 normal 4/6 each)  1s
+gen 25: champ pool 39/66 (value 3 snowball 1 turtle 2 user1 6 user4 1 normal 5/6 each)  1s
+gen 26: champ pool 40/66 (value 3 snowball 5 turtle 3 user1 4 user4 1 normal 5/6 each) -> NEW champ (beat old 24/40, pool 41, spike opp.midHp)  1s
+gen 27: champ pool 39/66 (value 4 snowball 4 turtle 3 user1 5 user4 1 normal 4/6 each) -> NEW champ (beat old 28/40, pool 44, spike me.missile)  1s
+gen 28: champ pool 36/66 (value 2 snowball 5 turtle 3 user1 4 user4 1 normal 2/6 each)  1s
+gen 29: champ pool 42/66 (value 6 snowball 4 turtle 0 user1 3 user4 2 normal 4/6 each)  1s
+gen 30: champ pool 35/66 (value 5 snowball 1 turtle 3 user1 4 user4 1 normal 5/6 each)  1s
+gen 31: champ pool 42/66 (value 6 snowball 4 turtle 4 user1 4 user4 2 normal 3/6 each)  1s
+gen 32: champ pool 32/66 (value 3 snowball 5 turtle 0 user1 6 user4 0 normal 3/6 each)  1s
+gen 33: champ pool 40/66 (value 6 snowball 4 turtle 1 user1 5 user4 1 normal 5/6 each)  1s
+gen 34: champ pool 41/66 (value 3 snowball 4 turtle 2 user1 5 user4 2 normal 3/6 each)  1s
+gen 35: champ pool 39/66 (value 3 snowball 5 turtle 1 user1 5 user4 2 normal 4/6 each) -> NEW champ (beat old 27/40, pool 39, spike me.siege)  1s
+gen 36: champ pool 41/66 (value 5 snowball 6 turtle 2 user1 5 user4 1 normal 4/6 each)  1s
+gen 37: champ pool 39/66 (value 3 snowball 4 turtle 3 user1 5 user4 1 normal 4/6 each)  1s
+gen 38: champ pool 41/66 (value 3 snowball 4 turtle 4 user1 6 user4 2 normal 3/6 each)  1s
+gen 39: champ pool 40/66 (value 2 snowball 5 turtle 4 user1 4 user4 3 normal 2/6 each)  1s
+gen 40: champ pool 33/66 (value 3 snowball 5 turtle 1 user1 5 user4 1 normal 1/6 each)  1s
+gen 41: champ pool 45/66 (value 6 snowball 3 turtle 6 user1 3 user4 3 normal 4/6 each)  1s
+gen 42: champ pool 41/66 (value 2 snowball 5 turtle 1 user1 5 user4 3 normal 5/6 each) -> NEW champ (beat old 24/40, pool 41, spike opp.ore)  1s
+gen 43: champ pool 33/66 (value 3 snowball 6 turtle 3 user1 5 user4 3 normal 3/6 each)  1s
+gen 44: champ pool 36/66 (value 4 snowball 3 turtle 3 user1 4 user4 1 normal 2/6 each)  1s
+gen 45: champ pool 40/66 (value 4 snowball 6 turtle 0 user1 5 user4 1 normal 5/6 each) -> NEW champ (beat old 25/40, pool 41, spike me.missile)  1s
+gen 46: champ pool 40/66 (value 5 snowball 5 turtle 2 user1 5 user4 2 normal 4/6 each)  1s
+gen 47: champ pool 40/66 (value 6 snowball 6 turtle 2 user1 3 user4 1 normal 3/6 each)  1s
+gen 48: champ pool 48/66 (value 3 snowball 6 turtle 4 user1 5 user4 3 normal 6/6 each)  1s
+gen 49: champ pool 49/66 (value 5 snowball 6 turtle 4 user1 5 user4 2 normal 3/6 each)  1s
+gen 50: champ pool 34/66 (value 3 snowball 6 turtle 1 user1 3 user4 1 normal 3/6 each)  1s
+gen 51: champ pool 44/66 (value 3 snowball 5 turtle 1 user1 3 user4 4 normal 4/6 each)  1s
+gen 52: champ pool 40/66 (value 4 snowball 6 turtle 3 user1 3 user4 3 normal 3/6 each) -> NEW champ (beat old 24/40, pool 40, spike me.hp)  1s
+gen 53: champ pool 36/66 (value 5 snowball 3 turtle 1 user1 6 user4 4 normal 3/6 each)  1s
+gen 54: champ pool 27/66 (value 4 snowball 3 turtle 1 user1 5 user4 1 normal 2/6 each)  1s
+gen 55: champ pool 37/66 (value 4 snowball 3 turtle 2 user1 4 user4 1 normal 4/6 each)  1s
+gen 56: champ pool 32/66 (value 2 snowball 4 turtle 2 user1 6 user4 1 normal 3/6 each)  1s
+gen 57: champ pool 43/66 (value 4 snowball 3 turtle 1 user1 6 user4 3 normal 4/6 each)  1s
+gen 58: champ pool 32.5/66 (value 4 snowball 4 turtle 2 user1 2 user4 2 normal 3/6 each)  1s
+gen 59: champ pool 28/66 (value 5 snowball 5 turtle 3 user1 2 user4 2 normal 0/6 each)  1s
+gen 60: champ pool 35.5/66 (value 5 snowball 6 turtle 4 user1 5 user4 4 normal 3/6 each)  1s
+gen 61: champ pool 40/66 (value 4 snowball 4 turtle 2 user1 4 user4 2 normal 3/6 each)  1s
+gen 62: champ pool 36/66 (value 5 snowball 3 turtle 4 user1 5 user4 0 normal 5/6 each)  1s
+gen 63: champ pool 38/66 (value 4 snowball 3 turtle 3 user1 6 user4 1 normal 3/6 each)  1s
+gen 64: champ pool 38/66 (value 3 snowball 4 turtle 3 user1 6 user4 2 normal 2/6 each)  1s
+gen 65: champ pool 38/66 (value 4 snowball 3 turtle 1 user1 5 user4 3 normal 4/6 each)  1s
+gen 66: champ pool 32/66 (value 3 snowball 4 turtle 1 user1 5 user4 2 normal 3/6 each)  1s
+gen 67: champ pool 38/66 (value 5 snowball 3 turtle 3 user1 5 user4 4 normal 2/6 each)  1s
+gen 68: champ pool 32/66 (value 4 snowball 5 turtle 1 user1 2 user4 2 normal 1/6 each)  1s
+gen 69: champ pool 33/66 (value 6 snowball 4 turtle 1 user1 4 user4 1 normal 3/6 each)  1s
+gen 70: champ pool 35/66 (value 5 snowball 6 turtle 3 user1 6 user4 2 normal 1/6 each) -> NEW champ (beat old 25.5/40, pool 35, spike opp.ore)  1s
+gen 71: champ pool 29.5/66 (value 3 snowball 6 turtle 1 user1 2 user4 2 normal 1/6 each)  1s
+gen 72: champ pool 35/66 (value 5 snowball 4 turtle 3 user1 3 user4 2 normal 1/6 each) -> NEW champ (beat old 25/40, pool 35, spike me.worth)  1s
+gen 73: champ pool 34/66 (value 4 snowball 4 turtle 1 user1 3 user4 2 normal 2/6 each)  1s
+gen 74: champ pool 37/66 (value 2 snowball 4 turtle 2 user1 6 user4 2 normal 3/6 each)  1s
+gen 75: champ pool 38.5/66 (value 5 snowball 6 turtle 3 user1 4 user4 1 normal 3/6 each)  1s
+gen 76: champ pool 39/66 (value 5 snowball 3 turtle 3 user1 6 user4 3 normal 5/6 each)  1s
+gen 77: champ pool 32.5/66 (value 3 snowball 6 turtle 1 user1 3 user4 1 normal 2/6 each)  1s
+gen 78: champ pool 39/66 (value 6 snowball 5 turtle 4 user1 4 user4 1 normal 2/6 each)  1s
+gen 79: champ pool 38.5/66 (value 4 snowball 6 turtle 3 user1 4 user4 1 normal 3/6 each)  1s
+gen 80: champ pool 37/66 (value 4 snowball 5 turtle 1 user1 6 user4 1 normal 1/6 each)  1s
+gen 81: champ pool 38.5/66 (value 5 snowball 6 turtle 2 user1 6 user4 2 normal 3/6 each)  1s
+gen 82: champ pool 41/66 (value 6 snowball 5 turtle 2 user1 6 user4 1 normal 2/6 each)  1s
+gen 83: champ pool 37/66 (value 5 snowball 4 turtle 3 user1 5 user4 2 normal 2/6 each)  1s
+gen 84: champ pool 39/66 (value 4 snowball 5 turtle 1 user1 6 user4 4 normal 4/6 each)  1s
+gen 85: champ pool 35/66 (value 3 snowball 4 turtle 2 user1 6 user4 1 normal 2/6 each)  1s
+gen 86: champ pool 36/66 (value 3 snowball 2 turtle 3 user1 4 user4 3 normal 4/6 each)  1s
+gen 87: champ pool 39.5/66 (value 2 snowball 3 turtle 2 user1 6 user4 4 normal 2/6 each)  1s
+gen 88: champ pool 42.5/66 (value 5 snowball 4 turtle 3 user1 3 user4 0 normal 3/6 each) -> NEW champ (beat old 24.5/40, pool 42.5, spike opp.count)  1s
+gen 89: champ pool 40.5/66 (value 4 snowball 5 turtle 2 user1 4 user4 1 normal 5/6 each)  1s
+gen 90: champ pool 36.5/66 (value 4 snowball 3 turtle 2 user1 4 user4 2 normal 3/6 each)  1s
+gen 91: champ pool 39.5/66 (value 5 snowball 4 turtle 2 user1 4 user4 3 normal 3/6 each)  1s
+gen 92: champ pool 39/66 (value 5 snowball 3 turtle 1 user1 3 user4 1 normal 4/6 each)  1s
+gen 93: champ pool 45/66 (value 3 snowball 6 turtle 2 user1 4 user4 4 normal 3/6 each)  1s
+gen 94: champ pool 33/66 (value 3 snowball 4 turtle 1 user1 4 user4 1 normal 4/6 each) -> NEW champ (beat old 24/40, pool 33, spike me.fwdAtk)  1s
+gen 95: champ pool 35/66 (value 3 snowball 3 turtle 1 user1 5 user4 2 normal 2/6 each)  1s
+gen 96: champ pool 33/66 (value 2 snowball 6 turtle 1 user1 4 user4 2 normal 4/6 each) -> NEW champ (beat old 28/40, pool 33, spike me.econShips)  1s
+gen 97: champ pool 37.5/66 (value 2 snowball 3 turtle 2 user1 5 user4 3 normal 3/6 each)  1s
+gen 98: champ pool 37/66 (value 5 snowball 5 turtle 3 user1 5 user4 4 normal 4/6 each)  1s
+gen 99: champ pool 36/66 (value 3 snowball 5 turtle 4 user1 5 user4 1 normal 4/6 each)  1s
+gen 100: champ pool 35/66 (value 5 snowball 5 turtle 3 user1 5 user4 0 normal 1/6 each)  1s
+gen 101: champ pool 37.5/66 (value 5 snowball 6 turtle 2 user1 3 user4 3 normal 2/6 each)  1s
+gen 102: champ pool 43/66 (value 5 snowball 5 turtle 2 user1 5 user4 2 normal 4/6 each)  1s
+gen 103: champ pool 37.5/66 (value 5 snowball 4 turtle 2 user1 4 user4 4 normal 3/6 each)  1s
+gen 104: champ pool 37.5/66 (value 6 snowball 4 turtle 3 user1 6 user4 3 normal 2/6 each)  1s
+gen 105: champ pool 39/66 (value 3 snowball 5 turtle 2 user1 5 user4 1 normal 3/6 each)  1s
+gen 106: champ pool 34/66 (value 4 snowball 5 turtle 3 user1 6 user4 1 normal 2/6 each)  1s
+gen 107: champ pool 39.5/66 (value 2 snowball 5 turtle 2 user1 5 user4 1 normal 4/6 each)  1s
+gen 108: champ pool 34/66 (value 2 snowball 6 turtle 1 user1 5 user4 3 normal 1/6 each)  1s
+gen 109: champ pool 37/66 (value 5 snowball 5 turtle 2 user1 4 user4 2 normal 3/6 each)  1s
+gen 110: champ pool 38.5/66 (value 6 snowball 5 turtle 0 user1 4 user4 1 normal 6/6 each)  1s
+gen 111: champ pool 40.5/66 (value 3 snowball 6 turtle 1 user1 6 user4 2 normal 6/6 each)  1s
+gen 112: champ pool 33/66 (value 5 snowball 5 turtle 1 user1 4 user4 1 normal 4/6 each)  1s
+gen 113: champ pool 33/66 (value 4 snowball 5 turtle 2 user1 5 user4 1 normal 3/6 each)  1s
+gen 114: champ pool 34.5/66 (value 5 snowball 2 turtle 3 user1 5 user4 0 normal 3/6 each) -> NEW champ (beat old 24/40, pool 34.5, spike opp.homeHp)  1s
+gen 115: champ pool 31/66 (value 2 snowball 5 turtle 1 user1 4 user4 1 normal 3/6 each)  1s
+gen 116: champ pool 34/66 (value 4 snowball 3 turtle 1 user1 6 user4 2 normal 0/6 each)  1s
+gen 117: champ pool 31/66 (value 4 snowball 4 turtle 4 user1 4 user4 0 normal 3/6 each) -> NEW champ (beat old 25/40, pool 31, spike me.armor)  1s
+gen 118: champ pool 36/66 (value 4 snowball 5 turtle 2 user1 5 user4 1 normal 4/6 each) -> NEW champ (beat old 26/40, pool 36, spike me.homeHp)  1s
+gen 119: champ pool 34/66 (value 4 snowball 4 turtle 1 user1 5 user4 1 normal 3/6 each)  1s
+gen 120: champ pool 39/66 (value 4 snowball 6 turtle 1 user1 5 user4 2 normal 3/6 each)  1s
+gen 121: champ pool 32/66 (value 2 snowball 5 turtle 1 user1 5 user4 3 normal 2/6 each)  1s
+gen 122: champ pool 34/66 (value 5 snowball 5 turtle 1 user1 5 user4 0 normal 3/6 each)  1s
+gen 123: champ pool 36.5/66 (value 5 snowball 3 turtle 3 user1 4 user4 2 normal 3/6 each)  1s
+gen 124: champ pool 43/66 (value 3 snowball 6 turtle 1 user1 3 user4 4 normal 5/6 each) -> NEW champ (beat old 25/40, pool 43, spike opp.hp)  1s
+gen 125: champ pool 34.5/66 (value 3 snowball 5 turtle 2 user1 5 user4 0 normal 5/6 each)  1s
+gen 126: champ pool 38/66 (value 5 snowball 3 turtle 0 user1 4 user4 1 normal 3/6 each) -> NEW champ (beat old 24.5/40, pool 38, spike opp.missile)  1s
+gen 127: champ pool 43/66 (value 3 snowball 3 turtle 1 user1 6 user4 3 normal 3/6 each)  1s
+gen 128: champ pool 43.5/66 (value 5 snowball 5 turtle 1 user1 3 user4 3 normal 1/6 each)  1s
+gen 129: champ pool 34.5/66 (value 4 snowball 6 turtle 1 user1 6 user4 3 normal 2/6 each)  1s
+gen 130: champ pool 36/66 (value 4 snowball 5 turtle 2 user1 6 user4 1 normal 4/6 each)  1s
+gen 131: champ pool 34/66 (value 4 snowball 5 turtle 2 user1 6 user4 0 normal 3/6 each)  1s
+gen 132: champ pool 35.5/66 (value 5 snowball 4 turtle 2 user1 6 user4 1 normal 4/6 each)  1s
+gen 133: champ pool 33.5/66 (value 3 snowball 6 turtle 2 user1 4 user4 1 normal 3/6 each)  1s
+gen 134: champ pool 38.5/66 (value 6 snowball 4 turtle 1 user1 5 user4 2 normal 3/6 each)  1s
+gen 135: champ pool 38.5/66 (value 3 snowball 5 turtle 3 user1 5 user4 2 normal 2/6 each)  1s
+gen 136: champ pool 36/66 (value 4 snowball 4 turtle 3 user1 6 user4 2 normal 1/6 each)  1s
+gen 137: champ pool 32/66 (value 3 snowball 5 turtle 1 user1 5 user4 0 normal 3/6 each)  1s
+gen 138: champ pool 38/66 (value 5 snowball 6 turtle 2 user1 5 user4 2 normal 3/6 each)  1s
+gen 139: champ pool 36.5/66 (value 4 snowball 5 turtle 1 user1 5 user4 2 normal 4/6 each)  1s
+gen 140: champ pool 43/66 (value 6 snowball 5 turtle 1 user1 5 user4 2 normal 4/6 each)  1s
+gen 141: champ pool 30/66 (value 5 snowball 3 turtle 0 user1 6 user4 2 normal 2/6 each)  1s
+gen 142: champ pool 33.5/66 (value 4 snowball 4 turtle 2 user1 5 user4 1 normal 2/6 each)  1s
+gen 143: champ pool 41/66 (value 5 snowball 4 turtle 1 user1 6 user4 1 normal 2/6 each)  1s
+gen 144: champ pool 39/66 (value 3 snowball 5 turtle 2 user1 5 user4 2 normal 4/6 each)  1s
+gen 145: champ pool 42/66 (value 4 snowball 5 turtle 3 user1 3 user4 2 normal 5/6 each)  1s
+gen 146: champ pool 32/66 (value 3 snowball 4 turtle 1 user1 5 user4 1 normal 2/6 each) -> NEW champ (beat old 25/40, pool 32, spike opp.missile)  1s
+gen 147: champ pool 33.5/66 (value 5 snowball 4 turtle 3 user1 5 user4 2 normal 3/6 each)  1s
+gen 148: champ pool 32.5/66 (value 3 snowball 5 turtle 3 user1 3 user4 2 normal 2/6 each)  1s
+gen 149: champ pool 34/66 (value 4 snowball 5 turtle 0 user1 5 user4 1 normal 4/6 each)  1s
+gen 150: champ pool 36/66 (value 5 snowball 4 turtle 2 user1 5 user4 1 normal 2/6 each)  1s
+
+=== 2026-10-23T13:13:57.518Z evolve 2 gens, 4 mutants, 10 h2h, 2/pool member, 8 threads
+gen 1: champ pool 9.5/16 (value 2 snowball 1 turtle 2 user1 2 user4 0 normal 0/2 each), screen best 4/10  0s
+gen 2: champ pool 8/16 (value 2 snowball 2 turtle 0 user1 2 user4 0 normal 1/2 each), screen best 7/10  0s
+
+=== 2026-10-23T13:14:03.148Z evolve 200 gens, 12 mutants, 40 h2h, 6/pool member, 8 threads
+gen 1: champ pool 27.5/48 (value 5 snowball 4 turtle 2 user1 4 user4 2 normal 2/6 each), screen best 20/40  1s
+gen 2: champ pool 28/48 (value 4 snowball 6 turtle 1 user1 4 user4 3 normal 1/6 each), screen best 28/40 -> NEW champ (show match 77/120, pool 28, spike opp.incomeLeft)  1s
+gen 3: champ pool 22/54 (value 5 snowball 0 turtle 4 user1 2 user4 2 normal 1/6 each), screen best 40/40  1s
+gen 4: champ pool 32/54 (value 5 snowball 0 turtle 6 user1 2 user4 2 normal 3/6 each), screen best 39/40 -> NEW champ (show match 119/120, pool 33, spike me.armor)  2s
+gen 5: champ pool 38/60 (value 5 snowball 6 turtle 1 user1 4 user4 2 normal 4/6 each), screen best 23/40  1s
+gen 6: champ pool 34.5/60 (value 3 snowball 6 turtle 0 user1 2 user4 2 normal 5/6 each), screen best 24.5/40  2s
+gen 7: champ pool 40.5/60 (value 1 snowball 6 turtle 3 user1 5 user4 2 normal 3.5/6 each), screen best 38/40  2s
+gen 8: champ pool 37/60 (value 4 snowball 6 turtle 2 user1 3 user4 4 normal 1/6 each), screen best 38/40  2s
+gen 9: champ pool 40/60 (value 2 snowball 6 turtle 2 user1 3 user4 4 normal 2/6 each), screen best 40/40  2s
+gen 10: champ pool 36/60 (value 3 snowball 5 turtle 4 user1 3 user4 1 normal 3/6 each), screen best 32.5/40  1s
+gen 11: champ pool 38/60 (value 2 snowball 6 turtle 3 user1 2 user4 4 normal 2/6 each), screen best 30/40  2s
+gen 12: champ pool 37/60 (value 2 snowball 6 turtle 3 user1 3 user4 4 normal 4/6 each), screen best 38/40 -> NEW champ (show match 70.5/120, pool 38, spike opp.money)  2s
+gen 13: champ pool 39/66 (value 2 snowball 6 turtle 2 user1 3 user4 3 normal 1/6 each), screen best 26/40 -> NEW champ (show match 69/120, pool 41, spike opp.econShips)  1s
+gen 14: champ pool 31/66 (value 5 snowball 4 turtle 1 user1 3 user4 2 normal 1/6 each), screen best 22/40  1s
+gen 15: champ pool 34/66 (value 3 snowball 4 turtle 2 user1 5 user4 2 normal 3/6 each), screen best 25/40  1s
+gen 16: champ pool 39/66 (value 5 snowball 3 turtle 1 user1 3 user4 3 normal 4/6 each), screen best 22/40  1s
+gen 17: champ pool 34/66 (value 3 snowball 4 turtle 1 user1 3 user4 2 normal 5/6 each), screen best 19/40  1s
+gen 18: champ pool 34/66 (value 3 snowball 4 turtle 3 user1 3 user4 2 normal 4/6 each), screen best 20/40  1s
+gen 19: champ pool 38/66 (value 4 snowball 6 turtle 2 user1 5 user4 2 normal 4/6 each), screen best 19.5/40  1s
+gen 20: champ pool 40/66 (value 4 snowball 4 turtle 5 user1 5 user4 0 normal 3/6 each), screen best 20.5/40  1s
+gen 21: champ pool 32/66 (value 3 snowball 4 turtle 0 user1 4 user4 2 normal 3/6 each), screen best 20/40  1s
+gen 22: champ pool 44/66 (value 3 snowball 6 turtle 3 user1 3 user4 0 normal 4/6 each), screen best 22/40  1s
+gen 23: champ pool 36/66 (value 4 snowball 5 turtle 2 user1 2 user4 1 normal 5/6 each), screen best 17/40  1s
+gen 24: champ pool 42/66 (value 5 snowball 5 turtle 2 user1 5 user4 2 normal 4/6 each), screen best 18/40 -> NEW champ (show match 68/120, pool 42, spike opp.perTurn)  1s
+gen 25: champ pool 42/66 (value 5 snowball 5 turtle 3 user1 3 user4 3 normal 4/6 each), screen best 17.5/40  1s
+gen 26: champ pool 40/66 (value 6 snowball 4 turtle 2 user1 4 user4 3 normal 1/6 each), screen best 21/40  1s
+gen 27: champ pool 37/66 (value 3 snowball 5 turtle 2 user1 3 user4 4 normal 1/6 each), screen best 24/40  1s
+gen 28: champ pool 31/66 (value 5 snowball 5 turtle 1 user1 2 user4 1 normal 0/6 each), screen best 27/40 -> NEW champ (show match 75/120, pool 33, spike me.danger)  1s
+gen 29: champ pool 28/66 (value 4 snowball 6 turtle 0 user1 0 user4 1 normal 1/6 each), screen best 35/40  2s
+gen 30: champ pool 21.5/66 (value 5 snowball 5 turtle 0 user1 0 user4 0 normal 1/6 each), screen best 39/40 -> NEW champ (show match 117/120, pool 39, spike me.incomeLeft)  2s
+gen 31: champ pool 24/66 (value 0 snowball 0 turtle 0 user1 2 user4 3 normal 2/6 each), screen best 24/40  2s
+gen 32: champ pool 37/66 (value 4 snowball 2 turtle 2 user1 1 user4 4 normal 3/6 each), screen best 24/40 -> NEW champ (show match 74/120, pool 39, spike me.danger)  2s
+gen 33: champ pool 41/66 (value 4 snowball 3 turtle 1 user1 5 user4 2 normal 3/6 each), screen best 40/40 -> NEW champ (show match 118/120, pool 42, spike me.danger)  2s
+gen 34: champ pool 45/66 (value 2 snowball 2 turtle 6 user1 1 user4 2 normal 4/6 each), screen best 34/40  2s
+gen 35: champ pool 41/66 (value 2 snowball 3 turtle 5 user1 3 user4 0 normal 1/6 each), screen best 26/40  2s
+gen 36: champ pool 44/66 (value 2 snowball 1 turtle 4 user1 2 user4 2 normal 5/6 each), screen best 26/40  1s
+gen 37: champ pool 44/66 (value 1 snowball 1 turtle 6 user1 4 user4 3 normal 2/6 each), screen best 33/40  1s
+gen 38: champ pool 40/66 (value 2 snowball 2 turtle 5 user1 2 user4 2 normal 4/6 each), screen best 33/40  2s
+gen 39: champ pool 46/66 (value 2 snowball 1 turtle 4 user1 2 user4 2 normal 6/6 each), screen best 13/40  2s
+gen 40: champ pool 42/66 (value 4 snowball 2 turtle 5 user1 1 user4 1 normal 3/6 each), screen best 31/40  2s
+gen 41: champ pool 50/66 (value 3 snowball 3 turtle 4 user1 3 user4 2 normal 5/6 each), screen best 25/40  2s
+gen 42: champ pool 39/66 (value 1 snowball 1 turtle 5 user1 1 user4 1 normal 1/6 each), screen best 31/40  2s
+gen 43: champ pool 45/66 (value 2 snowball 2 turtle 5 user1 4 user4 2 normal 5/6 each), screen best 28/40  2s
+gen 44: champ pool 49/66 (value 0 snowball 4 turtle 6 user1 2 user4 3 normal 5/6 each), screen best 25/40  1s
+gen 45: champ pool 40/66 (value 0 snowball 4 turtle 3 user1 3 user4 1 normal 3/6 each), screen best 20/40  2s
+gen 46: champ pool 46/66 (value 3 snowball 2 turtle 6 user1 2 user4 2 normal 3/6 each), screen best 26/40  2s
+gen 47: champ pool 39/66 (value 1 snowball 1 turtle 4 user1 1 user4 3 normal 4/6 each), screen best 31/40  2s
+gen 48: champ pool 48/66 (value 2 snowball 2 turtle 6 user1 3 user4 1 normal 6/6 each), screen best 30/40  2s
+gen 49: champ pool 37/66 (value 2 snowball 1 turtle 5 user1 2 user4 2 normal 2/6 each), screen best 31/40  2s
+gen 50: champ pool 42/66 (value 3 snowball 2 turtle 6 user1 2 user4 2 normal 3/6 each), screen best 31/40  2s
+gen 51: champ pool 49/66 (value 2 snowball 4 turtle 5 user1 3 user4 2 normal 3/6 each), screen best 27/40  2s
+gen 52: champ pool 43/66 (value 1 snowball 2 turtle 5 user1 1 user4 3 normal 4/6 each), screen best 11/40  2s
+gen 53: champ pool 39/66 (value 1 snowball 2 turtle 5 user1 1 user4 0 normal 4/6 each), screen best 33/40  2s
+gen 54: champ pool 45/66 (value 1 snowball 3 turtle 6 user1 4 user4 1 normal 3/6 each), screen best 28/40  1s
+gen 55: champ pool 46/66 (value 2 snowball 1 turtle 5 user1 1 user4 3 normal 4/6 each), screen best 25/40  2s
+gen 56: champ pool 40/66 (value 2 snowball 2 turtle 5 user1 0 user4 2 normal 4/6 each), screen best 26/40  1s
+gen 57: champ pool 43/66 (value 2 snowball 0 turtle 3 user1 2 user4 3 normal 3/6 each), screen best 29/40  1s
+gen 58: champ pool 43/66 (value 2 snowball 2 turtle 4 user1 2 user4 1 normal 4/6 each), screen best 34/40  1s
+gen 59: champ pool 45/66 (value 4 snowball 4 turtle 5 user1 2 user4 2 normal 3/6 each), screen best 31/40  2s
+gen 60: champ pool 43/66 (value 2 snowball 1 turtle 4 user1 2 user4 2 normal 3/6 each), screen best 29/40  2s
+gen 61: champ pool 45/66 (value 0 snowball 3 turtle 5 user1 3 user4 1 normal 4/6 each), screen best 33/40  2s
+gen 62: champ pool 36/66 (value 1 snowball 0 turtle 4 user1 1 user4 0 normal 6/6 each), screen best 7/40  2s
+gen 63: champ pool 46/66 (value 2 snowball 2 turtle 6 user1 0 user4 2 normal 6/6 each), screen best 27/40  2s
+gen 64: champ pool 38/66 (value 2 snowball 1 turtle 5 user1 2 user4 1 normal 3/6 each), screen best 30/40  1s
+gen 65: champ pool 40/66 (value 2 snowball 4 turtle 5 user1 3 user4 2 normal 1/6 each), screen best 31/40  1s
+gen 66: champ pool 49/66 (value 3 snowball 2 turtle 5 user1 2 user4 4 normal 4/6 each), screen best 18/40  1s
+gen 67: champ pool 43/66 (value 3 snowball 1 turtle 4 user1 2 user4 0 normal 4/6 each), screen best 6/40  2s
+gen 68: champ pool 42/66 (value 1 snowball 3 turtle 4 user1 1 user4 2 normal 3/6 each), screen best 7/40  2s
+gen 69: champ pool 46/66 (value 3 snowball 3 turtle 6 user1 3 user4 2 normal 2/6 each), screen best 34/40  1s
+gen 70: champ pool 47/66 (value 1 snowball 3 turtle 5 user1 2 user4 2 normal 5/6 each), screen best 25/40  1s
+gen 71: champ pool 47/66 (value 4 snowball 0 turtle 5 user1 3 user4 1 normal 5/6 each), screen best 11/40  2s
+gen 72: champ pool 44/66 (value 0 snowball 1 turtle 6 user1 1 user4 2 normal 5/6 each), screen best 31/40  2s
+gen 73: champ pool 45/66 (value 1 snowball 1 turtle 3 user1 2 user4 2 normal 6/6 each), screen best 27/40  2s
+gen 74: champ pool 43/66 (value 1 snowball 2 turtle 4 user1 2 user4 1 normal 4/6 each), screen best 31/40  2s
+gen 75: champ pool 47/66 (value 1 snowball 3 turtle 5 user1 4 user4 0 normal 4/6 each), screen best 26/40  2s
+gen 76: champ pool 40/66 (value 0 snowball 1 turtle 4 user1 1 user4 2 normal 4/6 each), screen best 6/40  2s
+gen 77: champ pool 46/66 (value 2 snowball 1 turtle 5 user1 3 user4 1 normal 5/6 each), screen best 14/40  2s
+gen 78: champ pool 40/66 (value 0 snowball 2 turtle 5 user1 1 user4 1 normal 3/6 each), screen best 28/40 -> NEW champ (show match 84/120, pool 40, spike me.worth)  1s
+gen 79: champ pool 37.5/66 (value 4 snowball 5 turtle 2 user1 4 user4 3 normal 4/6 each), screen best 27.5/40  1s
+gen 80: champ pool 35/66 (value 4 snowball 2 turtle 3 user1 2 user4 3 normal 2/6 each), screen best 22/40 -> NEW champ (show match 71/120, pool 39, spike opp.miners)  1s
+gen 81: champ pool 34/66 (value 5 snowball 5 turtle 1 user1 2 user4 2 normal 2/6 each), screen best 16/40  1s
+gen 82: champ pool 35/66 (value 4 snowball 6 turtle 2 user1 4 user4 0 normal 3/6 each), screen best 22/40  1s
+gen 83: champ pool 35/66 (value 4 snowball 6 turtle 3 user1 3 user4 1 normal 2/6 each), screen best 25/40  1s
+gen 84: champ pool 38/66 (value 4 snowball 6 turtle 0 user1 4 user4 3 normal 4/6 each), screen best 19/40  1s
+gen 85: champ pool 30/66 (value 3 snowball 5 turtle 1 user1 3 user4 1 normal 0/6 each), screen best 18/40  1s
+gen 86: champ pool 31/66 (value 3 snowball 6 turtle 2 user1 3 user4 2 normal 1/6 each), screen best 22/40  1s
+gen 87: champ pool 38/66 (value 4 snowball 6 turtle 2 user1 3 user4 2 normal 0/6 each), screen best 17/40  1s
+gen 88: champ pool 31/66 (value 2 snowball 6 turtle 4 user1 2 user4 2 normal 2/6 each), screen best 24/40 -> NEW champ (show match 73/120, pool 34, spike me.siege)  1s
+gen 89: champ pool 36/66 (value 2 snowball 5 turtle 2 user1 1 user4 2 normal 4/6 each), screen best 19/40  1s
+gen 90: champ pool 37.5/66 (value 6 snowball 6 turtle 2 user1 6 user4 1 normal 2/6 each), screen best 20/40 -> NEW champ (show match 67.5/120, pool 37.5, spike me.fwdAtk)  1s
+gen 91: champ pool 40/66 (value 4 snowball 3 turtle 4 user1 6 user4 2 normal 3/6 each), screen best 18/40  1s
+gen 92: champ pool 39.5/66 (value 5 snowball 6 turtle 3 user1 4 user4 1 normal 0/6 each), screen best 19/40 -> NEW champ (show match 67/120, pool 39.5, spike me.danger)  1s
+gen 93: champ pool 29.5/66 (value 4 snowball 5 turtle 1 user1 3 user4 2 normal 3/6 each), screen best 16/40  1s
+gen 94: champ pool 30/66 (value 4 snowball 6 turtle 2 user1 3 user4 1 normal 3/6 each), screen best 24/40 -> NEW champ (show match 75/120, pool 33, spike me.homeAtk)  1s
+gen 95: champ pool 42.5/66 (value 5 snowball 5 turtle 2 user1 5 user4 3 normal 4/6 each), screen best 20.5/40  1s
+gen 96: champ pool 40/66 (value 2 snowball 6 turtle 4 user1 4 user4 3 normal 3/6 each), screen best 18/40  1s
+gen 97: champ pool 37/66 (value 6 snowball 5 turtle 2 user1 5 user4 2 normal 1/6 each), screen best 22/40  1s
+gen 98: champ pool 30/66 (value 5 snowball 4 turtle 2 user1 4 user4 0 normal 1/6 each), screen best 23.5/40  1s
+gen 99: champ pool 35/66 (value 3 snowball 6 turtle 1 user1 5 user4 1 normal 4/6 each), screen best 17/40  1s
+gen 100: champ pool 36/66 (value 3 snowball 3 turtle 0 user1 5 user4 1 normal 3/6 each), screen best 23/40  1s
+gen 101: champ pool 31/66 (value 2 snowball 3 turtle 2 user1 4 user4 3 normal 4/6 each), screen best 22/40 -> NEW champ (show match 68.5/120, pool 31, spike opp.income)  1s
+gen 102: champ pool 35.5/66 (value 5 snowball 4 turtle 2 user1 6 user4 0 normal 3/6 each), screen best 20/40 -> NEW champ (show match 69/120, pool 35.5, spike me.growth)  1s
+gen 103: champ pool 40/66 (value 4 snowball 4 turtle 2 user1 6 user4 1 normal 3/6 each), screen best 18/40  1s
+gen 104: champ pool 36.5/66 (value 4 snowball 5 turtle 1 user1 4 user4 3 normal 3/6 each), screen best 15.5/40  1s
+gen 105: champ pool 37.5/66 (value 5 snowball 4 turtle 1 user1 5 user4 1 normal 5/6 each), screen best 18/40  1s
+gen 106: champ pool 41.5/66 (value 6 snowball 4 turtle 3 user1 5 user4 2 normal 4/6 each), screen best 26/40  1s
+gen 107: champ pool 36.5/66 (value 5 snowball 5 turtle 1 user1 4 user4 3 normal 2/6 each), screen best 19/40  1s
+gen 108: champ pool 36/66 (value 6 snowball 5 turtle 1 user1 4 user4 4 normal 5/6 each), screen best 22.5/40  1s
+gen 109: champ pool 34.5/66 (value 4 snowball 3 turtle 2 user1 5 user4 2 normal 4/6 each), screen best 25/40  1s
+gen 110: champ pool 35.5/66 (value 5 snowball 4 turtle 1 user1 5 user4 2 normal 4/6 each), screen best 18/40 -> NEW champ (show match 68.5/120, pool 35.5, spike opp.ore)  1s
+gen 111: champ pool 26/66 (value 3 snowball 4 turtle 1 user1 4 user4 1 normal 0/6 each), screen best 21/40  1s
+gen 112: champ pool 32.5/66 (value 4 snowball 3 turtle 2 user1 3 user4 4 normal 2/6 each), screen best 20/40  1s
+gen 113: champ pool 34.5/66 (value 4 snowball 4 turtle 2 user1 5 user4 1 normal 2/6 each), screen best 18.5/40  1s
+gen 114: champ pool 36.5/66 (value 3 snowball 5 turtle 2 user1 5 user4 1 normal 2/6 each), screen best 14/40  1s
+gen 115: champ pool 28.5/66 (value 4 snowball 4 turtle 1 user1 4 user4 1 normal 2/6 each), screen best 24/40  1s
+gen 116: champ pool 39/66 (value 4 snowball 5 turtle 2 user1 5 user4 2 normal 4/6 each), screen best 11/40  1s
+gen 117: champ pool 28/66 (value 2 snowball 3 turtle 2 user1 4 user4 3 normal 3/6 each), screen best 15/40  1s
+gen 118: champ pool 37.5/66 (value 4 snowball 4 turtle 1 user1 5 user4 2 normal 3/6 each), screen best 21.5/40 -> NEW champ (show match 68/120, pool 37.5, spike me.homeHp)  1s
+gen 119: champ pool 27.5/66 (value 4 snowball 5 turtle 2 user1 5 user4 1 normal 1/6 each), screen best 26/40 -> NEW champ (show match 68/120, pool 35, spike opp.armor)  1s
+gen 120: champ pool 32/66 (value 3 snowball 5 turtle 0 user1 4 user4 2 normal 3/6 each), screen best 24/40  1s
+gen 121: champ pool 42/66 (value 4 snowball 5 turtle 1 user1 6 user4 1 normal 5/6 each), screen best 25/40  1s
+gen 122: champ pool 40/66 (value 4 snowball 5 turtle 1 user1 6 user4 1 normal 3/6 each), screen best 18/40  1s
+gen 123: champ pool 35/66 (value 5 snowball 5 turtle 2 user1 4 user4 2 normal 3/6 each), screen best 18/40  1s
+gen 124: champ pool 35/66 (value 5 snowball 5 turtle 1 user1 4 user4 4 normal 1/6 each), screen best 15/40  1s
+gen 125: champ pool 33/66 (value 3 snowball 3 turtle 1 user1 5 user4 3 normal 2/6 each), screen best 25/40  1s
+gen 126: champ pool 33/66 (value 5 snowball 4 turtle 3 user1 4 user4 1 normal 1/6 each), screen best 21/40  1s
+gen 127: champ pool 45/66 (value 5 snowball 5 turtle 2 user1 5 user4 3 normal 2/6 each), screen best 24.5/40  1s
+gen 128: champ pool 37/66 (value 5 snowball 5 turtle 0 user1 5 user4 1 normal 3/6 each), screen best 20/40  1s
+gen 129: champ pool 44/66 (value 5 snowball 6 turtle 1 user1 5 user4 2 normal 5/6 each), screen best 21/40  1s
+gen 130: champ pool 44/66 (value 4 snowball 5 turtle 1 user1 5 user4 4 normal 3/6 each), screen best 25/40 -> NEW champ (show match 67/120, pool 44, spike opp.danger)  1s
+gen 131: champ pool 37/66 (value 6 snowball 5 turtle 1 user1 3 user4 2 normal 4/6 each), screen best 15/40  1s
+gen 132: champ pool 46/66 (value 4 snowball 6 turtle 2 user1 5 user4 2 normal 4/6 each), screen best 19/40  1s
+gen 133: champ pool 43/66 (value 4 snowball 5 turtle 3 user1 5 user4 1 normal 4/6 each), screen best 21/40  1s
+gen 134: champ pool 31.5/66 (value 4 snowball 5 turtle 1 user1 5 user4 2 normal 3/6 each), screen best 25.5/40  1s
+gen 135: champ pool 41/66 (value 3 snowball 6 turtle 1 user1 5 user4 3 normal 2/6 each), screen best 25/40  1s
+gen 136: champ pool 44/66 (value 4 snowball 4 turtle 3 user1 4 user4 4 normal 3/6 each), screen best 19/40  1s
+gen 137: champ pool 44/66 (value 6 snowball 6 turtle 3 user1 3 user4 4 normal 1/6 each), screen best 19.5/40  1s
+gen 138: champ pool 44/66 (value 5 snowball 6 turtle 3 user1 4 user4 2 normal 4/6 each), screen best 21/40  1s
+gen 139: champ pool 41/66 (value 4 snowball 5 turtle 1 user1 5 user4 1 normal 6/6 each), screen best 21.5/40  1s
+gen 140: champ pool 41/66 (value 3 snowball 6 turtle 2 user1 4 user4 3 normal 4/6 each), screen best 17.5/40  1s
+gen 141: champ pool 35/66 (value 5 snowball 6 turtle 2 user1 5 user4 0 normal 3/6 each), screen best 21/40  1s
+gen 142: champ pool 42/66 (value 4 snowball 6 turtle 2 user1 5 user4 4 normal 2/6 each), screen best 23.5/40 -> NEW champ (show match 68/120, pool 42, spike opp.health)  1s
+gen 143: champ pool 45/66 (value 2 snowball 3 turtle 3 user1 5 user4 3 normal 4/6 each), screen best 20/40  1s
+gen 144: champ pool 38/66 (value 5 snowball 6 turtle 1 user1 4 user4 0 normal 3/6 each), screen best 20/40  1s
+gen 145: champ pool 43/66 (value 6 snowball 6 turtle 3 user1 4 user4 1 normal 6/6 each), screen best 13/40  1s
+gen 146: champ pool 38/66 (value 5 snowball 5 turtle 2 user1 6 user4 2 normal 2/6 each), screen best 19/40  1s
+gen 147: champ pool 37/66 (value 2 snowball 5 turtle 3 user1 4 user4 1 normal 3/6 each), screen best 20.5/40  1s
+gen 148: champ pool 35/66 (value 5 snowball 6 turtle 2 user1 5 user4 1 normal 1/6 each), screen best 18/40  1s
+gen 149: champ pool 36/66 (value 6 snowball 6 turtle 0 user1 6 user4 3 normal 3/6 each), screen best 19/40  1s
+gen 150: champ pool 35/66 (value 5 snowball 4 turtle 1 user1 4 user4 1 normal 4/6 each), screen best 23/40  1s
+gen 151: champ pool 38/66 (value 5 snowball 5 turtle 2 user1 4 user4 2 normal 3/6 each), screen best 26/40  1s
+gen 152: champ pool 41/66 (value 5 snowball 6 turtle 2 user1 6 user4 2 normal 4/6 each), screen best 23/40  1s
+gen 153: champ pool 38.5/66 (value 4 snowball 6 turtle 2 user1 4 user4 2 normal 4/6 each), screen best 23/40  1s
+gen 154: champ pool 36/66 (value 3 snowball 5 turtle 3 user1 5 user4 0 normal 2/6 each), screen best 14/40  1s
+gen 155: champ pool 40.5/66 (value 5 snowball 6 turtle 2 user1 5 user4 0 normal 2/6 each), screen best 21/40  1s
+gen 156: champ pool 39/66 (value 5 snowball 6 turtle 2 user1 5 user4 3 normal 2/6 each), screen best 19/40  1s
+gen 157: champ pool 39/66 (value 5 snowball 5 turtle 1 user1 2 user4 2 normal 3/6 each), screen best 24/40  1s
+gen 158: champ pool 40/66 (value 6 snowball 5 turtle 3 user1 5 user4 2 normal 4/6 each), screen best 23/40  1s
+gen 159: champ pool 43.5/66 (value 5 snowball 4 turtle 0 user1 6 user4 1 normal 5/6 each), screen best 12/40  1s
+gen 160: champ pool 41/66 (value 5 snowball 6 turtle 2 user1 3 user4 2 normal 3/6 each), screen best 23/40  1s
+gen 161: champ pool 42.5/66 (value 4 snowball 5 turtle 4 user1 4 user4 1 normal 2/6 each), screen best 19.5/40  1s
+gen 162: champ pool 45/66 (value 5 snowball 4 turtle 2 user1 6 user4 2 normal 3/6 each), screen best 18/40  1s
+gen 163: champ pool 44/66 (value 4 snowball 5 turtle 3 user1 4 user4 2 normal 3/6 each), screen best 20.5/40  1s
+gen 164: champ pool 41.5/66 (value 4 snowball 4 turtle 2 user1 5 user4 3 normal 4/6 each), screen best 24.5/40  1s
+gen 165: champ pool 37/66 (value 5 snowball 5 turtle 2 user1 4 user4 1 normal 4/6 each), screen best 20/40  1s
+gen 166: champ pool 46/66 (value 3 snowball 6 turtle 2 user1 6 user4 2 normal 5/6 each), screen best 19/40  1s
+gen 167: champ pool 36/66 (value 5 snowball 3 turtle 1 user1 5 user4 1 normal 5/6 each), screen best 22/40  1s
+gen 168: champ pool 40/66 (value 5 snowball 5 turtle 1 user1 6 user4 1 normal 5/6 each), screen best 18/40  1s
+gen 169: champ pool 38/66 (value 4 snowball 4 turtle 2 user1 4 user4 2 normal 4/6 each), screen best 19/40  1s
+gen 170: champ pool 41/66 (value 5 snowball 5 turtle 3 user1 5 user4 0 normal 3/6 each), screen best 15.5/40  1s
+gen 171: champ pool 38.5/66 (value 2 snowball 4 turtle 2 user1 5 user4 3 normal 3/6 each), screen best 24/40  1s
+gen 172: champ pool 40.5/66 (value 2 snowball 5 turtle 3 user1 6 user4 1 normal 6/6 each), screen best 20/40 -> NEW champ (show match 68.5/120, pool 41.5, spike opp.perTurn)  1s
+gen 173: champ pool 34.5/66 (value 5 snowball 4 turtle 3 user1 3 user4 1 normal 4/6 each), screen best 22/40  1s
+gen 174: champ pool 34/66 (value 5 snowball 2 turtle 1 user1 6 user4 2 normal 6/6 each), screen best 23/40  1s
+gen 175: champ pool 41.5/66 (value 6 snowball 6 turtle 1 user1 5 user4 0 normal 5/6 each), screen best 18/40  1s
+gen 176: champ pool 34/66 (value 2 snowball 4 turtle 5 user1 4 user4 1 normal 1/6 each), screen best 23/40  1s
+gen 177: champ pool 34.5/66 (value 4 snowball 5 turtle 4 user1 5 user4 1 normal 3/6 each), screen best 20/40  1s
+gen 178: champ pool 39.5/66 (value 5 snowball 4 turtle 1 user1 3 user4 2 normal 5/6 each), screen best 18/40  1s
+gen 179: champ pool 44/66 (value 6 snowball 4 turtle 1 user1 5 user4 3 normal 6/6 each), screen best 22/40  1s
+gen 180: champ pool 42/66 (value 4 snowball 4 turtle 5 user1 6 user4 2 normal 3/6 each), screen best 18/40  1s
+gen 181: champ pool 41.5/66 (value 4 snowball 5 turtle 1 user1 6 user4 1 normal 4/6 each), screen best 16/40  1s
+gen 182: champ pool 38.5/66 (value 4 snowball 5 turtle 1 user1 6 user4 2 normal 4/6 each), screen best 20/40  1s
+gen 183: champ pool 36.5/66 (value 5 snowball 6 turtle 0 user1 5 user4 2 normal 2/6 each), screen best 21/40  1s
+gen 184: champ pool 35/66 (value 2 snowball 5 turtle 1 user1 6 user4 2 normal 0/6 each), screen best 18/40  1s
+gen 185: champ pool 43/66 (value 4 snowball 6 turtle 4 user1 6 user4 1 normal 3/6 each), screen best 24/40  1s
+gen 186: champ pool 46/66 (value 2 snowball 5 turtle 3 user1 5 user4 4 normal 5/6 each), screen best 17/40  1s
+gen 187: champ pool 46/66 (value 4 snowball 6 turtle 5 user1 5 user4 1 normal 4/6 each), screen best 23/40  1s
+gen 188: champ pool 40.5/66 (value 5 snowball 6 turtle 2 user1 5 user4 0 normal 4/6 each), screen best 14/40 -> NEW champ (show match 72/120, pool 42, spike me.lnOre)  1s
+gen 189: champ pool 33/66 (value 3 snowball 5 turtle 1 user1 4 user4 2 normal 4/6 each), screen best 17/40  1s
+gen 190: champ pool 47/66 (value 5 snowball 5 turtle 2 user1 6 user4 1 normal 4/6 each), screen best 23.5/40  1s
+gen 191: champ pool 36/66 (value 4 snowball 5 turtle 1 user1 5 user4 1 normal 3/6 each), screen best 15/40  1s
+gen 192: champ pool 36/66 (value 5 snowball 4 turtle 2 user1 6 user4 3 normal 1/6 each), screen best 22/40  1s
+gen 193: champ pool 39/66 (value 5 snowball 3 turtle 2 user1 6 user4 3 normal 2/6 each), screen best 16/40  1s
+gen 194: champ pool 34/66 (value 5 snowball 4 turtle 1 user1 4 user4 2 normal 3/6 each), screen best 25/40 -> NEW champ (show match 67/120, pool 34.5, spike opp.lnOre)  1s
+gen 195: champ pool 40.5/66 (value 4 snowball 6 turtle 3 user1 4 user4 1 normal 3/6 each), screen best 16.5/40  1s
+gen 196: champ pool 41/66 (value 3 snowball 5 turtle 3 user1 6 user4 1 normal 5/6 each), screen best 23/40  1s
+gen 197: champ pool 44.5/66 (value 6 snowball 6 turtle 1 user1 6 user4 2 normal 4/6 each), screen best 20/40  1s
+gen 198: champ pool 42/66 (value 6 snowball 5 turtle 1 user1 4 user4 3 normal 5/6 each), screen best 23/40  1s
+gen 199: champ pool 46/66 (value 4 snowball 6 turtle 3 user1 5 user4 1 normal 5/6 each), screen best 21/40  1s
+gen 200: champ pool 43/66 (value 6 snowball 6 turtle 3 user1 5 user4 2 normal 6/6 each), screen best 18/40  1s

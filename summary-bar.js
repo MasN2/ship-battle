@@ -53,7 +53,8 @@ let summaryBarEl = null;
 let battlefieldEl = null;
 let isEnabled = localStorage.getItem(STORAGE_KEY) === '1';
 
-document.addEventListener('DOMContentLoaded', () => {
+// Loaded after the page by index.html's file check, so the DOM may already be ready
+onDomReady(() => {
     battlefieldEl = document.getElementById('battlefield');
     if (!battlefieldEl) return;
 
@@ -83,9 +84,8 @@ function createSummaryBarDOM() {
 
 function injectPauseMenuToggle() {
     const pauseGrid = document.querySelector('.pause-grid');
-    if (!pauseGrid) return;
-
     let toggle = document.getElementById('summary-toggle');
+    if (!toggle && !pauseGrid) return;
     if (!toggle) {
         const toggleWrapper = document.createElement('label');
         toggleWrapper.htmlFor = 'summary-toggle';
@@ -273,4 +273,10 @@ export function updateSummaryBar() {
     }
 
     summaryBarEl.innerHTML = html;
+}
+
+
+function onDomReady(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else setTimeout(fn); // after the rest of the module graph (state.js and script.js import each other)
 }

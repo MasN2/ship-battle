@@ -1,0 +1,32 @@
+
+=== 2026-10-23T17:31:48.336Z 400 duels, batch 16, lr 0.5, sigma 0.02, spike 0.1, 8 threads
+16 pairs (7 split), learner vs monolith 20% (recent batch 20%), 3.3 min. strongest: miner:breakout 0.07, size:incoming 0.07, miner:always -0.06, skip:banked 0.04, missile:always 0.03, size:lethal -0.03
+32 pairs (14 split), learner vs monolith 29% (recent batch 38%), 7.1 min. strongest: size:lethal 0.10, missile:failing -0.07, pricey:banked 0.07, miner:incoming -0.07, size:breakout 0.07, miner:breakout 0.06
+48 pairs (19 split), learner vs monolith 24% (recent batch 16%), 9.0 min. strongest: size:lethal 0.13, pricey:banked 0.10, miner:breakout 0.09, econ:breakout -0.08, econ:econGap -0.07, missile:failing -0.07
+64 pairs (23 split), learner vs monolith 26% (recent batch 31%), 11.2 min. strongest: missile:failing -0.15, size:lethal 0.13, econ:econGap -0.11, size:incoming 0.11, missile:enemyWave -0.09, miner:always -0.08
+80 pairs (33 split), learner vs monolith 28% (recent batch 38%), 13.1 min. strongest: econ:econGap -0.18, missile:failing -0.12, miner:breakout 0.12, econ:incoming 0.11, size:lethal 0.11, skip:always -0.11
+96 pairs (36 split), learner vs monolith 26% (recent batch 16%), 15.2 min. strongest: econ:econGap -0.19, miner:breakout 0.13, armor:incoming -0.12, skip:always -0.11, size:lethal 0.11, skip:banked 0.10
+112 pairs (44 split), learner vs monolith 27% (recent batch 31%), 17.2 min. strongest: econ:econGap -0.20, skip:always -0.18, size:lethal 0.17, armor:incoming -0.13, miner:breakout 0.11, miner:always -0.11
+128 pairs (47 split), learner vs monolith 26% (recent batch 16%), 19.2 min. strongest: size:lethal 0.17, missile:enemyWave -0.16, econ:econGap -0.16, armor:incoming -0.16, skip:always -0.15, miner:breakout 0.13
+144 pairs (50 split), learner vs monolith 24% (recent batch 9%), 21.6 min. strongest: size:lethal 0.18, missile:enemyWave -0.18, armor:incoming -0.18, econ:econGap -0.17, skip:always -0.14, miner:breakout 0.14
+160 pairs (53 split), learner vs monolith 23% (recent batch 11%), 23.9 min. strongest: size:lethal 0.18, econ:econGap -0.18, missile:enemyWave -0.18, armor:incoming -0.18, skip:always -0.16, econ:incoming 0.15
+176 pairs (58 split), learner vs monolith 24% (recent batch 34%), 26.0 min. strongest: armor:incoming -0.25, size:lethal 0.21, skip:always -0.19, econ:econGap -0.18, skip:incoming -0.16, miner:incoming -0.14
+192 pairs (60 split), learner vs monolith 24% (recent batch 25%), 27.9 min. strongest: armor:incoming -0.24, skip:always -0.21, size:lethal 0.20, econ:econGap -0.18, skip:incoming -0.16, econ:incoming 0.14
+208 pairs (66 split), learner vs monolith 24% (recent batch 31%), 29.6 min. strongest: armor:incoming -0.24, skip:always -0.21, miner:always -0.18, econ:econGap -0.16, size:lethal 0.16, skip:incoming -0.14
+224 pairs (71 split), learner vs monolith 26% (recent batch 47%), 31.4 min. strongest: armor:incoming -0.28, miner:always -0.19, skip:always -0.18, size:lethal 0.17, econ:econGap -0.15, pricey:banked 0.14
+240 pairs (75 split), learner vs monolith 27% (recent batch 44%), 33.2 min. strongest: armor:incoming -0.23, miner:always -0.23, pricey:failing 0.22, econ:econGap -0.18, skip:always -0.16, pricey:banked 0.16
+256 pairs (76 split), learner vs monolith 28% (recent batch 34%), 35.0 min. strongest: armor:incoming -0.24, miner:always -0.24, pricey:failing 0.21, econ:econGap -0.16, size:lethal 0.15, skip:always -0.15
+272 pairs (83 split), learner vs monolith 28% (recent batch 41%), 36.8 min. strongest: armor:incoming -0.21, skip:always -0.20, miner:always -0.19, pricey:failing 0.17, econ:econGap -0.17, econ:incoming 0.14
+288 pairs (86 split), learner vs monolith 28% (recent batch 28%), 38.4 min. strongest: skip:always -0.20, pricey:failing 0.19, armor:incoming -0.19, econ:econGap -0.15, econ:incoming 0.15, miner:always -0.15
+304 pairs (88 split), learner vs monolith 28% (recent batch 25%), 40.2 min. strongest: miner:always -0.27, armor:incoming -0.21, pricey:failing 0.19, skip:always -0.18, econ:incoming 0.16, econ:econGap -0.14
+320 pairs (92 split), learner vs monolith 29% (recent batch 44%), 41.6 min. strongest: miner:always -0.25, armor:incoming -0.25, skip:always -0.20, pricey:failing 0.15, econ:incoming 0.15, missile:always -0.14
+336 pairs (98 split), learner vs monolith 30% (recent batch 50%), 43.4 min. strongest: miner:always -0.38, armor:incoming -0.24, skip:always -0.20, econ:incoming 0.20, size:lethal 0.19, pricey:failing 0.15
+352 pairs (100 split), learner vs monolith 30% (recent batch 31%), 45.3 min. strongest: miner:always -0.39, armor:incoming -0.24, skip:always -0.21, econ:incoming 0.19, size:lethal 0.17, skip:incoming -0.14
+368 pairs (103 split), learner vs monolith 30% (recent batch 34%), 47.2 min. strongest: miner:always -0.41, econ:incoming 0.28, armor:incoming -0.25, skip:always -0.23, size:lethal 0.16, size:breakout 0.14
+384 pairs (104 split), learner vs monolith 31% (recent batch 47%), 48.9 min. strongest: miner:always -0.44, econ:incoming 0.27, armor:incoming -0.25, skip:always -0.23, size:lethal 0.14, size:breakout 0.13
+400 pairs (105 split), learner vs monolith 31% (recent batch 41%), 50.6 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
+
+=== 2026-10-23T18:25:50.826Z 48 duels, batch 16, lr 0, sigma 0, spike 0, 8 threads
+16 pairs (0 split), learner vs monolith 25% (recent batch 25%), 1.6 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
+32 pairs (0 split), learner vs monolith 28% (recent batch 31%), 3.2 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
+48 pairs (0 split), learner vs monolith 25% (recent batch 19%), 5.0 min. strongest: miner:always -0.44, econ:incoming 0.26, armor:incoming -0.26, skip:always -0.23, size:lethal 0.14, missile:always -0.13
