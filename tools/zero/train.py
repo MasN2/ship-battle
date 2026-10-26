@@ -189,6 +189,7 @@ def main():
     ap.add_argument('--gm-games', type=int, default=10, help='per scenario: a light probe, not a verdict')
     ap.add_argument('--threads', type=int, default=max(1, os.cpu_count() - 1))
     ap.add_argument('--resume', action='store_true')
+    ap.add_argument('--init', help='start from this exported net (a pool/*.json) instead of random weights')
     ap.add_argument('--export', action='store_true')
     args = ap.parse_args()
 
@@ -203,6 +204,11 @@ def main():
     if (args.resume or args.export) and os.path.exists(ckpt):
         c = torch.load(ckpt, map_location=dev)
         net.load_state_dict(c['net']); opt.load_state_dict(c['opt']); it0 = c['it']
+    if args.init:
+        js = json.load(open(os.path.join(ROOT, args.init)))
+        sd = {k: torch.frombuffer(bytearray(base64.b64decode(v['b64'])), dtype=torch.float32).view(v['shape']) for k, v in js['params'].items()}
+        net.load_state_dict(sd)
+        it0 = js['meta'].get('iteration', it0)
     net_path = os.path.join(run, 'net.json')
     if args.export:
         export(net, net_path)
