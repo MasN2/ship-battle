@@ -9,7 +9,7 @@ freezes a copy into the opponent pool (past selves to keep beating). Every --eva
 iterations it plays the current net (greedy) across every scenario of tools/zero/robust.js against
 the Normal AI and a past net (--ref), and every --gm-every iterations a light grandmaster probe:
 benchmarks only, nothing from those games is trained on. Watch *_worst: a net that aces the
-standard game but folds when the rules change shows up there first.
+standard game but folds when the rules change shows up there first (*_far: held-out rules).
 Everything lives under --run: net.json (current), pool/, data/, log.jsonl, ckpt.pt.
 `--export` writes the current net to js/zero-weights.js for the live game.
 """
@@ -171,7 +171,7 @@ def main():
     ap.add_argument('--run', default='runs/zero')
     ap.add_argument('--iters', type=int, default=1000)
     ap.add_argument('--games', type=int, default=2000)
-    ap.add_argument('--std', type=float, default=0.2)
+    ap.add_argument('--std', type=float, default=0.3)
     ap.add_argument('--ppool', type=float, default=0.2)
     ap.add_argument('--open', type=int, default=3)
     ap.add_argument('--lr', type=float, default=3e-4)
@@ -250,7 +250,8 @@ def main():
             for tag, opp, per, cfg in probes:
                 r = robust(net_path, opp, per, args.threads, cfg)
                 if r:
-                    rec[f'{tag}_mean'], rec[f'{tag}_worst'] = r['mean'], r['worst']
+                    for k in ('near', 'nearWorst', 'far', 'farWorst'):
+                        rec[f'{tag}_{k}'] = r[k]
                     rec[f'{tag}_table'] = {k: v['score'] for k, v in r['table'].items()}
             rec['eval_s'] = round(time.time() - t2, 1)
         print(json.dumps(rec), flush=True)

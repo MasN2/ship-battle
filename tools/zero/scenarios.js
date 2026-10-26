@@ -7,8 +7,8 @@
 // a start: { money, income, ore, hp: [blue, red], fleet: [[ship, sector from blue's side]...] }.
 // resetRules() puts the standard rules back.
 //
-// Held out of training on purpose: price changes to ×5, ×11 and ×13 ships (missiles, archers,
-// carriers) and fleets bigger than ~120. The 'primeShift' and 'warzone' / 'missiles' tests ask
+// Held out of training on purpose: every New Game preset (most are far outside the training
+// noise), price changes to ×5, ×11 and ×13 ships (missiles, archers, carriers), fleets over ~50. The 'primeShift' and 'warzone' / 'missiles' tests ask
 // whether what it learned about prices and fleets carries over to rules it has never seen.
 
 import { TEMPLATES, SHIP_NUMS, calculatePrimeFactors } from '../../js/templates.js';
@@ -90,7 +90,7 @@ function randomFleet(rng, value, sectors) {
 function midfight(rng, st) {
     const { pick, int } = tools(rng);
     st.fleet = randomFleet(rng, int(10, 50), pick([[1, 2, 3], [2, 3, 4], [1, 2, 3, 4], [3, 4]]));
-    st.hp = Array(2).fill(pick([30, 40, 60, 80, 100, 120]));
+    st.hp = Array(2).fill(pick([40, 60, 80, 100, 120]));
     st.money = Array(2).fill(pick([5, 10, 15, 20, 30, 40]));
     if (rng() < 0.4) st.income = Array(2).fill(pick([4, 5, 6, 8]));
     if (rng() < 0.3) st.ore = Array(2).fill(pick([10, 30, 60]));
@@ -98,28 +98,39 @@ function midfight(rng, st) {
 
 function richStart(rng, st) {
     const { pick } = tools(rng);
-    st.money = Array(2).fill(pick([15, 25, 40, 60, 100]));
-    if (rng() < 0.5) st.income = Array(2).fill(pick([3, 5, 6, 8, 10]));
-    if (rng() < 0.4) st.ore = Array(2).fill(pick([10, 30, 60, 120]));
-    if (rng() < 0.4) st.hp = Array(2).fill(pick([60, 100, 200, 260]));
+    st.money = Array(2).fill(pick([10, 15, 25, 40]));
+    if (rng() < 0.5) st.income = Array(2).fill(pick([3, 5, 6, 8]));
+    if (rng() < 0.4) st.ore = Array(2).fill(pick([10, 30, 60]));
+    if (rng() < 0.4) st.hp = Array(2).fill(pick([100, 200, 260]));
 }
 
-/** Big swings on whole-game axes, log-uniform over most of the New Game slider ranges. */
-function extreme(rng, st) {
+/** Wider noise on one to three whole-game axes, still close to a normal game (the extremes,
+    like 5× hp or 1 base hp, are kept for testing: they are different games, and training on
+    them teaches habits a normal game punishes). */
+function wide(rng, st) {
     const { pick, uni } = tools(rng);
     const logU = (lo, hi) => Math.exp(uni(Math.log(lo), Math.log(hi)));
+    const scale = (key, lo, hi) => { const k = logU(lo, hi); for (const n of SHIP_NUMS) TEMPLATES[n][key] = Math.max(1, Math.round(TEMPLATES[n][key] * k)); };
     const axes = [
-        () => { const k = logU(0.25, 5); for (const n of SHIP_NUMS) TEMPLATES[n].health = Math.max(1, Math.round(TEMPLATES[n].health * k)); },
-        () => { const k = logU(0.33, 3); for (const n of SHIP_NUMS) TEMPLATES[n].attack = Math.max(1, Math.round(TEMPLATES[n].attack * k)); },
-        () => { st.hp = Array(2).fill(Math.max(1, Math.round(logU(1, 400)))); },
-        () => { st.money = Array(2).fill(Math.round(logU(1, 250))); },
-        () => { st.income = Array(2).fill(Math.max(1, Math.round(logU(1, 20)))); },
-        () => { st.ore = Array(2).fill(Math.round(logU(5, 300))); },
-        () => { const k = logU(0.5, 2); for (const n of SHIP_NUMS) priceMult[n] *= k; },
-        () => { st.fleet = randomFleet(rng, Math.round(logU(5, 120)), [1, 2, 2, 3, 3]); },
+        () => scale('health', 0.5, 1.5),
+        () => scale('attack', 0.5, 1.5),
+        () => { st.hp = Array(2).fill(Math.round(logU(80, 300))); },
+        () => { st.money = Array(2).fill(Math.round(logU(1, 40))); },
+        () => { st.income = Array(2).fill(pick([2, 3, 5, 6, 8])); },
+        () => { st.ore = Array(2).fill(Math.round(logU(5, 60))); },
+        () => { const k = logU(0.67, 1.5); for (const n of SHIP_NUMS) priceMult[n] *= k; },
+        () => { st.fleet = randomFleet(rng, Math.round(logU(5, 50)), [1, 2, 2, 3, 3]); },
     ].sort(() => rng() - 0.5);
     const count = pick([1, 1, 2, 2, 3]);
     for (let i = 0; i < count; i++) axes[i]();
+}
+
+/** Longer games: sturdier ships or deeper bases, so investing (traders, miners) can pay. */
+function longGame(rng, st) {
+    const { uni } = tools(rng);
+    const r = rng();
+    if (r < 0.7) { const k = uni(1.2, 1.6); for (const n of SHIP_NUMS) TEMPLATES[n].health = Math.max(1, Math.round(TEMPLATES[n].health * k)); }
+    if (r > 0.4) st.hp = Array(2).fill(Math.round(uni(200, 320)));
 }
 
 function lopsided(rng, st) {
@@ -135,26 +146,28 @@ export const TRAIN_FAMILIES = {
     midfight: 0.2,  // mirrored fleets on the field, low bases, cash in hand
     rich: 0.1,      // big starting money (and sometimes income/ore/hp)
     econ: 0.1,      // cheaper/dearer miners, traders, income ships
-    extreme: 0.15,  // one to three whole-game axes pushed far (ship hp/atk, base hp, money, income, ore, prices, fleet)
+    wide: 0.15,     // one to three whole-game axes nudged (ship hp/atk ×0.5-1.5, base hp, money, income, ore, prices, fleet)
+    long: 0.1,      // sturdier ships / deeper bases: longer games where investing can pay
     combo: 0.15,    // jitter plus one of the others
 };
 
 /** A training scenario; `std` = chance of a plain standard game. Returns { start, family }. */
-export function trainingScenario(rng, std = 0.2) {
+export function trainingScenario(rng, std = 0.3) {
     resetRules();
     const st = standardStart();
     if (rng() < std) return { start: st, family: 'standard' };
     const fams = Object.entries(TRAIN_FAMILIES);
     let r = rng() * fams.reduce((a, [, w]) => a + w, 0), family = fams[0][0];
     for (const [f, w] of fams) { if (r < w) { family = f; break; } r -= w; }
-    const other = () => tools(rng).pick(['midfight', 'rich', 'econ', 'extreme']);
+    const other = () => tools(rng).pick(['midfight', 'rich', 'econ', 'wide', 'long']);
     const parts = family === 'combo' ? ['jitter', other()] : [family];
     for (const p of parts) {
         if (p === 'jitter') jitterRules(rng);
         else if (p === 'econ') econRules(rng);
         else if (p === 'midfight') midfight(rng, st);
         else if (p === 'rich') richStart(rng, st);
-        else if (p === 'extreme') extreme(rng, st);
+        else if (p === 'wide') wide(rng, st);
+        else if (p === 'long') longGame(rng, st);
     }
     if (rng() < 0.15) lopsided(rng, st);
     clearMemos();
@@ -175,6 +188,9 @@ function preset(mods, rng) {
     return st;
 }
 
+/** 'near' tests are fresh draws from what training sees; 'far' ones it never trains on. */
+export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide'];
+
 // Held-out tests. Presets are the game's own New Game options, mostly far more extreme than
 // anything in training; 'midfight' and 'econ' are fresh draws from training families.
 export const EVAL_SCENARIOS = {
@@ -182,7 +198,7 @@ export const EVAL_SCENARIOS = {
     midfight: rng => { resetRules(); const st = standardStart(); midfight(rng, st); clearMemos(); return st; },
     econ: rng => { resetRules(); econRules(rng); clearMemos(); return standardStart(); },
     jitter: rng => { resetRules(); jitterRules(rng); clearMemos(); return standardStart(); },
-    extreme: rng => { resetRules(); const st = standardStart(); extreme(rng, st); clearMemos(); return st; },
+    wide: rng => { resetRules(); const st = standardStart(); wide(rng, st); clearMemos(); return st; },
     // held out: one or two of ×5 / ×11 / ×13 ships much cheaper or dearer
     primeShift: rng => {
         resetRules();

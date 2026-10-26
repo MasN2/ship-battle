@@ -1,5 +1,6 @@
 // Robustness check: bot A vs bot B across scenarios (tools/zero/scenarios.js EVAL_SCENARIOS),
 // to catch a net that aces the standard game but folds when the rules or the start change.
+// Scenarios marked * are held out of training ('far'); the rest are fresh draws of trained-on noise.
 //   node tools/zero/robust.js <A> <B> [games per scenario=40] [--a '{cfg}'] [--b '{cfg}']
 //        [--scen standard,midfight,...] [--open 2] [--max 200] [--seed 1] [--threads N] [--json]
 // Bots as in tools/tourney.js (zero, gm, gm3, normal, ...). Grandmaster plays every scenario by
@@ -15,7 +16,7 @@ import { DIFFICULTIES } from '../../js/config.js';
 import { makeBot } from '../match.js';
 import { grandmasterBot } from '../bots.js';
 import { mulberry32 } from '../rng.js';
-import { EVAL_SCENARIOS, applyStart, resetRules } from './scenarios.js';
+import { EVAL_SCENARIOS, NEAR, applyStart, resetRules } from './scenarios.js';
 
 function botFor(name, cfg, scen, cache) {
     const key = name === 'gm3' && scen !== 'standard' ? 'gm3-nobook' : name;
@@ -93,11 +94,18 @@ if (!isMainThread) {
         const t = r.map(x => x.turns).sort((a, b) => a - b);
         table[scen] = { score: +(100 * m).toFixed(1), se: +(100 * se).toFixed(1), n: r.length, turns: t[t.length >> 1], crashes: r.filter(x => x.crashed).length };
     }
+    const avg = xs => (xs.length ? +(xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(1) : null);
     const vals = Object.values(table).map(x => x.score);
-    const summary = { mean: +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1), worst: Math.min(...vals), secs: (Date.now() - t0) / 1000 };
+    const group = near => Object.entries(table).filter(([k]) => NEAR.includes(k) === near).map(([, v]) => v.score);
+    const summary = {
+        mean: avg(vals), worst: Math.min(...vals),
+        near: avg(group(true)), nearWorst: group(true).length ? Math.min(...group(true)) : null,
+        far: avg(group(false)), farWorst: group(false).length ? Math.min(...group(false)) : null,
+        secs: (Date.now() - t0) / 1000,
+    };
     if (json) { console.log(JSON.stringify({ table, ...summary })); process.exit(0); }
     console.log(`${aName}${aCfg ? JSON.stringify(aCfg) : ''} vs ${bName}${bCfg ? JSON.stringify(bCfg) : ''}, ${per} games per scenario, ${summary.secs.toFixed(0)}s`);
-    for (const [k, v] of Object.entries(table)) console.log(`  ${k.padEnd(12)} A ${String(v.score).padStart(5)}% ±${v.se}   median ${v.turns} turns${v.crashes ? `  (${v.crashes} crashes)` : ''}`);
-    console.log(`  mean ${summary.mean}%, worst ${summary.worst}%`);
+    for (const [k, v] of Object.entries(table)) console.log(`  ${NEAR.includes(k) ? ' ' : '*'}${k.padEnd(12)} A ${String(v.score).padStart(5)}% ±${v.se}   median ${v.turns} turns${v.crashes ? `  (${v.crashes} crashes)` : ''}`);
+    console.log(`  near (trained-on noise) ${summary.near}%, worst ${summary.nearWorst}%   far (held out) ${summary.far}%, worst ${summary.farWorst}%`);
     process.exit(0);
 }
