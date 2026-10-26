@@ -100,8 +100,12 @@ export function renderBattlefield() {
     for (const ship of allShips) {
         const pos = getShipPosition(ship, allShips);
         let div = shipElements.get(ship.id);
+        // Ship ids restart at 1 every game, so after a restart an id can belong to a different
+        // ship: its old card would keep the old number and name under the new stats.
+        if (div && div.ship !== ship) { div.remove(); div = null; }
         if (!div) {
             div = createShipElement(ship, pos.compact);
+            div.ship = ship;
             shipsLayer.appendChild(div);
             shipElements.set(ship.id, div);
         }
