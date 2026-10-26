@@ -145,6 +145,16 @@ export function newGame(handicap) {
         modded: !isDefault(M),
     };
 
+    if (state.red.opening === 960){
+        state.red.opening = [
+            Math.floor(Math.random() * 3), // a: 0 to 2
+            Math.floor(Math.random() * 4), // b: 0 to 3
+            Math.floor(Math.random() * 4), // c: 0 to 3
+            Math.floor(Math.random() * 4), // d: 0 to 3
+            Math.floor(Math.random() * 5)  // e: 0 to 4
+        ];
+    }
+
     const handicapInput = document.getElementById('handicapSelect');
     if (handicapInput) handicapInput.value = state.red.ore_delay * 16;
 
