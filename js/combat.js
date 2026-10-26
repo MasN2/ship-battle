@@ -358,7 +358,7 @@ export async function runTurn(playerPick = 0) {
         let cfg = DIFFICULTIES[difficulty]?.gmCfg;
         if (state.modded && cfg?.book) cfg = { ...cfg, book: false };
         aiPick = chooseGrandmaster(state, 'red', { cfg, memo: (state.red.gmMemo ??= {}) });
-    } else if (state.red.ai === "zero" && ZERO_WEIGHTS) {
+    } else if (state.red.ai === "zero" && ZERO_WEIGHTS && aiPick === undefined) {
         // Also decided before blue's purchase; it reads the board, not blue's pick.
         aiPick = chooseZero(state, 'red', (zeroNet ??= loadNet(ZERO_WEIGHTS)));
     }
