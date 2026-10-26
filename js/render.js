@@ -390,7 +390,6 @@ function barStatus(n) {
     if (cost(40, ore) <= 2.6*income && n <= 10) return 'hidden';
     if (cost(50, ore) <= 2.5*income && n <= 20) return 'hidden';
     if (cost(60, ore) <= 2.4*income && n <= 30) return 'hidden';
-    if (cost(10, ore) > 3.2*income && n >= 10) return 'above';
     if (cost(20, ore) > 3*income && n >= 20) return 'above';
     if (cost(30, ore) > 2.8*income && n >= 30) return 'above';
     if (cost(40, ore) > 2.6*income && n >= 40) return 'above';
