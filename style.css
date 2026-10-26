@@ -1123,7 +1123,7 @@ html, body {
 }
 
 .bottom-bar {
-    flex-shrink: 0; /* Prevents it from getting squished */
+    /* flex-shrink: 0; /* Prevents it from getting squished */
     zoom: var(--ui, 1);
 }
 
