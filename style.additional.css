@@ -234,7 +234,7 @@
 
 /* Shortcut Bar Layout */
 .shortcut-bar {
-	margin: auto;
+	margin: 0 auto;
 	grid-template-columns: repeat(7, 1fr);
 }
 
@@ -646,3 +646,19 @@
 	.setup-mod, .setup-mod:has(.setup-seg) { grid-template-columns: 1fr; grid-column: auto; gap: 4px; }
 	.setup-mod output { text-align: left; }
 }
+
+/* Ships above the current price band: previewed, not buyable yet (js/render.js) */
+.ship-btn.locked {
+	opacity: 0.22;
+	filter: grayscale(0.85);
+	cursor: default;
+	box-shadow: none !important;
+	border-style: dashed;
+}
+
+	.ship-btn.locked:hover {
+		transform: none !important;
+		background: var(--bg-3) !important;
+		border-color: var(--line) !important;
+		opacity: 0.4;
+	}

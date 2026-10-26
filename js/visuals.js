@@ -158,14 +158,17 @@ export function shootLaser(fromEl, toEl, owner, opts = {}) {
     if (!fromEl || !toEl) return null;
     initFxPool();
 
-    const oRect = getCachedRect(document.getElementById('fx-layer'));
+    const layer = document.getElementById('fx-layer');
+    const oRect = getCachedRect(layer);
     const f = getCachedRect(fromEl);
     const t = getCachedRect(toEl);
+    // Screen pixels -> the layer's own pixels (the game area is CSS-zoomed, js/layout.js)
+    const k = oRect.width ? layer.offsetWidth / oRect.width : 1;
 
-    const x1 = f.left + f.width / 2 - oRect.left;
-    const y1 = f.top + f.height / 2 - oRect.top;
-    const x2 = t.left + t.width / 2 - oRect.left;
-    const y2 = t.top + t.height / 2 - oRect.top;
+    const x1 = (f.left + f.width / 2 - oRect.left) * k;
+    const y1 = (f.top + f.height / 2 - oRect.top) * k;
+    const x2 = (t.left + t.width / 2 - oRect.left) * k;
+    const y2 = (t.top + t.height / 2 - oRect.top) * k;
     const dx = x2 - x1, dy = y2 - y1;
     const len = Math.hypot(dx, dy);
     if (len < 1) return null;

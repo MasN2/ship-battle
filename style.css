@@ -121,7 +121,8 @@ body {
     width: 100%;
     margin: 0 auto;
     padding: 14px 20px 18px;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
 }
 
@@ -417,8 +418,12 @@ header.top {
     gap: 0;
     border: 1px solid var(--line);
     background-image: url(https://media.istockphoto.com/id/2165838619/vector/vector-colorful-abstract-universe-backgroud-with-galaxies-and-glowing-stars.jpg?s=612x612&w=0&k=20&c=oXF59JUdF4dQnOzds8whs7ZP2bhT4xihLaNKN1SEvyE=);
+    background-size: cover;
+    background-position: center;
     padding: 6px;
-    min-height: 300px;
+    /* Fills the height left over in .app (ships are placed for that height, js/render.js) */
+    flex: 1 0 auto;
+    min-height: 360px;
     position: relative;
     overflow: visible;
 }
@@ -1107,12 +1112,19 @@ html, body {
 
 .app {
   flex: 1;
+  min-height: 0;
   overflow-y: auto; /* Handles its own internal scrolling */
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* Bigger windows get a bigger game; --ui is set by js/layout.js (1 = 100%) */
+  zoom: var(--ui, 1);
 }
 
 .bottom-bar {
     flex-shrink: 0; /* Prevents it from getting squished */
+    zoom: var(--ui, 1);
 }
 
 /* Deploy bar */
@@ -1121,7 +1133,7 @@ html, body {
     background: var(--bg-2);
     padding: 8px;
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
     gap: 5px;
     align-items: stretch;
 }
@@ -1564,10 +1576,6 @@ button[data-tip], button[data-tip-text] {
 
 /* Responsive */
 @media (max-width: 1000px) {
-    .deploy-bar {
-        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-    }
-
     .log-wrap {
         grid-template-columns: 1fr;
     }

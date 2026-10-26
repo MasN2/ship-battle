@@ -50,7 +50,7 @@ function choiceButton(key, label, hint) {
     b.innerHTML = `<span class="setup-choice-label"></span><span class="setup-choice-hint"></span>`;
     b.querySelector('.setup-choice-label').textContent = label;
     b.querySelector('.setup-choice-hint').textContent = hint ?? '';
-    b.addEventListener('click', () => { draft.difficulty = key; refresh(); });
+    b.addEventListener('click', () => { draft.difficulty = key; tab = tabOf(key); refresh(); });
     return b;
 }
 

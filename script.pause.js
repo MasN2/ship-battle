@@ -79,8 +79,8 @@ const SHORTCUT_KEY = 'shipbattle.showShortcut';
 const shortcutBar = document.getElementById('shortcut-bar');
 const shortcutToggle = document.getElementById('shortcut-toggle');
 
-// Load preference (defaults to true)
-let showShortcut = localStorage.getItem(SHORTCUT_KEY) !== '0';
+// Load preference (off unless turned on)
+let showShortcut = localStorage.getItem(SHORTCUT_KEY) === '1';
 
 if (shortcutToggle && shortcutBar) {
     shortcutToggle.checked = showShortcut;

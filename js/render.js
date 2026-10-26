@@ -7,6 +7,10 @@ import { hideTip } from './tooltips.js';
 import { runTurn } from './combat.js';
 
 const shipElements = new Map();
+// Height a sector column has for stacking ships (from the battlefield's height, at least 240):
+// up to SHIP_STEP apart, squeezed closer only when they would not fit.
+let stackSpace = 240;
+const SHIP_STEP = 240 / 7;
 
 export function render() {
     const nameInput = document.getElementById('blue-bo');
@@ -48,7 +52,7 @@ export function getShipPosition(ship, allShips) {
     });
     const l = inSector.length;
     const modifiedShips = l > 7 ? 7 * Math.pow(l / 7, 0.5) : 7;
-    top += inSector.indexOf(ship) * (240 / modifiedShips);
+    top += inSector.indexOf(ship) * Math.min(SHIP_STEP, stackSpace / modifiedShips);
     return { leftPct, top, compact: false };
 }
 
@@ -77,6 +81,10 @@ export function renderBattlefield() {
 
     updateBase('blue', el.querySelector('.base.blue'));
     updateBase('red', el.querySelector('.base.red'));
+
+    // Measure the height the page gives the battlefield (without last render's min-height)
+    el.style.minHeight = '';
+    stackSpace = Math.max(240, el.clientHeight - SECTOR_LABEL_H - BASE_H - SHIP_CARD_H - 20);
 
     const shipsLayer = document.getElementById('ships-layer');
     const allShips = [...state.blue.ships, ...state.red.ships];
@@ -305,6 +313,7 @@ export function renderDeployBar() {
               <span class="overlay-text-right price-tag"></span>
             `;
             btn.onclick = () => {
+                if (btn.classList.contains('locked')) return;
                 const c = cost(n, state.blue.ore);
                 const affordable = state.blue.money + maxLoanFor(state.blue.income) >= c;
                 if (affordable && !processing && !gameOver) runTurn(n);
@@ -320,29 +329,33 @@ export function renderDeployBar() {
         skipBtn.classList.toggle('disabled', processing || gameOver);
     }
 
+    // Ships just above the bar's price band are previewed (faded, not buyable) so the bar keeps
+    // a steady size: at least two full rows, filled to the end of the last row.
+    const shown = SHIP_NUMS.filter(n => barStatus(n) === 'shown').length;
+    const cols = Math.max(1, getComputedStyle(el).gridTemplateColumns.split(' ').length);
+    let previews = Math.max(2, Math.ceil((shown + 1) / cols)) * cols - (shown + 1);
+
     for (const n of SHIP_NUMS) {
         const btn = document.getElementById(`btn-ship-${n}`);
         if (!btn) continue;
 
-        let isHidden = false;
-            if (cost(10, state.blue.ore) > 3.2*state.blue.income && n >= 10) isHidden = true;
-            if (cost(20, state.blue.ore) > 3*state.blue.income && n >= 20) isHidden = true;
-            if (cost(30, state.blue.ore) > 2.8*state.blue.income && n >= 30) isHidden = true;
-            if (cost(40, state.blue.ore) > 2.6*state.blue.income && n >= 40) isHidden = true;
-            if (cost(40, state.blue.ore) <= 2.6*state.blue.income && n <= 10) isHidden = true;
-            if (cost(50, state.blue.ore) > 2.5*state.blue.income && n >= 50) isHidden = true;
-            if (cost(50, state.blue.ore) <= 2.5*state.blue.income && n <= 20) isHidden = true;
-            if (cost(60, state.blue.ore) > 2.4*state.blue.income && n >= 60) isHidden = true;
-            if (cost(60, state.blue.ore) <= 2.4*state.blue.income && n <= 30) isHidden = true;
-            if (cost(70, state.blue.ore) > 4*state.blue.income && n >= 70) isHidden = true;
-            if (n > state.blue.max_ship) isHidden = true;
-            if (largestPrimeFactor(n) >= state.blue.locked_factor) isHidden = true;
-
-        btn.style.display = isHidden ? 'none' : '';
-        if (isHidden) continue;
+        const status = barStatus(n);
+        const locked = status === 'above' && previews-- > 0;
+        btn.style.display = status === 'shown' || locked ? '' : 'none';
+        if (status !== 'shown' && !locked) continue;
 
         const t = TEMPLATES[n];
         const c = cost(n, state.blue.ore);
+        if (locked) {
+            btn.className = 'ship-btn locked';
+            btn.dataset.tipText = `<b>Not on your bar yet.</b> It appears as your income and ore grow.<br><br>${getBuyCardTooltip(n, t, c)}`;
+            const priceTag = btn.querySelector('.price-tag');
+            if (priceTag) {
+                priceTag.textContent = c.toFixed(2);
+                priceTag.className = 'overlay-text-right price-tag';
+            }
+            continue;
+        }
         const affordable = state.blue.money + maxLoanFor(state.blue.income) >= c;
         const costExceedsMoney = c > state.blue.money;
         const btnDisabled = !affordable || processing || gameOver;
@@ -359,6 +372,28 @@ export function renderDeployBar() {
             priceTag.className = `overlay-text-right price-tag ${costExceedsMoney ? 'text-red' : ''}`;
         }
     }
+}
+
+/**
+ * Whether ship n is on blue's deploy bar: 'shown', 'above' its price band (too pricey for now;
+ * previewed), or 'hidden' (outgrown, or locked by a campaign). js/grandmaster.js visibleShips()
+ * models the same rule.
+ */
+function barStatus(n) {
+    const { ore, income } = state.blue;
+    if (n > state.blue.max_ship) return 'hidden';
+    if (largestPrimeFactor(n) >= state.blue.locked_factor) return 'hidden';
+    if (cost(40, ore) <= 2.6*income && n <= 10) return 'hidden';
+    if (cost(50, ore) <= 2.5*income && n <= 20) return 'hidden';
+    if (cost(60, ore) <= 2.4*income && n <= 30) return 'hidden';
+    if (cost(10, ore) > 3.2*income && n >= 10) return 'above';
+    if (cost(20, ore) > 3*income && n >= 20) return 'above';
+    if (cost(30, ore) > 2.8*income && n >= 30) return 'above';
+    if (cost(40, ore) > 2.6*income && n >= 40) return 'above';
+    if (cost(50, ore) > 2.5*income && n >= 50) return 'above';
+    if (cost(60, ore) > 2.4*income && n >= 60) return 'above';
+    if (cost(70, ore) > 4*income && n >= 70) return 'above';
+    return 'shown';
 }
 
 
