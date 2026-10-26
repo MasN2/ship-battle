@@ -1,108 +1,34 @@
 // Self-play games for Zero (js/zero.js), written out as training data for tools/zero/train.py.
 //   node tools/zero/selfplay.js --net net.json --games 2000 --out data/it0001 [--pool a.json,b.json]
-//        [--ppool 0.2] [--vary 0.5] [--open 3] [--max 200] [--seed 1] [--threads N] [--temp 1]
+//        [--ppool 0.2] [--std 0.25] [--open 3] [--max 200] [--seed 1] [--threads N] [--temp 1]
 // Both sides are the current net unless a game draws a past snapshot from --pool as one side's
 // opponent (chance --ppool); then only the current net's moves are kept. Each game's first
 // 0..--open turns are random moves (not kept), so no two games start alike.
-// --vary: chance a game is played under shuffled rules: every ship's attack and hp and every
-// prime's price nudged, sometimes whole-game scales, odd starting money/income/ore/hp (now and
-// then a little lopsided), a small random fleet already on the field. The rest are standard games.
+// --std: share of plain standard games; the rest draw a training scenario (tools/zero/scenarios.js:
+// nudged stats and prices, mid-fight mirrored fleets with low bases, rich starts, econ tweaks).
 // The shuffles only live inside this process's copy of the rules; nothing is saved.
 // Writes <out>.bin + <out>.json (array layout) and prints a JSON summary as the last stdout line.
 
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import fs from 'fs';
 import os from 'os';
-import { TEMPLATES, SHIP_NUMS, calculatePrimeFactors } from '../../js/templates.js';
-import { priceMult } from '../../js/economy.js';
-import { newSimState, stepTurn, SimError, clearPriceCache } from '../../js/sim.js';
-import { clearPriceMemos } from '../../js/grandmaster.js';
+import { newSimState, stepTurn, SimError } from '../../js/sim.js';
+import { trainingScenario, applyStart, resetRules } from './scenarios.js';
 import {
-    encode, forward, moveProbs, sampleIndex, loadNet, typeTable, clearZeroMemos, legalMoves,
+    encode, forward, moveProbs, sampleIndex, loadNet, typeTable, legalMoves,
     N_TYPES, TYPE_DIM, SHIP_DYN, ACT_DYN, GLOBAL_DIM,
 } from '../../js/zero.js';
 import { mulberry32 } from '../rng.js';
 
 const GAMMA = 0.997, LAMBDA = 0.95;
 
-const ORIG = Object.fromEntries(SHIP_NUMS.map(n => [n, [TEMPLATES[n].attack, TEMPLATES[n].health]]));
-const PRICE_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19];
-
-function resetRules() {
-    for (const n of SHIP_NUMS) { TEMPLATES[n].attack = ORIG[n][0]; TEMPLATES[n].health = ORIG[n][1]; }
-    priceMult.fill(1);
-    clearPriceCache(); clearPriceMemos(); clearZeroMemos();
-}
-
-/** Shuffled rules for one game (or standard ones); returns the starting conditions. */
-export function randomizeRules(rng, vary) {
-    resetRules();
-    const start = { money: [0, 0], income: [4, 4], ore: [0, 0], hp: [160, 160], fleet: 0, varied: false };
-    if (rng() >= vary) return start;
-    start.varied = true;
-    const gauss = () => Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng());
-    const lg = s => (s ? Math.exp(s * gauss()) : 1);
-    const pick = a => a[Math.floor(rng() * a.length)];
-    const atkAll = rng() < 0.25 ? lg(0.3) : 1, hpAll = rng() < 0.25 ? lg(0.3) : 1;
-    const noise = rng() < 0.8 ? pick([0.08, 0.15, 0.25]) : 0;
-    for (const n of SHIP_NUMS) {
-        TEMPLATES[n].attack = Math.max(1, Math.round(ORIG[n][0] * atkAll * lg(noise)));
-        TEMPLATES[n].health = Math.max(1, Math.round(ORIG[n][1] * hpAll * lg(noise)));
-    }
-    const all = rng() < 0.3 ? lg(0.2) : 1;
-    const prime = Object.fromEntries(PRICE_PRIMES.map(p => [p, rng() < 0.4 ? lg(0.25) : 1]));
-    const each = rng() < 0.5 ? 0.06 : 0;
-    for (const n of SHIP_NUMS) {
-        let k = all * lg(each);
-        for (const p of new Set(calculatePrimeFactors(n))) k *= prime[p] ?? 1;
-        priceMult[n] = k;
-    }
-    clearPriceCache(); clearPriceMemos(); clearZeroMemos();
-    if (rng() < 0.3) start.money = Array(2).fill(pick([0, 2, 5, 10, 20]));
-    if (rng() < 0.3) start.income = Array(2).fill(pick([3, 4, 5, 6, 8]));
-    if (rng() < 0.25) start.ore = Array(2).fill(pick([0, 10, 30, 60, 120]));
-    if (rng() < 0.3) start.hp = Array(2).fill(pick([80, 120, 160, 200, 260]));
-    if (rng() < 0.2) {
-        const s = rng() < 0.5 ? 0 : 1;
-        if (rng() < 0.5) start.money[s] += 1 + Math.floor(rng() * 5);
-        else start.hp[s] += pick([-20, -10, 10, 20]);
-    }
-    if (rng() < 0.15) start.fleet = pick([10, 20, 40, 75]);
-    return start;
-}
-
-/** A random mirrored fleet worth about `value` (ship numbers), placed in sectors near each base. */
-function seedFleet(S, value, rng) {
-    const cap = Math.max(1, Math.min(40, Math.round(value * (0.1 + 0.5 * rng()))));
-    let left = value;
-    while (left >= 1) {
-        const opts = SHIP_NUMS.filter(n => n <= Math.min(cap, left));
-        if (!opts.length) break;
-        const n = opts[Math.floor(rng() * opts.length)];
-        const sec = [1, 2, 2, 3, 3][Math.floor(rng() * 5)];
-        for (const owner of ['blue', 'red']) {
-            const t = TEMPLATES[n];
-            const sector = owner === 'blue' ? sec : 8 - sec;
-            const row = S[owner].ships.filter(s => s.sector === sector).length;
-            S[owner].ships.push({ number: n, attack: t.attack, health: t.health, sector, row, template: t, dying: false });
-        }
-        left -= n;
-    }
-}
-
 /** One game. Returns { samples, info }; each sample keeps its encoding plus PPO bookkeeping. */
 function playGame(seed, nets, opt) {
     const rng = mulberry32(seed);
-    const start = randomizeRules(rng, opt.vary);
+    const { start, family } = trainingScenario(rng, opt.std);
     const T = typeTable();
     const S = newSimState();
-    ['blue', 'red'].forEach((side, i) => {
-        S[side].income = start.income[i];
-        S[side].money = start.money[i] + start.income[i];
-        S[side].ore = start.ore[i];
-        S[side].hp = start.hp[i];
-    });
-    if (start.fleet) seedFleet(S, start.fleet, rng);
+    applyStart(S, start);
 
     const ctrl = { blue: nets.cur, red: nets.cur };
     const keep = { blue: true, red: true };
@@ -158,7 +84,7 @@ function playGame(seed, nets, opt) {
     resetRules();
     return {
         T, samples,
-        info: { winner, turns: S.turn, mode, varied: start.varied, crashed, learnerWon: learner ? winner === learner : null, learnerLost: learner ? winner !== learner && winner !== 'none' : null },
+        info: { winner, turns: S.turn, mode, family, crashed, learnerWon: learner ? winner === learner : null, learnerLost: learner ? winner !== learner && winner !== 'none' : null },
     };
 }
 
@@ -214,7 +140,7 @@ if (!isMainThread) {
     const seed0 = Number(flag('--seed', 1));
     const threads = Math.min(games, Number(flag('--threads', Math.max(1, os.cpus().length - 1))));
     const opt = {
-        ppool: Number(flag('--ppool', 0.2)), vary: Number(flag('--vary', 0.5)), open: Number(flag('--open', 3)),
+        ppool: Number(flag('--ppool', 0.2)), std: Number(flag('--std', 0.25)), open: Number(flag('--open', 3)),
         max: Number(flag('--max', 200)), temp: Number(flag('--temp', 1)),
     };
     const seeds = Array.from({ length: games }, (_, i) => seed0 * 1000003 + i);
@@ -267,6 +193,7 @@ if (!isMainThread) {
         crashes: infos.filter(i => i.crashed).length,
         poolGames: pool.length,
         poolScore: pool.length ? pool.reduce((a, i) => a + (i.learnerWon ? 1 : i.learnerLost ? 0 : 0.5), 0) / pool.length : null,
+        families: infos.reduce((a, i) => ((a[i.family] = (a[i.family] ?? 0) + 1), a), {}),
     };
     console.log(JSON.stringify(summary));
     process.exit(0);

@@ -1,17 +1,19 @@
 """Trains Zero (js/zero.js) from scratch by self-play: PPO on games from tools/zero/selfplay.js.
 
     python tools/zero/train.py [--run runs/zero] [--iters 1000] [--games 2000] [--resume]
-                               [--vary 0.5] [--ppool 0.2] [--eval-every 10] [--eval-games 200]
+                               [--std 0.2] [--ppool 0.2] [--eval-every 10] [--gm-every 100]
 
 Each iteration: node plays --games self-play games with the current net (31 threads), this
 script fits the net to them on the GPU, writes the new net, and every --snap-every iterations
 freezes a copy into the opponent pool (past selves to keep beating). Every --eval-every
-iterations it plays the current net (greedy) against the Normal AI and grandmaster v1.2 / v3.2
-with tools/tourney.js (3 random opening turns, so deterministic bots play distinct games), as a benchmark only: nothing from those games is trained on.
+iterations it plays the current net (greedy) across every scenario of tools/zero/robust.js against
+the Normal AI and a past net (--ref), and every --gm-every iterations a light grandmaster probe:
+benchmarks only, nothing from those games is trained on. Watch *_worst: a net that aces the
+standard game but folds when the rules change shows up there first.
 Everything lives under --run: net.json (current), pool/, data/, log.jsonl, ckpt.pt.
 `--export` writes the current net to js/zero-weights.js for the live game.
 """
-import argparse, base64, json, os, random, re, subprocess, sys, time
+import argparse, base64, json, os, random, subprocess, sys, time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -150,15 +152,18 @@ def node(args_list, **kw):
     return subprocess.run(['node', *args_list], cwd=ROOT, capture_output=True, text=True, **kw)
 
 
-def evaluate(net_path, opp, games, threads):
-    cfg = json.dumps(dict(weights=net_path, temp=0))
-    r = node(['tools/tourney.js', 'zero', opp, str(games), '--a', cfg, '--max', '200', '--open', '3', '--seed', str(random.randint(1, 10**6))],
-             env={**os.environ, 'SB_THREADS': str(threads)})
-    m = re.search(r'A score: wins ([\d.]+)%', r.stdout)
-    if not m:
-        print(r.stdout, r.stderr)
+def robust(net_path, opp, per, threads, opp_cfg=None):
+    """Zero (greedy) vs opp over every scenario in tools/zero/scenarios.js: {table, mean, worst}."""
+    cmd = ['tools/zero/robust.js', 'zero', opp, str(per), '--a', json.dumps(dict(weights=net_path, temp=0)),
+           '--seed', str(random.randint(1, 10**6)), '--threads', str(threads), '--json']
+    if opp_cfg:
+        cmd += ['--b', json.dumps(opp_cfg)]
+    r = node(cmd)
+    try:
+        return json.loads(r.stdout.strip().splitlines()[-1])
+    except Exception:
+        print(r.stdout, r.stderr, flush=True)
         return None
-    return float(m.group(1))
 
 
 def main():
@@ -166,7 +171,7 @@ def main():
     ap.add_argument('--run', default='runs/zero')
     ap.add_argument('--iters', type=int, default=1000)
     ap.add_argument('--games', type=int, default=2000)
-    ap.add_argument('--vary', type=float, default=0.5)
+    ap.add_argument('--std', type=float, default=0.2)
     ap.add_argument('--ppool', type=float, default=0.2)
     ap.add_argument('--open', type=int, default=3)
     ap.add_argument('--lr', type=float, default=3e-4)
@@ -178,8 +183,10 @@ def main():
     ap.add_argument('--snap-every', type=int, default=10)
     ap.add_argument('--pool-size', type=int, default=12)
     ap.add_argument('--eval-every', type=int, default=10)
-    ap.add_argument('--eval-games', type=int, default=200)
-    ap.add_argument('--eval-opps', default='normal,gm,gm3')
+    ap.add_argument('--eval-games', type=int, default=30, help='per scenario, vs Normal and vs --ref')
+    ap.add_argument('--ref', default='runs/zero1/pool/it00140.json', help='a past net to keep beating (shipped v0.2)')
+    ap.add_argument('--gm-every', type=int, default=100)
+    ap.add_argument('--gm-games', type=int, default=10, help='per scenario: a light probe, not a verdict')
     ap.add_argument('--threads', type=int, default=max(1, os.cpu_count() - 1))
     ap.add_argument('--resume', action='store_true')
     ap.add_argument('--export', action='store_true')
@@ -218,7 +225,7 @@ def main():
         for attempt in range(3):  # (a retry survives game files being edited mid-run)
             r = node(['tools/zero/selfplay.js', '--net', net_path, '--games', str(args.games), '--out', data,
                       '--pool', ','.join(pool_paths), '--ppool', str(args.ppool if pool_paths else 0),
-                      '--vary', str(args.vary), '--open', str(args.open), '--seed', str(it), '--threads', str(args.threads)])
+                      '--std', str(args.std), '--open', str(args.open), '--seed', str(it), '--threads', str(args.threads)])
             if not r.returncode:
                 break
             print(r.stdout, r.stderr, flush=True)
@@ -237,8 +244,14 @@ def main():
         torch.save(dict(net=net.state_dict(), opt=opt.state_dict(), it=it), ckpt)
         if args.eval_every and it % args.eval_every == 0:
             t2 = time.time()
-            for o in args.eval_opps.split(','):
-                rec[f'vs_{o}'] = evaluate(net_path, o, args.eval_games, args.threads)
+            probes = [('normal', 'normal', args.eval_games, None), ('ref', 'zero', args.eval_games, dict(weights=os.path.join(ROOT, args.ref), temp=0))]
+            if args.gm_every and it % args.gm_every == 0:
+                probes.append(('gm', 'gm', args.gm_games, None))
+            for tag, opp, per, cfg in probes:
+                r = robust(net_path, opp, per, args.threads, cfg)
+                if r:
+                    rec[f'{tag}_mean'], rec[f'{tag}_worst'] = r['mean'], r['worst']
+                    rec[f'{tag}_table'] = {k: v['score'] for k, v in r['table'].items()}
             rec['eval_s'] = round(time.time() - t2, 1)
         print(json.dumps(rec), flush=True)
         log.write(json.dumps(rec) + '\n'); log.flush()
