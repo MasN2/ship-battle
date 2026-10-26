@@ -35,3 +35,8 @@ globalThis.window = stub;
 globalThis.localStorage = { getItem: () => null, setItem: () => {} };
 globalThis.prompt = () => null;
 globalThis.WebSocket = stub;
+globalThis.getComputedStyle = () => stub;
+globalThis.matchMedia = () => stub;
+globalThis.ResizeObserver = stub;
+globalThis.requestAnimationFrame = () => 0;
+globalThis.Option = stub;
