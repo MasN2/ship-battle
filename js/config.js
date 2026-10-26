@@ -9,7 +9,7 @@ export const START_INCOME = 4;
 export const START_ORE = 0;
 export const ORE_POW = 0.8;
 export const ORE_R = 40;
-export const ORE_BASE = 70;
+export const ORE_BASE = 40;
 export const ATTACK_RANGE = 2;
 export const MAX_LOAN = 4;
 
