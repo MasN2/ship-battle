@@ -22,17 +22,17 @@ export const TEMPLATES = {
     19: { number: 19, name: 'Bulwark', attack: 1, health: 84, tags: ['ARMOR'] },
     20: { number: 20, name: 'Leviathan', attack: 4, health: 45, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
     21: { number: 21, name: 'Foundry', attack: 1, health: 1, tags: ['MIN', '×5 INC+3'], mining: 0.21, incomeBoost: 3 },
-    22: { number: 22, name: 'Glaive', attack: 10, health: 50, tags: ['CARRIER'], split: true },
-    23: { number: 23, name: 'Pathfinder', attack: 1, health: 11, tags: [] },
-    24: { number: 24, name: 'Freighter', attack: 8, health: 50, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
+    22: { number: 22, name: 'Glaive', attack: 10, health: 60, tags: ['CARRIER'], split: true },
+    23: { number: 23, name: 'Pathfinder', attack: 1, health: 13, tags: [] },
+    24: { number: 24, name: 'Freighter', attack: 8, health: 60, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
     25: { number: 25, name: 'Nova', attack: 1, health: 20, tags: ['NOVA'], nova: true },
-    26: { number: 26, name: 'Mothership', attack: 2, health: 40, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
+    26: { number: 26, name: 'Mothership', attack: 2, health: 50, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     27: { number: 27, name: 'Cornucopia', attack: 1, health: 5, tags: ['MIN', 'MIN', 'MIN'], mining: 0.81 },
-    28: { number: 28, name: 'Convoy', attack: 4, health: 55, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
-    29: { number: 29, name: 'Armory', attack: 1, health: 120, tags: [] },
-    30: { number: 30, name: 'Dynamite', attack: 2, health: 34, tags: ['×2 CMB', 'MIN', '×7 AOE'], mining: 0.30, missile: true },
-    31: { number: 31, name: 'Ruler', attack: 1, health: 60, tags: [] },
-    32: { number: 32, name: 'Battlecruiser', attack: 32, health: 70, tags: ['×2 CMB'] },
+    28: { number: 28, name: 'Convoy', attack: 4, health: 60, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
+    29: { number: 29, name: 'Armory', attack: 1, health: 130, tags: [] },
+    30: { number: 30, name: 'Dynamite', attack: 2, health: 40, tags: ['×2 CMB', 'MIN', '×7 AOE'], mining: 0.30, missile: true },
+    31: { number: 31, name: 'Ruler', attack: 1, health: 70, tags: [] },
+    32: { number: 32, name: 'Battlecruiser', attack: 32, health: 80, tags: ['×2 CMB'] },
     33: { number: 33, name: 'Reaper', attack: 5, health: 80, tags: ['MIN', 'CARRIER'], split: true },
     34: { number: 34, name: 'Eraser', attack: 2, health: 60, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
@@ -42,7 +42,7 @@ export const TEMPLATES = {
     39: { number: 39, name: 'Harvester', attack: 1, health: 50, tags: ['MIN', 'LONG RANGE'], longRange: true, mining: 0.33 },
     40: { number: 40, name: 'Obliterator', attack: 27, health: 60, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
     41: { number: 41, name: 'Abacus', attack: 1, health: 20 },
-    42: { number: 42, name: 'Refinery', attack: 3, health: 26, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
+    42: { number: 42, name: 'Refinery', attack: 3, health: 25, tags: ['MIN', '×5 INC+6'], mining: 0.42, incomeBoost: 6 },
     43: { number: 43, name: 'Replicator', attack: 1, health: 50 },
     44: { number: 44, name: 'Sharpshooter', attack: 45, health: 60 },
     45: { number: 45, name: 'Reactor', attack: 1, health: 34 },
@@ -74,7 +74,7 @@ export const TEMPLATES = {
     71: { number: 71, name: 'Wong', attack: 1, health: 150 },
     72: { number: 72, name: 'Old God', attack: 27, health: 800 },
     73: { number: 73, name: 'Rejuvenator', attack: 73, health: 300 },
-    83: { number: 83, name: 'Terminus', attack: 1984, health: 1, tags: ['END'], win: true },
+    89: { number: 89, name: 'Terminus', attack: 1984, health: 1, tags: ['END'], win: true },
 };
 
 export const SHIP_NUMS = Object.keys(TEMPLATES).map(Number).sort((a, b) => a - b);
@@ -121,7 +121,7 @@ export function listAbilities(n) {
             case 67: lines.push(`<b style="color: white;">67 › Deploy:</b> I join the furthest advanced ship.`); break;
             case 71: lines.push(`<b style="color: white;">71</b> Your Deploy abilities trigger twice as many times.`); break;
             case 73: lines.push(`<b style="color: white;">73 › Deploy:</b> Your base gains hp equal to my attack.`); break;
-            case 83: lines.push(`<b style="color: white;">83 › Deploy:</b> The enemy base loses hp equal to my attack.`); break;
+            case 89: lines.push(`<b style="color: white;">89 › Deploy:</b> The enemy base loses hp equal to my attack.`); break;
         }
     }
     if (n % 33 === 0) lines.push('<b style="color: #00cab1;">3</b> &times; <b style="color: #25d367;">11</b>: I mine anywhere.');
