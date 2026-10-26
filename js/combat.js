@@ -346,6 +346,11 @@ export async function runTurn(playerPick = 0) {
     setProcessing(true);
     render();
 
+    if (state.blue.ai === "zero" && ZERO_WEIGHTS) {
+        // Also decided before blue's purchase; it reads the board, not blue's pick.
+        playerPick = chooseZero(state, 'blue', (zeroNet ??= loadNet(ZERO_WEIGHTS)));
+    }
+
     let aiPick = state.red.opening[state.turn - 1];
     if (state.red.ai === "pvp") {
         socket.send(playerPick);

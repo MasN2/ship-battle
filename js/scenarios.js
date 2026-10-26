@@ -68,6 +68,8 @@ export function initScenarios() {
                 event.preventDefault();
                 if (input.value === "?") {
                     input.value = `${state.blue.history}`;
+                } else if (input.value === "zero"){
+                    state.blue.ai = "zero";
                 } else {
                     await load(JSON.parse(`[${input.value}]`));
                     input.value = "";

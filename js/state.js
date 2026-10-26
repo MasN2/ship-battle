@@ -118,6 +118,7 @@ export function newGame(handicap) {
             armor: 1,
             armor_gain: 0,
             ships: [],
+            ai: false,
             history: [],
             lastBought: 0,
             max_ship: D.maxShip ?? 999,
