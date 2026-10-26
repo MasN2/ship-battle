@@ -1,8 +1,9 @@
 // Self-play games for Zero (js/zero.js), written out as training data for tools/zero/train.py.
 //   node tools/zero/selfplay.js --net net.json --games 2000 --out data/it0001 [--pool a.json,b.json]
-//        [--ppool 0.2] [--std 0.25] [--open 3] [--max 200] [--seed 1] [--threads N] [--temp 1]
+//        [--ppool 0.2] [--pgm 0] [--std 0.25] [--open 3] [--max 200] [--seed 1] [--threads N] [--temp 1]
 // Both sides are the current net unless a game draws a past snapshot from --pool as one side's
-// opponent (chance --ppool); then only the current net's moves are kept. Each game's first
+// opponent (chance --ppool), or grandmaster v1.2 (chance --pgm: slow, ~7s a game, so keep it to
+// a few percent; its thinking is capped at --gm-ms per move, 150 by default, v1.2 otherwise); then only the current net's moves are kept. Each game's first
 // 0..--open turns are random moves (not kept), so no two games start alike.
 // --std: share of plain standard games; the rest draw a training scenario (tools/zero/scenarios.js:
 // nudged stats and prices, mid-fight mirrored fleets with low bases, rich starts, econ tweaks).
@@ -13,7 +14,8 @@ import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import fs from 'fs';
 import os from 'os';
 import { newSimState, stepTurn, SimError } from '../../js/sim.js';
-import { trainingScenario, applyStart, resetRules } from './scenarios.js';
+import { trainingScenario, applyStart, resetRules, MAX_SHIPS } from './scenarios.js';
+import { grandmasterBot } from '../bots.js';
 import {
     encode, forward, moveProbs, sampleIndex, loadNet, typeTable, legalMoves,
     N_TYPES, TYPE_DIM, SHIP_DYN, ACT_DYN, GLOBAL_DIM,
@@ -38,11 +40,17 @@ function playGame(seed, nets, opt) {
         ctrl[o] = nets.pool[Math.floor(rng() * nets.pool.length)];
         keep[o] = false;
         mode = 'pool';
+    } else if (rng() < opt.pgm) {
+        const o = rng() < 0.5 ? 'blue' : 'red';
+        ctrl[o] = nets.gm;
+        keep[o] = false;
+        mode = 'gm';
     }
+    const memo = { blue: {}, red: {} };
     const open = Math.floor(rng() * (opt.open + 1));
     const traj = { blue: [], red: [] };
     let crashed = false;
-    while (!S.over && S.turn <= opt.max) {
+    while (!S.over && S.turn <= opt.max && S.blue.ships.length + S.red.ships.length <= MAX_SHIPS) {
         const pick = {};
         for (const side of ['blue', 'red']) {
             if (S.turn <= open) {
@@ -50,6 +58,7 @@ function playGame(seed, nets, opt) {
                 pick[side] = m[Math.floor(rng() * m.length)];
                 continue;
             }
+            if (typeof ctrl[side] === 'function') { pick[side] = ctrl[side](S, side, rng, memo[side]) || 0; continue; }
             const e = encode(S, side);
             const { logits, value } = forward(ctrl[side], T, e);
             const p = moveProbs(logits, opt.temp);
@@ -80,7 +89,7 @@ function playGame(seed, nets, opt) {
         }
         samples.push(...tr);
     }
-    const learner = mode === 'pool' ? (keep.blue ? 'blue' : 'red') : null;
+    const learner = mode !== 'self' ? (keep.blue ? 'blue' : 'red') : null;
     resetRules();
     return {
         T, samples,
@@ -106,7 +115,7 @@ const FIELDS = [
 
 function runWorker({ jobs, netPath, poolPaths, opt }) {
     const read = p => loadNet(JSON.parse(fs.readFileSync(p, 'utf8')));
-    const nets = { cur: read(netPath), pool: poolPaths.map(read) };
+    const nets = { cur: read(netPath), pool: poolPaths.map(read), gm: grandmasterBot({ budgetMs: opt.gmMs }) };
     const G = Object.fromEntries(FIELDS.map(([k, T]) => [k, new Grow(T)]));
     const infos = [];
     jobs.forEach((seed, g) => {
@@ -140,7 +149,7 @@ if (!isMainThread) {
     const seed0 = Number(flag('--seed', 1));
     const threads = Math.min(games, Number(flag('--threads', Math.max(1, os.cpus().length - 1))));
     const opt = {
-        ppool: Number(flag('--ppool', 0.2)), std: Number(flag('--std', 0.25)), open: Number(flag('--open', 3)),
+        ppool: Number(flag('--ppool', 0.2)), pgm: Number(flag('--pgm', 0)), gmMs: Number(flag('--gm-ms', 150)), std: Number(flag('--std', 0.25)), open: Number(flag('--open', 3)),
         max: Number(flag('--max', 200)), temp: Number(flag('--temp', 1)),
     };
     const seeds = Array.from({ length: games }, (_, i) => seed0 * 1000003 + i);
@@ -193,6 +202,8 @@ if (!isMainThread) {
         crashes: infos.filter(i => i.crashed).length,
         poolGames: pool.length,
         poolScore: pool.length ? pool.reduce((a, i) => a + (i.learnerWon ? 1 : i.learnerLost ? 0 : 0.5), 0) / pool.length : null,
+        gmGames: infos.filter(i => i.mode === 'gm').length,
+        gmScore: (g => (g.length ? g.reduce((a, i) => a + (i.learnerWon ? 1 : i.learnerLost ? 0 : 0.5), 0) / g.length : null))(infos.filter(i => i.mode === 'gm')),
         families: infos.reduce((a, i) => ((a[i.family] = (a[i.family] ?? 0) + 1), a), {}),
     };
     console.log(JSON.stringify(summary));

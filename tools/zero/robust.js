@@ -16,7 +16,7 @@ import { DIFFICULTIES } from '../../js/config.js';
 import { makeBot } from '../match.js';
 import { grandmasterBot } from '../bots.js';
 import { mulberry32 } from '../rng.js';
-import { EVAL_SCENARIOS, NEAR, applyStart, resetRules } from './scenarios.js';
+import { EVAL_SCENARIOS, NEAR, applyStart, resetRules, MAX_SHIPS } from './scenarios.js';
 
 function botFor(name, cfg, scen, cache) {
     const key = name === 'gm3' && scen !== 'standard' ? 'gm3-nobook' : name;
@@ -37,7 +37,7 @@ function play({ scen, seed, aSide }, W, cache) {
     const memo = { blue: {}, red: {} };
     const open = Math.floor(rng() * (W.open + 1));
     let crashed = false;
-    while (!S.over && S.turn <= W.max) {
+    while (!S.over && S.turn <= W.max && S.blue.ships.length + S.red.ships.length <= MAX_SHIPS) {
         const pick = {};
         for (const side of ['blue', 'red']) {
             if (S.turn <= open) { const m = legalMoves(S, side); pick[side] = m[Math.floor(rng() * m.length)]; }

@@ -173,6 +173,7 @@ def main():
     ap.add_argument('--games', type=int, default=2000)
     ap.add_argument('--std', type=float, default=0.3)
     ap.add_argument('--ppool', type=float, default=0.2)
+    ap.add_argument('--pgm', type=float, default=0, help='share of games vs grandmaster v1.2 (slow)')
     ap.add_argument('--open', type=int, default=3)
     ap.add_argument('--lr', type=float, default=3e-4)
     ap.add_argument('--epochs', type=int, default=3)
@@ -230,7 +231,7 @@ def main():
         data = os.path.join(run, 'data', 'batch')
         for attempt in range(3):  # (a retry survives game files being edited mid-run)
             r = node(['tools/zero/selfplay.js', '--net', net_path, '--games', str(args.games), '--out', data,
-                      '--pool', ','.join(pool_paths), '--ppool', str(args.ppool if pool_paths else 0),
+                      '--pool', ','.join(pool_paths), '--ppool', str(args.ppool if pool_paths else 0), '--pgm', str(args.pgm),
                       '--std', str(args.std), '--open', str(args.open), '--seed', str(it), '--threads', str(args.threads)])
             if not r.returncode:
                 break

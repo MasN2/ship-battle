@@ -8,7 +8,8 @@
 // resetRules() puts the standard rules back.
 //
 // Held out of training on purpose: every New Game preset (most are far outside the training
-// noise), price changes to ×5, ×11 and ×13 ships (missiles, archers, carriers), fleets over ~50. The 'primeShift' and 'warzone' / 'missiles' tests ask
+// noise), price changes to ×5, ×11 and ×13 ships (missiles, archers, carriers). (Big fleets
+// are trained on now, in the rich 'mirror' family, so Warzone is less of a stretch.) The 'primeShift' and 'warzone' / 'missiles' tests ask
 // whether what it learned about prices and fleets carries over to rules it has never seen.
 
 import { TEMPLATES, SHIP_NUMS, calculatePrimeFactors } from '../../js/templates.js';
@@ -22,6 +23,9 @@ const ORIG = Object.fromEntries(SHIP_NUMS.map(n => [n, [TEMPLATES[n].attack, TEM
 const PRICE_PRIMES = [2, 3, 7, 17, 19, 23]; // trained on (5, 11, 13 held out)
 const HELD_OUT_PRIMES = [5, 11, 13];
 const FLEET_SHIPS = SHIP_NUMS.filter(n => n <= 73);
+// Ships that make more ships (carriers, Ruler, Abacus, Replicator, Rainbow, Wong): a mirrored
+// fleet gets at most one, or mirrored carriers spam each other into the hundreds.
+const SPAWNS = n => [13, 31, 41, 43, 47, 71].some(p => n % p === 0);
 
 const clearMemos = () => { clearPriceCache(); clearPriceMemos(); clearZeroMemos(); };
 
@@ -75,12 +79,13 @@ function randomFleet(rng, value, sectors) {
     const { pick } = tools(rng);
     const cap = Math.max(1, Math.min(73, Math.round(value * (0.1 + 0.55 * rng() ** 1.5))));
     const fleet = [];
-    let left = value;
+    let left = value, spawners = 0;
     while (left >= 1 && fleet.length < 24) {
-        const opts = FLEET_SHIPS.filter(n => n <= Math.min(cap, left));
+        const opts = FLEET_SHIPS.filter(n => n <= Math.min(cap, left) && !(spawners && SPAWNS(n)));
         if (!opts.length) break;
         const n = pick(opts);
         fleet.push([n, pick(sectors)]);
+        if (SPAWNS(n)) spawners++;
         left -= n;
     }
     return fleet;
@@ -112,9 +117,9 @@ function wide(rng, st) {
     const logU = (lo, hi) => Math.exp(uni(Math.log(lo), Math.log(hi)));
     const scale = (key, lo, hi) => { const k = logU(lo, hi); for (const n of SHIP_NUMS) TEMPLATES[n][key] = Math.max(1, Math.round(TEMPLATES[n][key] * k)); };
     const axes = [
-        () => scale('health', 0.5, 1.5),
+        () => scale('health', 0.5, 2),
         () => scale('attack', 0.5, 1.5),
-        () => { st.hp = Array(2).fill(Math.round(logU(80, 300))); },
+        () => { st.hp = Array(2).fill(Math.round(logU(80, 480))); },
         () => { st.money = Array(2).fill(Math.round(logU(1, 40))); },
         () => { st.income = Array(2).fill(pick([2, 3, 5, 6, 8])); },
         () => { st.ore = Array(2).fill(Math.round(logU(5, 60))); },
@@ -130,7 +135,23 @@ function longGame(rng, st) {
     const { uni } = tools(rng);
     const r = rng();
     if (r < 0.7) { const k = uni(1.2, 1.6); for (const n of SHIP_NUMS) TEMPLATES[n].health = Math.max(1, Math.round(TEMPLATES[n].health * k)); }
-    if (r > 0.4) st.hp = Array(2).fill(Math.round(uni(200, 320)));
+    if (r > 0.4) st.hp = Array(2).fill(Math.round(uni(200, 480)));
+}
+
+/**
+ * A rich mirror on otherwise normal rules: a mirrored fleet of higher-tier ships already out,
+ * plenty of money, and enough income and ore that the deploy bar shows the bigger ships
+ * (the bar follows income and ore, not money). Many options, no settled opening: the side
+ * that breaks the mirror with the better plan wins.
+ */
+function mirror(rng, st) {
+    const { pick, uni } = tools(rng);
+    const logU = (lo, hi) => Math.exp(uni(Math.log(lo), Math.log(hi)));
+    st.fleet = randomFleet(rng, Math.round(logU(40, 300)), pick([[1, 2], [1, 2, 3], [2, 3, 4], [1, 2, 3, 4, 5]]));
+    st.money = Array(2).fill(Math.round(logU(40, 300)));
+    st.income = Array(2).fill(pick([6, 8, 10, 12, 15, 20]));
+    st.ore = Array(2).fill(Math.round(logU(20, 200)));
+    if (rng() < 0.3) st.hp = Array(2).fill(pick([120, 200, 260, 320]));
 }
 
 function lopsided(rng, st) {
@@ -142,24 +163,25 @@ function lopsided(rng, st) {
 
 // Training families and their shares (the rest of a draw is the standard game).
 export const TRAIN_FAMILIES = {
-    jitter: 0.15,   // nudged ship stats and prime prices
-    midfight: 0.2,  // mirrored fleets on the field, low bases, cash in hand
-    rich: 0.1,      // big starting money (and sometimes income/ore/hp)
-    econ: 0.1,      // cheaper/dearer miners, traders, income ships
-    wide: 0.15,     // one to three whole-game axes nudged (ship hp/atk ×0.5-1.5, base hp, money, income, ore, prices, fleet)
-    long: 0.1,      // sturdier ships / deeper bases: longer games where investing can pay
-    combo: 0.15,    // jitter plus one of the others
+    jitter: 0.12,   // nudged ship stats and prime prices
+    midfight: 0.15, // mirrored fleets on the field, low bases, cash in hand
+    rich: 0.08,     // big starting money (and sometimes income/ore/hp)
+    econ: 0.08,     // cheaper/dearer miners, traders, income ships
+    wide: 0.15,     // one to three whole-game axes nudged (ship hp ×0.5-2, atk ×0.5-1.5, base hp 80-480, money, income, ore, prices, fleet)
+    long: 0.1,      // sturdier ships / deeper bases (to 480): longer games where an economy lead wins
+    mirror: 0.2,    // rich mirror of higher-tier fleets on normal rules
+    combo: 0.12,    // jitter plus one of the others
 };
 
 /** A training scenario; `std` = chance of a plain standard game. Returns { start, family }. */
-export function trainingScenario(rng, std = 0.3) {
+export function trainingScenario(rng, std = 0.25) {
     resetRules();
     const st = standardStart();
     if (rng() < std) return { start: st, family: 'standard' };
     const fams = Object.entries(TRAIN_FAMILIES);
     let r = rng() * fams.reduce((a, [, w]) => a + w, 0), family = fams[0][0];
     for (const [f, w] of fams) { if (r < w) { family = f; break; } r -= w; }
-    const other = () => tools(rng).pick(['midfight', 'rich', 'econ', 'wide', 'long']);
+    const other = () => tools(rng).pick(['midfight', 'rich', 'econ', 'wide', 'long', 'mirror']);
     const parts = family === 'combo' ? ['jitter', other()] : [family];
     for (const p of parts) {
         if (p === 'jitter') jitterRules(rng);
@@ -168,6 +190,7 @@ export function trainingScenario(rng, std = 0.3) {
         else if (p === 'rich') richStart(rng, st);
         else if (p === 'wide') wide(rng, st);
         else if (p === 'long') longGame(rng, st);
+        else if (p === 'mirror') mirror(rng, st);
     }
     if (rng() < 0.15) lopsided(rng, st);
     clearMemos();
@@ -189,7 +212,7 @@ function preset(mods, rng) {
 }
 
 /** 'near' tests are fresh draws from what training sees; 'far' ones it never trains on. */
-export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide'];
+export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress'];
 
 // Held-out tests. Presets are the game's own New Game options, mostly far more extreme than
 // anything in training; 'midfight' and 'econ' are fresh draws from training families.
@@ -199,6 +222,8 @@ export const EVAL_SCENARIOS = {
     econ: rng => { resetRules(); econRules(rng); clearMemos(); return standardStart(); },
     jitter: rng => { resetRules(); jitterRules(rng); clearMemos(); return standardStart(); },
     wide: rng => { resetRules(); const st = standardStart(); wide(rng, st); clearMemos(); return st; },
+    mirror: rng => { resetRules(); const st = standardStart(); mirror(rng, st); clearMemos(); return st; },
+    fortress: () => { resetRules(); const st = standardStart(); st.hp = [400, 400]; return st; },
     // held out: one or two of ×5 / ×11 / ×13 ships much cheaper or dearer
     primeShift: rng => {
         resetRules();
@@ -211,6 +236,9 @@ export const EVAL_SCENARIOS = {
     ...Object.fromEntries(Object.entries(PRESETS).filter(([k]) => !['standard', 'chaos'].includes(k))
         .map(([k, p]) => [k, rng => { resetRules(); return preset(p.mods, rng); }])),
 };
+
+/** Safety valve: a game with more ships than this on the board is called a draw. */
+export const MAX_SHIPS = 600;
 
 /** Puts a scenario's start onto a fresh sim state (newSimState() has already begun turn 1). */
 export function applyStart(S, st) {
