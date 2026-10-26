@@ -83,9 +83,8 @@ function createSummaryBarDOM() {
 
 function injectPauseMenuToggle() {
     const pauseGrid = document.querySelector('.pause-grid');
-    if (!pauseGrid) return;
-
     let toggle = document.getElementById('summary-toggle');
+    if (!toggle && !pauseGrid) return;
     if (!toggle) {
         const toggleWrapper = document.createElement('label');
         toggleWrapper.htmlFor = 'summary-toggle';

@@ -11,7 +11,8 @@ const btnRestartTop = document.getElementById('btn-restart-top');
 const menuBtn = document.getElementById('menu-btn');
 const btnNewGame = document.getElementById('btn-new-game');
 const btnImport = document.getElementById('btn-open-import');
-const pauseCurrent = document.getElementById('pause-current');
+const pauseOpponent = document.getElementById('pause-opponent');
+const pauseMods = document.getElementById('pause-mods');
 
 function setOpen(modal, open) {
     modal.classList.toggle('active', open);
@@ -20,9 +21,11 @@ function setOpen(modal, open) {
 
 function togglePauseMenu(force) {
     const shouldOpen = force !== undefined ? force : !pauseModal.classList.contains('active');
-    if (shouldOpen && pauseCurrent) {
+    if (shouldOpen && pauseOpponent) {
         const mods = setup.chaos ? ['Chaos (random modifiers)'] : describeMods(setup.mods);
-        pauseCurrent.textContent = `${DIFFICULTIES[setup.difficulty]?.label ?? setup.difficulty} · ${mods.length ? mods.join(' · ') : 'Standard rules'}`;
+        pauseOpponent.textContent = DIFFICULTIES[setup.difficulty]?.label ?? setup.difficulty;
+        pauseMods.textContent = mods.length ? mods.join(' · ') : 'Standard rules';
+        pauseMods.classList.toggle('modded', mods.length > 0);
     }
     setOpen(pauseModal, shouldOpen);
 }

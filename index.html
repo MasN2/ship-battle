@@ -82,42 +82,47 @@
                 <span class="esc-hint">Press <kbd>ESC</kbd> to resume</span>
             </div>
 
-            <div class="pause-section-title">Settings</div>
-            <div class="pause-grid">
-                <div class="pause-field">
-                    <label>Animation Speed (<span id="speed-val">1×</span>)</label>
-                    <input type="range" id="speed-slider" min="0.5" max="15" step="0.5" value="1" />
+            <div class="pause-game">
+                <div class="pause-game-info">
+                    <span class="pause-game-label">Now playing</span>
+                    <span class="pause-game-opp" id="pause-opponent"></span>
+                    <span class="pause-game-mods" id="pause-mods"></span>
                 </div>
+                <div class="pause-game-btns">
+                    <button class="btn-action outline" id="btn-new-game">New Game…</button>
+                    <button class="btn-action outline" id="btn-open-import">Import…</button>
+                </div>
+            </div>
 
-                <label for="sound-toggle">
-                    <div class="pause-field toggle-row">
-                        <label for="sound-toggle">Enable SFX</label>
-                        <input type="checkbox" id="sound-toggle" />
-                    </div>
+            <div class="pause-section-title">Settings</div>
+            <div class="pause-settings">
+                <label class="pause-row" for="speed-slider">
+                    <span>Animation speed</span>
+                    <span class="pause-row-ctrl">
+                        <input type="range" id="speed-slider" min="0.5" max="15" step="0.5" value="1" />
+                        <output id="speed-val">1×</output>
+                    </span>
                 </label>
-
-                <label for="tag-toggle">
-                    <div class="pause-field toggle-row">
-                        <label for="tag-toggle">Advanced UI</label>
-                        <input type="checkbox" id="tag-toggle" />
-                    </div>
+                <label class="pause-row" for="sound-toggle">
+                    <span>Sound effects</span>
+                    <input type="checkbox" class="switch" id="sound-toggle" />
                 </label>
-
-                <label for="shortcut-toggle">
-                    <div class="pause-field toggle-row">
-                        <label for="shortcut-toggle">Fast Buy Bar</label>
-                        <input type="checkbox" id="shortcut-toggle" />
-                    </div>
+                <label class="pause-row" for="tag-toggle">
+                    <span>Advanced UI</span>
+                    <input type="checkbox" class="switch" id="tag-toggle" />
+                </label>
+                <label class="pause-row" for="shortcut-toggle">
+                    <span>Fast buy bar</span>
+                    <input type="checkbox" class="switch" id="shortcut-toggle" />
+                </label>
+                <label class="pause-row" for="summary-toggle">
+                    <span>Lane summary bar</span>
+                    <input type="checkbox" class="switch" id="summary-toggle" />
                 </label>
             </div>
-            <div class="pause-section-title">Game</div>
-            <div class="pause-current" id="pause-current"></div>
+
             <div class="pause-actions">
-                <button class="btn-action outline" id="btn-new-game">✦ New Game…</button>
-                <button class="btn-action outline" id="btn-open-import">📂 Import Game…</button>
-            </div>
-            <div class="pause-actions">
-                <button class="btn-action primary" id="btn-resume">▶ Resume Battle</button>
+                <button class="btn-action primary" id="btn-resume">▶ Resume</button>
                 <button class="btn-action danger" id="btn-restart">↻ Restart</button>
             </div>
         </div>
