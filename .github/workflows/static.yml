@@ -31,12 +31,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Stamp file versions
-        # Every import and stylesheet link gets ?v=<commit>, so a browser can never mix cached
-        # files from an older deploy with new ones (a stale module breaks the whole page).
-        run: |
-          v="${GITHUB_SHA::8}"
-          sed -i -E "s#([A-Za-z0-9_./-]+\.(js|css))(['\"])#\1?v=$v\3#g" index.html *.js js/*.js
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

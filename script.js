@@ -36,7 +36,8 @@ export function closeTutorial() {
 window.newGame = newGame;
 window.setUsername = setUsername;
 
-document.addEventListener('DOMContentLoaded', () => {
+// Loaded after the page by index.html's file check, so the DOM may already be ready
+onDomReady(() => {
     initTooltips();
     initScenarios();
 
@@ -66,3 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     newGame();
     initSetup();
 });
+
+
+function onDomReady(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else setTimeout(fn); // after the rest of the module graph (state.js and script.js import each other)
+}
