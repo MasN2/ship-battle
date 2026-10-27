@@ -56,7 +56,8 @@ const ORIGINAL = Object.fromEntries(SHIP_NUMS.map(n => [n, { attack: TEMPLATES[n
 const pick = a => a[Math.floor(Math.random() * a.length)];
 
 /** A random mix of modifiers (any of the allowed values, extremes included). */
-export function chaosMods() {
+export function chaosMods(rng = Math.random) {
+    const pick = a => a[Math.floor(rng() * a.length)]; // rng: seeded in training (tools/zero/scenarios.js)
     const m = normalizeMods();
     const S = MOD_STEPS;
     const knobs = [
@@ -71,8 +72,8 @@ export function chaosMods() {
         () => { m.primePrice[pick(PRICE_PRIMES)] = pick(S.price); },
         () => { m.openingValue = pick(S.openingValue.slice(1)); },
     ];
-    knobs.sort(() => Math.random() - 0.5);
-    const count = 2 + Math.floor(Math.random() * 3);
+    knobs.sort(() => rng() - 0.5);
+    const count = 2 + Math.floor(rng() * 3);
     for (let i = 0; i < count; i++) knobs[i]();
     return m;
 }

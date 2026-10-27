@@ -18,7 +18,7 @@ import { priceMult } from '../../js/economy.js';
 import { clearPriceCache } from '../../js/sim.js';
 import { clearPriceMemos } from '../../js/grandmaster.js';
 import { clearZeroMemos } from '../../js/zero.js';
-import { applyBalanceMods, normalizeMods, PRESETS } from '../../js/modifiers.js';
+import { applyBalanceMods, normalizeMods, chaosMods, PRESETS } from '../../js/modifiers.js';
 
 const ORIG = Object.fromEntries(SHIP_NUMS.map(n => [n, [TEMPLATES[n].attack, TEMPLATES[n].health]]));
 const PRICE_PRIMES = [2, 3, 7, 17, 19, 23]; // trained on (5, 11, 13 held out)
@@ -180,6 +180,15 @@ function bank(rng, st) {
     for (const n of SHIP_NUMS) if (n % 7 === 0) priceMult[n] *= k;
 }
 
+/**
+ * The game's own Chaos preset: 2-4 random knobs at any slider value, extremes included
+ * (1 base hp, ×10 ship hp, ×0.1 prices...). A thin blanket, so no ruleset a player can dial up
+ * is wholly unseen, while no single extreme gets enough games to teach habits.
+ */
+function chaos(rng, st) {
+    Object.assign(st, preset(chaosMods(rng), rng));
+}
+
 function lopsided(rng, st) {
     const { pick } = tools(rng);
     const s = rng() < 0.5 ? 0 : 1;
@@ -199,6 +208,7 @@ export const TRAIN_FAMILIES = {
     combo: 0.12,    // jitter plus one of the others
     variant: 0.06,  // a little juggernaut (ship hp ×3-5) and glass (×0.25-0.4)
     bank: 0.06,     // cash in hand, income 1-3, pricier traders
+    chaos: 0.06,    // the Chaos preset's roll: 2-4 knobs anywhere on their sliders, extremes included
 };
 
 /** A training scenario; `std` = chance of a plain standard game. Returns { start, family }. */
@@ -221,6 +231,7 @@ export function trainingScenario(rng, std = 0.25) {
         else if (p === 'mirror') mirror(rng, st);
         else if (p === 'variant') variant(rng, st);
         else if (p === 'bank') bank(rng, st);
+        else if (p === 'chaos') chaos(rng, st);
     }
     if (rng() < 0.15) lopsided(rng, st);
     clearMemos();
@@ -242,7 +253,7 @@ function preset(mods, rng) {
 }
 
 /** 'near' tests are fresh draws from what training sees; 'far' ones it never trains on. */
-export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress', 'glass', 'juggernaut', 'bank'];
+export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress', 'glass', 'juggernaut', 'bank', 'chaos'];
 
 // Held-out tests. Presets are the game's own New Game options, mostly far more extreme than
 // anything in training; 'midfight' and 'econ' are fresh draws from training families.
@@ -253,6 +264,7 @@ export const EVAL_SCENARIOS = {
     jitter: rng => { resetRules(); jitterRules(rng); clearMemos(); return standardStart(); },
     wide: rng => { resetRules(); const st = standardStart(); wide(rng, st); clearMemos(); return st; },
     mirror: rng => { resetRules(); const st = standardStart(); mirror(rng, st); clearMemos(); return st; },
+    chaos: rng => { resetRules(); const st = standardStart(); chaos(rng, st); clearMemos(); return st; },
     bank: rng => { resetRules(); const st = standardStart(); bank(rng, st); clearMemos(); return st; },
     fortress: () => { resetRules(); const st = standardStart(); st.hp = [400, 400]; return st; },
     // held out: one or two of ×5 / ×11 / ×13 ships much cheaper or dearer
