@@ -1,4 +1,5 @@
-import { state, processing, gameOver, opponent } from './state.js';
+import { state, processing, gameOver, opponent, activeMods } from './state.js';
+import { describeMods } from './modifiers.js';
 import { SECTORS, BLUE_BASE_IDX, RED_BASE_IDX, BLUE_DEPLOY_IDX, RED_DEPLOY_IDX, ATTACK_RANGE, SWORD_SVG, BOW_SVG, ROCKET_SVG, HEART_SVG, TARGET_MARK_SVG, SECTOR_LABEL_H, BASE_H, SHIP_CARD_H, SHIP_CARD_H_COMPACT, START_ORE } from './config.js';
 import { TEMPLATES, SHIP_NUMS, listAbilities } from './templates.js';
 import { cost, calcOreIncome, excessExponent, oreDivisor, maxLoanFor, balance } from './economy.js';
@@ -31,6 +32,9 @@ export function render() {
                 ? `Turn ${state.turn} · ENDED`
                 : `Turn ${state.turn} · DEPLOY`;
     }
+
+    const ml = document.getElementById('mods-line');
+    if (ml) ml.textContent = describeMods(activeMods).join(' · ') || 'Standard';
 }
 
 export function renderStats() {

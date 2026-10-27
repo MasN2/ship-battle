@@ -11,6 +11,29 @@
 	pointer-events: none; /* Allows clicking behind it */
 }
 
+	.hud-top .hud-turn {
+		position: relative;
+		margin: 0 auto;
+	}
+
+	.hud-top .mods-line {
+		position: absolute;
+		top: calc(100% + 4px);
+		left: 50%;
+		transform: translateX(-50%);
+		width: max-content;
+		max-width: min(90vw, 760px);
+		text-align: center;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 10px;
+		line-height: 1.4;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--muted, #8b949e);
+		text-shadow: 0 1px 3px #000;
+		pointer-events: none;
+	}
+
 	.hud-top .turn-info {
 		pointer-events: auto;
 		background: rgba(22, 27, 34, 0.85);
