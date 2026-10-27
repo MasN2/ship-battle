@@ -166,6 +166,20 @@ function variant(rng, st) {
     for (const n of SHIP_NUMS) TEMPLATES[n].health = Math.max(1, Math.round(TEMPLATES[n].health * k));
 }
 
+/**
+ * Money in the bank, income hard to come by: little income and pricier traders (×7). Before the
+ * deploy bar stopped hiding ships by income, a start like this locked out most of the menu.
+ * Milder than the Old Money preset (200 money, 1 income, traders ×3), which stays an exam.
+ */
+function bank(rng, st) {
+    const { pick, uni } = tools(rng);
+    const logU = (lo, hi) => Math.exp(uni(Math.log(lo), Math.log(hi)));
+    st.money = Array(2).fill(Math.round(logU(30, 150)));
+    st.income = Array(2).fill(pick([1, 2, 3]));
+    const k = uni(1.3, 2.5);
+    for (const n of SHIP_NUMS) if (n % 7 === 0) priceMult[n] *= k;
+}
+
 function lopsided(rng, st) {
     const { pick } = tools(rng);
     const s = rng() < 0.5 ? 0 : 1;
@@ -184,6 +198,7 @@ export const TRAIN_FAMILIES = {
     mirror: 0.2,    // rich mirror of higher-tier fleets on normal rules
     combo: 0.12,    // jitter plus one of the others
     variant: 0.06,  // a little juggernaut (ship hp ×3-5) and glass (×0.25-0.4)
+    bank: 0.06,     // cash in hand, income 1-3, pricier traders
 };
 
 /** A training scenario; `std` = chance of a plain standard game. Returns { start, family }. */
@@ -205,6 +220,7 @@ export function trainingScenario(rng, std = 0.25) {
         else if (p === 'long') longGame(rng, st);
         else if (p === 'mirror') mirror(rng, st);
         else if (p === 'variant') variant(rng, st);
+        else if (p === 'bank') bank(rng, st);
     }
     if (rng() < 0.15) lopsided(rng, st);
     clearMemos();
@@ -226,7 +242,7 @@ function preset(mods, rng) {
 }
 
 /** 'near' tests are fresh draws from what training sees; 'far' ones it never trains on. */
-export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress', 'glass', 'juggernaut'];
+export const NEAR = ['standard', 'midfight', 'econ', 'jitter', 'wide', 'mirror', 'fortress', 'glass', 'juggernaut', 'bank'];
 
 // Held-out tests. Presets are the game's own New Game options, mostly far more extreme than
 // anything in training; 'midfight' and 'econ' are fresh draws from training families.
@@ -237,6 +253,7 @@ export const EVAL_SCENARIOS = {
     jitter: rng => { resetRules(); jitterRules(rng); clearMemos(); return standardStart(); },
     wide: rng => { resetRules(); const st = standardStart(); wide(rng, st); clearMemos(); return st; },
     mirror: rng => { resetRules(); const st = standardStart(); mirror(rng, st); clearMemos(); return st; },
+    bank: rng => { resetRules(); const st = standardStart(); bank(rng, st); clearMemos(); return st; },
     fortress: () => { resetRules(); const st = standardStart(); st.hp = [400, 400]; return st; },
     // held out: one or two of ×5 / ×11 / ×13 ships much cheaper or dearer
     primeShift: rng => {

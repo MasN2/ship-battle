@@ -94,10 +94,14 @@ function sideFeatures(S, o, out, k) {
     return k;
 }
 
-/** The moves on `side`'s deploy bar it can pay for (loans included), skip (0) first. */
-export function legalMoves(S, side) {
+/**
+ * Every ship `side` can pay for (loans included), skip (0) first: the deploy bar shows every
+ * ship now. visibleOnly: the old bar, which hid ships by income and ore (a new-player aid the
+ * author never meant as a purchase limit; kept for comparisons and the grandmaster benchmark).
+ */
+export function legalMoves(S, side, visibleOnly = false) {
     const out = [0];
-    for (const n of visibleShips(S, side)) if (canAfford(S, side, n)) out.push(n);
+    for (const n of visibleOnly ? visibleShips(S, side) : SHIP_NUMS) if (canAfford(S, side, n)) out.push(n);
     return out;
 }
 
@@ -105,7 +109,7 @@ export function legalMoves(S, side) {
  * Everything the net sees, from `side`'s chair: { global, ships: {cell, type, dyn}, acts: {type, dyn}, moves }.
  * Ship and action features are a row of the type table plus a few numbers of their own.
  */
-export function encode(S, side) {
+export function encode(S, side, visibleOnly = false) {
     const opp = side === 'blue' ? 'red' : 'blue';
     const global = new Float32Array(GLOBAL_DIM);
     global[0] = Math.min(4, S.turn / 50);
@@ -130,7 +134,7 @@ export function encode(S, side) {
         }
     }
 
-    const moves = legalMoves(S, side);
+    const moves = legalMoves(S, side, visibleOnly);
     const me = S[side];
     const atype = new Int32Array(moves.length), adyn = new Float32Array(moves.length * ACT_DYN);
     const inc = Math.max(1, me.income);
@@ -268,9 +272,9 @@ export function nearBestProbs(logits, { topK = 3, minRatio = 0.3, temp = 0.5 } =
  * ({ topK, minRatio, temp }, see nearBestProbs) it picks among its near-best moves;
  * otherwise softmax at `temp` (0 = always its favourite).
  */
-export function chooseZero(S, side, net, { temp = 0, variety = null, rng = Math.random } = {}) {
+export function chooseZero(S, side, net, { temp = 0, variety = null, visibleOnly = false, rng = Math.random } = {}) {
     if (!net) return 0;
-    const e = encode(S, side);
+    const e = encode(S, side, visibleOnly);
     const { logits } = forward(net, typeTable(), e);
     const p = variety ? nearBestProbs(logits, variety) : moveProbs(logits, temp);
     return e.moves[sampleIndex(p, rng)];
