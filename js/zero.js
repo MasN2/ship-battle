@@ -235,10 +235,43 @@ export function sampleIndex(p, rng) {
     return p.length - 1;
 }
 
-/** The live game's entry point: the ship Zero buys for `side` (0 = skip). */
-export function chooseZero(S, side, net, { temp = 0, rng = Math.random } = {}) {
+/**
+ * How the live game picks: favourite ~88% of the time, else a close second/third. Measured on
+ * Alpha 0.75: no strength cost (52.3% ±2.5 over 400 standard games vs always-favourite), and a
+ * fixed human build order replayed 60 times meets 58 different Alpha games instead of 1.
+ */
+export const LIVE_VARIETY = { topK: 3, minRatio: 0.3, temp: 0.5 };
+
+/**
+ * Near-best sampling, so replaying a game can't map out one fixed line: only the top `topK`
+ * moves that the net rates at least `minRatio` as likely as its favourite can be played, chosen
+ * in proportion to the net's own probabilities sharpened by `temp`. A confident net still
+ * plays its favourite (a runner-up below minRatio never gets in); a torn one varies between
+ * the moves it rates close.
+ */
+export function nearBestProbs(logits, { topK = 3, minRatio = 0.3, temp = 0.5 } = {}) {
+    const p = moveProbs(logits, 1);
+    const order = [...p.keys()].sort((a, b) => p[b] - p[a]).slice(0, topK);
+    const q = new Float64Array(p.length);
+    let sum = 0;
+    for (const i of order) {
+        if (p[i] < minRatio * p[order[0]]) break;
+        q[i] = p[i] ** (1 / temp);
+        sum += q[i];
+    }
+    for (const i of order) q[i] /= sum;
+    return q;
+}
+
+/**
+ * The live game's entry point: the ship Zero buys for `side` (0 = skip). With `variety`
+ * ({ topK, minRatio, temp }, see nearBestProbs) it picks among its near-best moves;
+ * otherwise softmax at `temp` (0 = always its favourite).
+ */
+export function chooseZero(S, side, net, { temp = 0, variety = null, rng = Math.random } = {}) {
     if (!net) return 0;
     const e = encode(S, side);
     const { logits } = forward(net, typeTable(), e);
-    return e.moves[sampleIndex(moveProbs(logits, temp), rng)];
+    const p = variety ? nearBestProbs(logits, variety) : moveProbs(logits, temp);
+    return e.moves[sampleIndex(p, rng)];
 }
