@@ -18,7 +18,7 @@
 
 	.hud-top .mods-line {
 		position: absolute;
-		top: calc(100% + 4px);
+		bottom: calc(100% + 2px);
 		left: 50%;
 		transform: translateX(-50%);
 		width: max-content;
