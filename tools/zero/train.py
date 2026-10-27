@@ -5,7 +5,8 @@
 
 Each iteration: node plays --games self-play games with the current net (31 threads), this
 script fits the net to them on the GPU, writes the new net, and every --snap-every iterations
-freezes a copy into the opponent pool (past selves to keep beating). Every --eval-every
+freezes a copy into the opponent pool (past selves to keep beating); shipped releases in --hof
+stay in that pool for good. Every --eval-every
 iterations it plays the current net (greedy) across every scenario of tools/zero/robust.js against
 the Normal AI and a past net (--ref), and every --gm-every iterations a light grandmaster probe:
 benchmarks only, nothing from those games is trained on. Watch *_worst: a net that aces the
@@ -185,6 +186,7 @@ def main():
     ap.add_argument('--ent', type=float, default=0.01)
     ap.add_argument('--snap-every', type=int, default=10)
     ap.add_argument('--pool-size', type=int, default=12)
+    ap.add_argument('--hof', default='runs/hof', help='hall of fame: shipped releases, always in the opponent pool')
     ap.add_argument('--eval-every', type=int, default=10)
     ap.add_argument('--eval-games', type=int, default=30, help='per scenario, vs Normal and vs --ref')
     ap.add_argument('--ref', default='runs/zero1/pool/it00140.json', help='a past net to keep beating (shipped v0.2)')
@@ -231,6 +233,12 @@ def main():
         t0 = time.time()
         pool = sorted(f for f in os.listdir(os.path.join(run, 'pool')) if f.endswith('.json'))
         pool_paths = [os.path.join(run, 'pool', f) for f in pool[-args.pool_size:]]
+        # The recent pool only remembers ~pool_size×snap_every iterations; a style that drifts
+        # away from an old release's can lose to it again (iteration 1250 beat its neighbours but
+        # lost 60/40 to Alpha 0.75). Shipped releases stay in the pool for good.
+        hof = os.path.join(ROOT, args.hof)
+        if os.path.isdir(hof):
+            pool_paths += [os.path.join(hof, f) for f in sorted(os.listdir(hof)) if f.endswith('.json')]
         data = os.path.join(run, 'data', 'batch')
         for attempt in range(3):  # (a retry survives game files being edited mid-run)
             r = node(['tools/zero/selfplay.js', '--net', net_path, '--games', str(args.games), '--out', data,

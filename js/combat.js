@@ -7,7 +7,7 @@ import { animateAttacker, shootLaser, showDamageNumber, flashBase, clearRectCach
 import { render, renderDeployBar, renderShortcutBar, updateBase } from './render.js';
 import { pickAIR } from './ai.js';
 import { chooseGrandmaster } from './grandmaster.js';
-import { loadNet, chooseZero } from './zero.js';
+import { loadNet, chooseZero, LIVE_VARIETY } from './zero.js';
 import { ZERO_WEIGHTS } from './zero-weights.js';
 
 let zeroNet;
@@ -365,7 +365,8 @@ export async function runTurn(playerPick = 0) {
         aiPick = chooseGrandmaster(state, 'red', { cfg, memo: (state.red.gmMemo ??= {}) });
     } else if (state.red.ai === "zero" && ZERO_WEIGHTS && aiPick === undefined) {
         // Also decided before blue's purchase; it reads the board, not blue's pick.
-        aiPick = chooseZero(state, 'red', (zeroNet ??= loadNet(ZERO_WEIGHTS)));
+        // Near-best sampling: a replayed game can't map out one fixed line (see LIVE_VARIETY).
+        aiPick = chooseZero(state, 'red', (zeroNet ??= loadNet(ZERO_WEIGHTS)), { variety: LIVE_VARIETY });
     }
     for (const num of state.red.priority){
         if (aiPick === undefined && canAfford('red', num)) {aiPick = num;}

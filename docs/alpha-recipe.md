@@ -150,6 +150,11 @@ game with different numbers.
   net beat that same release only 48%). Keep a pool of
   past snapshots and spend a large share of games against them (40% here), use a modest
   learning rate, and pick releases by head-to-head ranking, never by "latest iteration".
+  The cycles are rock-paper-scissors between styles: one net drifted from "invest mid-game"
+  back toward "fight mid-game, bank late", beat its recent predecessors 60-70%, and lost 60/40
+  to a release two versions older whose cheap-swarm style it no longer remembered. A recent-only
+  pool forgets old styles, so keep a **hall of fame**: every shipped release stays in the
+  opponent pool permanently.
 - **A little outside sparring.** A few percent of training games against the best previous
   non-learned AI (with its thinking time capped so it doesn't stall training) keeps an outside
   style in the mix.

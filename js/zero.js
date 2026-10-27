@@ -94,10 +94,14 @@ function sideFeatures(S, o, out, k) {
     return k;
 }
 
-/** The moves on `side`'s deploy bar it can pay for (loans included), skip (0) first. */
-export function legalMoves(S, side) {
+/**
+ * Every ship `side` can pay for (loans included), skip (0) first: the deploy bar shows every
+ * ship now. visibleOnly: the old bar, which hid ships by income and ore (a new-player aid the
+ * author never meant as a purchase limit; kept for comparisons and the grandmaster benchmark).
+ */
+export function legalMoves(S, side, visibleOnly = false) {
     const out = [0];
-    for (const n of visibleShips(S, side)) if (canAfford(S, side, n)) out.push(n);
+    for (const n of visibleOnly ? visibleShips(S, side) : SHIP_NUMS) if (canAfford(S, side, n)) out.push(n);
     return out;
 }
 
@@ -105,7 +109,7 @@ export function legalMoves(S, side) {
  * Everything the net sees, from `side`'s chair: { global, ships: {cell, type, dyn}, acts: {type, dyn}, moves }.
  * Ship and action features are a row of the type table plus a few numbers of their own.
  */
-export function encode(S, side) {
+export function encode(S, side, visibleOnly = false) {
     const opp = side === 'blue' ? 'red' : 'blue';
     const global = new Float32Array(GLOBAL_DIM);
     global[0] = Math.min(4, S.turn / 50);
@@ -130,7 +134,7 @@ export function encode(S, side) {
         }
     }
 
-    const moves = legalMoves(S, side);
+    const moves = legalMoves(S, side, visibleOnly);
     const me = S[side];
     const atype = new Int32Array(moves.length), adyn = new Float32Array(moves.length * ACT_DYN);
     const inc = Math.max(1, me.income);
@@ -235,10 +239,43 @@ export function sampleIndex(p, rng) {
     return p.length - 1;
 }
 
-/** The live game's entry point: the ship Zero buys for `side` (0 = skip). */
-export function chooseZero(S, side, net, { temp = 0, rng = Math.random } = {}) {
+/**
+ * How the live game picks: favourite ~88% of the time, else a close second/third. Measured on
+ * Alpha 0.75: no strength cost (52.3% ±2.5 over 400 standard games vs always-favourite), and a
+ * fixed human build order replayed 60 times meets 58 different Alpha games instead of 1.
+ */
+export const LIVE_VARIETY = { topK: 3, minRatio: 0.3, temp: 0.5 };
+
+/**
+ * Near-best sampling, so replaying a game can't map out one fixed line: only the top `topK`
+ * moves that the net rates at least `minRatio` as likely as its favourite can be played, chosen
+ * in proportion to the net's own probabilities sharpened by `temp`. A confident net still
+ * plays its favourite (a runner-up below minRatio never gets in); a torn one varies between
+ * the moves it rates close.
+ */
+export function nearBestProbs(logits, { topK = 3, minRatio = 0.3, temp = 0.5 } = {}) {
+    const p = moveProbs(logits, 1);
+    const order = [...p.keys()].sort((a, b) => p[b] - p[a]).slice(0, topK);
+    const q = new Float64Array(p.length);
+    let sum = 0;
+    for (const i of order) {
+        if (p[i] < minRatio * p[order[0]]) break;
+        q[i] = p[i] ** (1 / temp);
+        sum += q[i];
+    }
+    for (const i of order) q[i] /= sum;
+    return q;
+}
+
+/**
+ * The live game's entry point: the ship Zero buys for `side` (0 = skip). With `variety`
+ * ({ topK, minRatio, temp }, see nearBestProbs) it picks among its near-best moves;
+ * otherwise softmax at `temp` (0 = always its favourite).
+ */
+export function chooseZero(S, side, net, { temp = 0, variety = null, visibleOnly = false, rng = Math.random } = {}) {
     if (!net) return 0;
-    const e = encode(S, side);
+    const e = encode(S, side, visibleOnly);
     const { logits } = forward(net, typeTable(), e);
-    return e.moves[sampleIndex(moveProbs(logits, temp), rng)];
+    const p = variety ? nearBestProbs(logits, variety) : moveProbs(logits, temp);
+    return e.moves[sampleIndex(p, rng)];
 }

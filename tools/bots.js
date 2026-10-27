@@ -63,11 +63,15 @@ export function greedEconBot(S, side) {
 }
 
 /** Zero (js/zero.js): cfg.weights = a net file from tools/zero/train.py, else the shipped net;
-    cfg.temp = sampling temperature (0 = always its top move). */
+    cfg.temp = sampling temperature (0 = always its top move); cfg.variety = near-best sampling
+    ({ topK, minRatio, temp }, see nearBestProbs), as the live game plays; cfg.visibleOnly = only
+    the ships the old deploy bar showed. */
 export function zeroBot(cfg) {
     const net = loadNet(cfg?.weights ? JSON.parse(fs.readFileSync(cfg.weights, 'utf8')) : ZERO_WEIGHTS);
     const temp = cfg?.temp ?? 0;
-    return (S, side, rng) => chooseZero(S, side, net, { temp, rng });
+    const variety = cfg?.variety ?? null;
+    const visibleOnly = !!cfg?.visibleOnly; // the old income/ore-limited deploy bar
+    return (S, side, rng) => chooseZero(S, side, net, { temp, variety, visibleOnly, rng });
 }
 
 export function grandmasterBot(cfg) {

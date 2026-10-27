@@ -75,7 +75,7 @@ export const GM_BETA_VERSION = '2.6β';
 // v3: the β plus the time wizard's book (lessons from rewinding real games vs v1.2, js/book.js)
 export const GM_V3_VERSION = '3.2';
 // Zero (js/zero.js): bump with every net shipped to js/zero-weights.js.
-export const ZERO_VERSION = '0.75';
+export const ZERO_VERSION = '0.8';
 
 export const DIFFICULTIES = {
     campaign1: { label: 'Campaign 1', maxShip: 1, playerIncome: 1, botHp: 62, botIncome: 33, botOre: 1000, priority: [89, 0], opening: [1,1,1,1,1,1,1,1,1,1], tutorial: c1tutorial},
@@ -142,7 +142,7 @@ export const DIFFICULTIES = {
     grandmasterV3: { label: `Grandmaster v${GM_V3_VERSION} (wizard)`, ai: 'grandmaster', gmCfg: null },
     grandmasterV3e: { label: `Grandmaster v${GM_V3_VERSION} (learned eval)`, ai: 'grandmaster', gmCfg: null },
     // Taught itself by self-play (tools/zero/): a learned policy, no search, no book, no handicaps.
-    // Shown as "Alpha 0.75" (spoken: alpha zero point seven five); the version keeps its leading
+    // Shown as "Alpha 0.8" (spoken: alpha zero point eight); the version keeps its leading
     // zero and creeps toward 0.99 rather than ever reaching 1.0, in shrinking steps since 0.7.
     zero960: { label: `LormandZero960 ${ZERO_VERSION}`, ai: 'zero960' },
     zero: { label: `LormandZero ${ZERO_VERSION}`, ai: 'zero' },
