@@ -53,7 +53,7 @@ export const TEMPLATES = {
     50: { number: 50, name: 'Doomsday', attack: 3, health: 70, tags: ['NOVA'], nova: true },
     51: { number: 51, name: 'Engineer', attack: 1, health: 90, tags: ['×2 CMB', 'SIEGE'], siege: true },
     52: { number: 52, name: 'Starbase', attack: 9, health: 120, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
-    41: { number: 53, name: 'Abacus', attack: 1, health: 1 },
+    53: { number: 53, name: 'Abacus', attack: 1, health: 1 },
     54: { number: 54, name: 'Valhalla', attack: 3, health: 50, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.36 },
     55: { number: 55, name: 'ICBM', attack: 5, health: 70 },
     56: { number: 56, name: 'Armada', attack: 27, health: 200 },
