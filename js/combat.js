@@ -106,15 +106,15 @@ if (num === 59) ship.attack += state[owner].income;
         const enemy = owner === 'red' ? 'blue' : 'red';
         state[enemy].hp -= ship.attack;
     }
-    if (num === 41) {
-        for (let i = 1; i <= 23; i++) {
+    if (num === 53) {
+        for (let i = 1; i <= 31; i++) {
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
     if (num % 37 === 0) {
         for (let i = 1; i <= 12; i++) await deployShip(owner, i, sector);
     }
-    if (num === 53) {
+    if (num === 41) {
         for (const s of state[owner].ships){
             s.attack += 1;
         }
