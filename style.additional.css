@@ -2,7 +2,7 @@
 	position: sticky;
 	z-index: 100;
 	display: flex;
-	top: 1.4rem; /* room for the modifiers line above the turn pill */
+	top: 0.5rem;
 	justify-content: space-between;
 	margin: auto;
 	align-items: center;
