@@ -102,7 +102,7 @@ export function listAbilities(n) {
         switch (factor) {
             case 2: lines.push(`<b class="tr">2 › </b> I have ×${n >= 40 ? 3 : 2} attack.`); break;
             case 3: lines.push(`<b style="color: #00cab1;">3 › End of turn:</b> +${n / 3} ore if this ship is within the center 3 sectors.`); break;
-            case 5: lines.push(`<b class="tp">5 › After I attack:</b> Fire a ${n / 5}-damage missile that hits all enemies in target sector. Prioritizes attacking crowded sectors.`); break;
+            case 5: lines.push(`<b class="tp">5 › After I attack:</b> Fire a ${n / 5}-damage missile at every enemy in range.`); break;
             case 7: lines.push(`<b class="tc">7 › Deploy:</b> Trade 4 base hp for ${n / 7} income.`); break;
             case 11: lines.push(`<b style="color: #25d367;">11 ›</b> I have +1 range and x5 attack.`); break;
             case 13: lines.push(`<b class="to">13 › End of turn:</b> Deploy ship #${2 * n / 13} in my sector.`); break;
