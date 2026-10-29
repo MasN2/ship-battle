@@ -6,7 +6,7 @@ export const TEMPLATES = {
     3: { number: 3, name: 'Driller', attack: 1, health: 4, tags: ['MIN'], mining: 0.03 },
     4: { number: 4, name: 'Frigate', attack: 4, health: 15, tags: ['×2 CMB'], combat: true },
     5: { number: 5, name: 'Missile', attack: 1, health: 18, tags: ['×7 AOE'], missile: true },
-    6: { number: 6, name: 'Reaver', attack: 2, health: 17, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.06 },
+    6: { number: 6, name: 'Reaver', attack: 2, health: 16, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.06 },
     7: { number: 7, name: 'Trader', attack: 1, health: 1, tags: ['×5 INC+1'], incomeBoost: 1 },
     8: { number: 8, name: 'Destroyer', attack: 8, health: 21, tags: ['×2 CMB'], combat: true },
     9: { number: 9, name: 'Quarry', attack: 1, health: 4, tags: ['MIN', 'MIN'], mining: 0.18 },
@@ -23,21 +23,21 @@ export const TEMPLATES = {
     20: { number: 20, name: 'Leviathan', attack: 4, health: 45, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
     21: { number: 21, name: 'Foundry', attack: 1, health: 1, tags: ['MIN', '×5 INC+3'], mining: 0.21, incomeBoost: 3 },
     22: { number: 22, name: 'Glaive', attack: 10, health: 60, tags: ['CARRIER'], split: true },
-    23: { number: 23, name: 'Pathfinder', attack: 1, health: 22, tags: [] },
+    23: { number: 23, name: 'Pathfinder', attack: 1, health: 25, tags: [] },
     24: { number: 24, name: 'Freighter', attack: 8, health: 60, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
-    25: { number: 25, name: 'Nova', attack: 1, health: 16, tags: ['NOVA'], nova: true },
+    25: { number: 25, name: 'Nova', attack: 1, health: 14, tags: ['NOVA'], nova: true },
     26: { number: 26, name: 'Mothership', attack: 2, health: 50, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     27: { number: 27, name: 'Cornucopia', attack: 1, health: 5, tags: ['MIN', 'MIN', 'MIN'], mining: 0.81 },
     28: { number: 28, name: 'Convoy', attack: 4, health: 60, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
     29: { number: 29, name: 'Armory', attack: 1, health: 130, tags: [] },
     30: { number: 30, name: 'Dynamite', attack: 2, health: 40, tags: ['×2 CMB', 'MIN', '×7 AOE'], mining: 0.30, missile: true },
-    31: { number: 31, name: 'Crossbowman', attack: 9, health: 60, tags: [] },
+    31: { number: 31, name: 'Crossbowman', attack: 10, health: 60, tags: [] },
     32: { number: 32, name: 'Battlecruiser', attack: 32, health: 80, tags: ['×2 CMB'] },
     33: { number: 33, name: 'Reaper', attack: 5, health: 80, tags: ['MIN', 'CARRIER'], split: true },
     34: { number: 34, name: 'Eraser', attack: 2, health: 70, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
     36: { number: 36, name: 'Titan', attack: 4, health: 50, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
-    37: { number: 37, name: 'Ruler', attack: 1, health: 40, tags: [] },
+    37: { number: 37, name: 'Ruler', attack: 1, health: 30, tags: [] },
     38: { number: 38, name: 'Centurion', attack: 2, health: 200, tags: ['ARMOR'] },
     39: { number: 39, name: 'Harvester', attack: 1, health: 50, tags: ['MIN', 'LONG RANGE'], longRange: true, mining: 0.33 },
     40: { number: 40, name: 'Obliterator', attack: 27, health: 60, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
@@ -62,7 +62,7 @@ export const TEMPLATES = {
     59: { number: 59, name: 'Economist', attack: 1, health: 240 },
     60: { number: 60, name: 'Nobel', attack: 9, health: 120 },
     61: { number: 61, name: 'Shinobi', attack: 61, health: 130 },
-    62: { number: 62, name: 'Xbowman', attack: 27, health: 150 },
+    62: { number: 62, name: 'Xbowman', attack: 30, health: 150 },
     63: { number: 63, name: 'Forge', attack: 1, health: 30 },
     64: { number: 64, name: 'Power', attack: 729, health: 140 },
     65: { number: 65, name: 'Firebase', attack: 1, health: 120 },
@@ -110,7 +110,7 @@ export function listAbilities(n) {
             case 19: lines.push(`<b style="color: #8a63fe;">19 ›</b> I take ${n / 19} less damage from all sources.`); break;
             case 23: lines.push(`<b style="color: yellow;">23 › End of turn:</b> Trade 1 base hp for ${n / 23} income.`); break;
             case 29: lines.push(`<b style="color: white;">29 › End of turn:</b> Modify your base with +1 armor.`); break;
-            case 31: lines.push(`<b style="color: #5e7488;">31 › I have +2 range and x9 attack.`); break;
+            case 31: lines.push(`<b style="color: #5e7488;">31 › I have +2 range and x10 attack.`); break;
             case 37: lines.push(`<b style="color: #5e7488;">37 › Deploy:</b> Also deploy ships up to #12 in my sector.`); break;
             case 41: lines.push(`<b style="color: white;">41 › Deploy:</b> Modify your ships with +1 attack.`); break;
             case 43: lines.push(`<b style="color: white;">43 › End of turn:</b> Modify me with ×3 attack.`); break;
