@@ -25,7 +25,7 @@ export const TEMPLATES = {
     22: { number: 22, name: 'Glaive', attack: 10, health: 60, tags: ['CARRIER'], split: true },
     23: { number: 23, name: 'Pathfinder', attack: 1, health: 25, tags: [] },
     24: { number: 24, name: 'Freighter', attack: 8, health: 60, tags: ['×2 CMB', 'MIN'], combat: true, mining: 0.24 },
-    25: { number: 25, name: 'Nova', attack: 1, health: 14, tags: ['NOVA'], nova: true },
+    25: { number: 25, name: 'Nova', attack: 1, health: 60, tags: ['NOVA'], nova: true },
     26: { number: 26, name: 'Mothership', attack: 2, health: 50, tags: ['×2 CMB', 'LONG RANGE'], longRange: true },
     27: { number: 27, name: 'Cornucopia', attack: 1, health: 5, tags: ['MIN', 'MIN', 'MIN'], mining: 0.81 },
     28: { number: 28, name: 'Convoy', attack: 4, health: 60, tags: ['×2 CMB', '×5 INC+4'], combat: true, incomeBoost: 4 },
@@ -124,6 +124,7 @@ export function listAbilities(n) {
             case 89: lines.push(`<b style="color: white;">89 › Deploy:</b> The enemy base loses hp equal to my attack.`); break;
         }
     }
+    if (n % 25 === 0) lines.push(`<b style="color: #00cab1;">5</b> &times; <b style="color: #25d367;">5</b>: Instead of firing the second barrage, fire ${n/25}-damage mini-missiles at each enemy outside of range.`);
     if (n % 33 === 0) lines.push('<b style="color: #00cab1;">3</b> &times; <b style="color: #25d367;">11</b>: I mine anywhere.');
     if (n % 58 === 0) lines.push('<b style="color: #00cab1;">2</b> &times; <b style="color: #25d367;">29</b>: Then modify your base with x2 armor.');
     return lines.join('<br>');

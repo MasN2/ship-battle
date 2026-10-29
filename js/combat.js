@@ -150,20 +150,23 @@ export function fireMissiles(ship, enemyOwner) {
     // Determine direction: blue goes forward (+1), red goes backward (-1)
     const direction = ship.owner === 'blue' ? 1 : -1;
 
-    for (let i = 1; i <= range; i++) {
+    for (let i = 1; i <= 6; i++) {
         const targetSector = ship.sector + (i * direction);
-        fireMissile(ship, enemyOwner, targetSector);
+        if (i <= range) {
+            fireMissile(ship, enemyOwner, targetSector, ship.template.number/5);
+        } else if (ship.template.number % 25 == 0){
+            fireMissile(ship, enemyOwner, targetSector, ship.template.number/25);
+        }
     }
 }
 
-export function fireMissile(ship, enemyOwner, sector) {
+export function fireMissile(ship, enemyOwner, sector, dmg) {
     const attackerEl = document.querySelector(`[data-ship-id="${ship.id}"]`);
     if (attackerEl) {
         attackerEl.classList.add('attacking');
         timeout(() => attackerEl.classList.remove('attacking'), 350);
     }
 
-    const dmg = ship.template.number / 5;
     const bSec = ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX;
     const baseEl = document.querySelector(`.base.${enemyOwner}`);
 
@@ -310,7 +313,6 @@ export async function runAttacks() {
             const result = await executeStrike(ship, enemyOwner, target, baseTarget, 0);
 
             if (ship.template.number % 5 === 0) fireMissiles(ship, enemyOwner);
-            if (ship.template.number % 25 === 0) fireMissiles(ship, enemyOwner);
 
             if (ship.template.trample && result.leftover > 0) {
                 let overflow = result.leftover;
