@@ -37,7 +37,7 @@ export const TEMPLATES = {
     34: { number: 34, name: 'Eraser', attack: 2, health: 70, tags: ['×2 CMB', 'SIEGE'], siege: true },
     35: { number: 35, name: 'Flotilla', attack: 1, health: 30, tags: ['×5 INC+5', '×7 AOE'], incomeBoost: 5, missile: true },
     36: { number: 36, name: 'Titan', attack: 4, health: 50, tags: ['×2 CMB', 'MIN', 'MIN'], combat: true, mining: 0.72 },
-    37: { number: 37, name: 'Ruler', attack: 1, health: 30, tags: [] },
+    37: { number: 37, name: 'Ruler', attack: 1, health: 1, tags: [] },
     38: { number: 38, name: 'Centurion', attack: 2, health: 200, tags: ['ARMOR'] },
     39: { number: 39, name: 'Harvester', attack: 1, health: 50, tags: ['MIN', 'LONG RANGE'], longRange: true, mining: 0.33 },
     40: { number: 40, name: 'Obliterator', attack: 27, health: 60, tags: ['×2 CMB', '×7 AOE'], combat: true, missile: true },
