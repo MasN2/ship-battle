@@ -111,10 +111,10 @@ if (num === 59) ship.attack += state[owner].income;
             if (calculatePrimeFactors(i).length === 1) await deployShip(owner, i, sector);
         }
     }
-    if (num % 37 === 0) {
+    if (num % 41 === 0) {
         for (let i = 1; i <= 12; i++) await deployShip(owner, i, sector);
     }
-    if (num === 41) {
+    if (num === 37) {
         for (const s of state[owner].ships){
             s.attack += 1;
         }
