@@ -186,13 +186,9 @@ export function updateSummaryBar() {
                     // Factor 23: Gain n / 23 income
                     data.income += Math.floor(n / 23);
                     break;
-                case 31:
-                    // Factor 31: Modify your base with +1 armor
-                    data.baseArmor += 1;
-                    break;
-                case 43:
-                    // Factor 43: Modify with +1 attack, then deploy that many Corvettes
-                    data.deploy += (atk + 1);
+                case 29:
+                    // Factor 29: Modify your base with +(n/29) armor
+                    data.baseArmor += (n / 29);
                     break;
                 case 47:
                     // Factor 47: Deploy ship #(attack) into sector
@@ -200,10 +196,11 @@ export function updateSummaryBar() {
                     break;
             }
         }
+      if (n % 25 == 0) data.missile -= Math.floor(n / 5);
 
         // Direct vs Long-Range attack (strictly factor 11 for Bow)
 
-            if (factors.includes(11)) {
+            if (factors.includes(11) || factors.includes(31)) {
                 data.range += atk;
             } else {
                 data.melee += atk;
