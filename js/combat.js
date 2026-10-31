@@ -120,16 +120,16 @@ if (num === 59) ship.attack += state[owner].income;
         }
     }
     if (num === 15) {
-        s.attack += Math.floor(state[owner].ore ** (1/5));
+        ship.attack += Math.floor(state[owner].ore ** (1/5));
     }
         if (num === 30) {
-        s.attack += Math.floor(state[owner].ore ** (1/4));
+        ship.attack += Math.floor(state[owner].ore ** (1/4));
     }
         if (num === 45 || num === 60) {
-        s.attack += Math.floor(state[owner].ore ** (1/3));
+        ship.attack += Math.floor(state[owner].ore ** (1/3));
     }
         if (num % 35 === 0) {
-        s.attack += Math.floor(state[owner].income / 10);
+        ship.attack += Math.floor(state[owner].income / 10);
     }
 }
 

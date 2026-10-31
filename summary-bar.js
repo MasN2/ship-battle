@@ -196,7 +196,7 @@ export function updateSummaryBar() {
                     break;
             }
         }
-      if (n % 25 == 0) data.missile -= Math.floor(n / 5);
+      if (!factors.includes(5)){
 
         // Direct vs Long-Range attack (strictly factor 11 for Bow)
 
@@ -205,6 +205,7 @@ export function updateSummaryBar() {
             } else {
                 data.melee += atk;
             }
+        }
         
     }
 
