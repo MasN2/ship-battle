@@ -119,6 +119,18 @@ if (num === 59) ship.attack += state[owner].income;
             s.attack += 1;
         }
     }
+    if (num === 15) {
+        s.attack += Math.floor(state[owner].ore ** (1/5));
+    }
+        if (num === 30) {
+        s.attack += Math.floor(state[owner].ore ** (1/4));
+    }
+        if (num === 45 || num === 60) {
+        s.attack += Math.floor(state[owner].ore ** (1/3));
+    }
+        if (num % 35 === 0) {
+        s.attack += Math.floor(state[owner].income / 10);
+    }
 }
 
 export function canAfford(owner, num) {
@@ -153,9 +165,10 @@ export function fireMissiles(ship, enemyOwner) {
     for (let i = 1; i <= 6; i++) {
         const targetSector = ship.sector + (i * direction);
         if (i <= range) {
-            fireMissile(ship, enemyOwner, targetSector, ship.template.number/5);
-        } else if (ship.template.number % 25 == 0){
-            fireMissile(ship, enemyOwner, targetSector, ship.template.number/25);
+            fireMissile(ship, enemyOwner, targetSector, ship.attack);
+        }
+        if (ship.template.number % 25 == 0){
+            fireMissile(ship, enemyOwner, targetSector, ship.attack);
         }
     }
 }
@@ -309,20 +322,24 @@ export async function runAttacks() {
             if (!target && !baseTarget) continue;
 
             ship.attackedThisTurn = true;
-            let tsec = target?.sector ?? (ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX);
-            const result = await executeStrike(ship, enemyOwner, target, baseTarget, 0);
 
-            if (ship.template.number % 5 === 0) fireMissiles(ship, enemyOwner);
+            if (ship.template.number % 5 === 0) {         
+                fireMissiles(ship, enemyOwner);    
+            } else {
+                let tsec = target?.sector ?? (ship.owner === 'blue' ? RED_BASE_IDX : BLUE_BASE_IDX);
+                const result = await executeStrike(ship, enemyOwner, target, baseTarget, 0);
 
-            if (ship.template.trample && result.leftover > 0) {
-                let overflow = result.leftover;
-                let trampleHits = 0;
-                while (overflow > 0 && trampleHits <= 10) {
-                    const { target: nextTarget, baseTarget: nextBase } = findTarget(ship, enemyOwner);
-                    if (!nextTarget && !nextBase) break;
-                    const res = await executeStrike(ship, enemyOwner, nextTarget, nextBase, overflow);
-                    overflow = res.leftover;
-                    trampleHits++;
+
+                if (ship.template.trample && result.leftover > 0) {
+                    let overflow = result.leftover;
+                    let trampleHits = 0;
+                    while (overflow > 0 && trampleHits <= 10) {
+                        const { target: nextTarget, baseTarget: nextBase } = findTarget(ship, enemyOwner);
+                        if (!nextTarget && !nextBase) break;
+                        const res = await executeStrike(ship, enemyOwner, nextTarget, nextBase, overflow);
+                        overflow = res.leftover;
+                        trampleHits++;
+                    }
                 }
             }
             await sleep(120);
